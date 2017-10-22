@@ -463,6 +463,7 @@
         
           <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><a href="https://zh.wikipedia.org/wiki/%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98">共享内存</a>指在多处理器的计算机系统中，可以被不同中CPU访问的大容量内存。是众多进程间通信（IPC）方式中最快的一种，无需进行数据拷贝等操作，即可在各个进程之间共享数据。</p>
 <p>PHP同样也提供了对共享内存操作的可能性，通过<code>shmop</code>扩展实现。</p>
+<p>对于多进程写入的并发控制，可以尝试通过<code>sysvsem</code>扩展进行控制。</p>
           <div class="post-more-link text-center">
             <a class="btn" href="/articles/2017/01/04/try-to-use-shared-memory-in-php/#more" rel="contents">
               阅读全文 &raquo;

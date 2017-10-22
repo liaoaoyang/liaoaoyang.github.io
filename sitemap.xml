@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://www.liaoaoyang.com/articles/2017/01/04/try-to-use-shared-memory-in-php/</loc>
+    
+    <lastmod>2017-10-21T16:04:51.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://www.liaoaoyang.com/articles/2017/09/19/yaf-source-code-overview-ii/</loc>
     
-    <lastmod>2017-09-20T13:48:50.000Z</lastmod>
+    <lastmod>2017-10-08T02:11:42.000Z</lastmod>
     
   </url>
   
@@ -12,13 +19,6 @@
     <loc>http://www.liaoaoyang.com/articles/2017/09/17/yaf-source-code-overview-i/</loc>
     
     <lastmod>2017-09-18T16:51:58.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/02/17/write-a-nagios-alert-script/</loc>
-    
-    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
   </url>
   
@@ -44,7 +44,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2017/01/04/try-to-use-shared-memory-in-php/</loc>
+    <loc>http://www.liaoaoyang.com/about/index.html</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -296,7 +296,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/about/index.html</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/02/17/write-a-nagios-alert-script/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
