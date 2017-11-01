@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://www.liaoaoyang.com/articles/2017/11/01/a-quick-reading-of-effective-tcpip/</loc>
+    
+    <lastmod>2017-10-31T16:07:14.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.liaoaoyang.com/articles/2017/10/30/nginx-location-from-manual-to-source-code-i/</loc>
+    
+    <lastmod>2017-10-30T02:10:46.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://www.liaoaoyang.com/articles/2017/01/04/try-to-use-shared-memory-in-php/</loc>
     
     <lastmod>2017-10-21T16:04:51.000Z</lastmod>
@@ -19,20 +33,6 @@
     <loc>http://www.liaoaoyang.com/articles/2017/09/17/yaf-source-code-overview-i/</loc>
     
     <lastmod>2017-09-18T16:51:58.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.liaoaoyang.com/articles/2015/03/20/use-volley-in-android-studio/</loc>
-    
-    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/08/23/use-grafana-and-influxdb-to-display-nagios-monitor-data/</loc>
-    
-    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
   </url>
   
@@ -184,6 +184,13 @@
   </url>
   
   <url>
+    <loc>http://www.liaoaoyang.com/articles/2016/02/17/write-a-nagios-alert-script/</loc>
+    
+    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://www.liaoaoyang.com/articles/2014/07/28/mysql-note-add-instance-and-start/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
@@ -296,7 +303,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/02/17/write-a-nagios-alert-script/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2015/03/20/use-volley-in-android-studio/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -528,6 +535,13 @@
   
   <url>
     <loc>http://www.liaoaoyang.com/articles/2016/05/07/a-simple-note-of-php-reflection-class/</loc>
+    
+    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.liaoaoyang.com/articles/2016/08/23/use-grafana-and-influxdb-to-display-nagios-monitor-data/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
