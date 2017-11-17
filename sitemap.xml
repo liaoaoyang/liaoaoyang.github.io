@@ -2,6 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://www.liaoaoyang.com/articles/2017/11/13/is-php-file-put-contents-safe-when-used-by-multi-processes/</loc>
+    
+    <lastmod>2017-11-17T15:41:16.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.liaoaoyang.com/articles/2017/08/22/php-daemon/</loc>
+    
+    <lastmod>2017-11-11T04:17:54.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.liaoaoyang.com/articles/2017/08/06/interesting-and-useful-designs-of-redis/</loc>
+    
+    <lastmod>2017-11-10T03:37:44.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://www.liaoaoyang.com/articles/2017/11/01/a-quick-reading-of-effective-tcpip/</loc>
     
     <lastmod>2017-10-31T16:07:14.000Z</lastmod>
@@ -33,27 +54,6 @@
     <loc>http://www.liaoaoyang.com/articles/2017/09/17/yaf-source-code-overview-i/</loc>
     
     <lastmod>2017-09-18T16:51:58.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.liaoaoyang.com/articles/2014/12/28/use-cpp-11-with-qt-creator/</loc>
-    
-    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.liaoaoyang.com/about/index.html</loc>
-    
-    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/07/17/the-hard-thing-about-hard-things/</loc>
-    
-    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
   </url>
   
@@ -121,7 +121,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2017/08/22/php-daemon/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/02/17/write-a-nagios-alert-script/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -184,7 +184,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/02/17/write-a-nagios-alert-script/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2015/03/20/use-volley-in-android-studio/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -303,14 +303,14 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2015/03/20/use-volley-in-android-studio/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/05/11/leetcode-58-263-326-345/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/04/12/leetcode-4/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/08/23/use-grafana-and-influxdb-to-display-nagios-monitor-data/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -366,7 +366,14 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2017/08/06/interesting-and-useful-designs-of-redis/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2014/12/28/use-cpp-11-with-qt-creator/</loc>
+    
+    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.liaoaoyang.com/about/index.html</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -541,7 +548,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/08/23/use-grafana-and-influxdb-to-display-nagios-monitor-data/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/07/17/the-hard-thing-about-hard-things/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -604,7 +611,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/05/11/leetcode-58-263-326-345/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/04/12/leetcode-4/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
