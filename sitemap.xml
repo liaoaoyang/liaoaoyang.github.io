@@ -2,9 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://www.liaoaoyang.com/articles/2016/04/03/get-progress-when-mysql-load-data-infile/</loc>
+    
+    <lastmod>2017-11-21T15:07:53.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.liaoaoyang.com/articles/2017/04/22/crucial-conversations/</loc>
+    
+    <lastmod>2017-11-21T15:07:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.liaoaoyang.com/articles/2017/10/30/nginx-location-from-manual-to-source-code-i/</loc>
+    
+    <lastmod>2017-11-21T15:07:19.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.liaoaoyang.com/articles/2017/01/04/try-to-use-shared-memory-in-php/</loc>
+    
+    <lastmod>2017-11-21T15:06:37.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://www.liaoaoyang.com/articles/2017/11/13/is-php-file-put-contents-safe-when-used-by-multi-processes/</loc>
     
-    <lastmod>2017-11-17T15:41:16.000Z</lastmod>
+    <lastmod>2017-11-21T15:06:07.000Z</lastmod>
     
   </url>
   
@@ -30,20 +58,6 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2017/10/30/nginx-location-from-manual-to-source-code-i/</loc>
-    
-    <lastmod>2017-10-30T02:10:46.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.liaoaoyang.com/articles/2017/01/04/try-to-use-shared-memory-in-php/</loc>
-    
-    <lastmod>2017-10-21T16:04:51.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://www.liaoaoyang.com/articles/2017/09/19/yaf-source-code-overview-ii/</loc>
     
     <lastmod>2017-10-08T02:11:42.000Z</lastmod>
@@ -54,20 +68,6 @@
     <loc>http://www.liaoaoyang.com/articles/2017/09/17/yaf-source-code-overview-i/</loc>
     
     <lastmod>2017-09-18T16:51:58.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/04/08/start-leetcode/</loc>
-    
-    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.liaoaoyang.com/articles/2014/06/08/sigma-35mm-lens/</loc>
-    
-    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
   </url>
   
@@ -415,7 +415,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/04/03/get-progress-when-mysql-load-data-infile/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/07/17/the-hard-thing-about-hard-things/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -429,7 +429,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2017/04/22/crucial-conversations/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/04/08/start-leetcode/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -548,7 +548,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/07/17/the-hard-thing-about-hard-things/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2014/06/08/sigma-35mm-lens/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
