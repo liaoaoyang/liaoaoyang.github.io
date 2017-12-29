@@ -232,8 +232,8 @@
             
               
                 
-                <a class="post-title-link" href="/articles/2014/05/23/php-ini-note/" itemprop="url">
-                  PHP配置问题汇总
+                <a class="post-title-link" href="/articles/2014/05/24/kbt-pure-pro/" itemprop="url">
+                  KBT Pure Pro 键盘
                 </a>
               
             
@@ -243,8 +243,8 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2014-05-23T00:00:00+08:00" content="2014-05-23">
-              2014-05-23
+            <time itemprop="dateCreated" datetime="2014-05-24T00:00:00+08:00" content="2014-05-24">
+              2014-05-24
             </time>
           </span>
 
@@ -253,8 +253,8 @@
               &nbsp; | &nbsp; 分类于
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/LAMP-LNMP/" itemprop="url" rel="index">
-                    <span itemprop="name">LAMP/LNMP</span>
+                  <a href="/categories/Try/" itemprop="url" rel="index">
+                    <span itemprop="name">Try</span>
                   </a>
                 </span>
 
@@ -283,16 +283,12 @@
 
       
         
-          <span itemprop="articleBody">
-            
-              <h2 id="1-短记号问题"><a href="#1-短记号问题" class="headerlink" title="1.短记号问题"></a>1.短记号问题</h2><p>一般来说PHP代码需要以<code>&lt;?php</code>开始，以<code>?&gt;</code>，但是PHP也支持短记号<code>&lt;?</code>以及<code>?&gt;</code>。</p>
-<p>在使用Yaf的过程中，在mac本机调试的时候发现模板不能正确显示，发现模板中都是短记号的形式，形如：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">"taskIdHolder"</span> <span class="attribute">data-id</span>=<span class="value">"<span class="php"><span class="preprocessor">&lt;?php</span> <span class="keyword">echo</span> <span class="variable">$task_id</span>; <span class="preprocessor">?&gt;</span></span>"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">div</span>&gt;</span>;</span><br></pre></td></tr></table></figure>
-<p>这类模板会不能正确地显示，解决的办法自然就是在php.ini中开启对短记号的支持：</p>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="setting">short_open_tag = <span class="value"><span class="keyword">On</span></span></span></span><br></pre></td></tr></table></figure>
-
-            
-          </span>
+          <p>身为程序员，没有一把趁手的键盘怎么可以。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/articles/2014/05/24/kbt-pure-pro/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -389,6 +385,106 @@
 <figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import <span class="keyword">time</span></span><br><span class="line">&gt;&gt;&gt; <span class="keyword">print</span>(<span class="keyword">time</span>.strftime(<span class="string">"<span class="variable">%z</span>"</span>, <span class="keyword">time</span>.<span class="keyword">gmtime</span>()))</span><br><span class="line">+080<span class="number">0</span></span><br></pre></td></tr></table></figure>
 <p>参见<strong><a href="https://docs.python.org/2/library/time.html" target="_blank" rel="external">Python2的doc</a></strong>，其实就是利用<strong><a href="https://docs.python.org/2/library/time.html#time.strftime" target="_blank" rel="external">time.strftime</a></strong>格式化输出<strong><a href="https://docs.python.org/2/library/time.html#time.gmtime" target="_blank" rel="external">time.gmtime</a></strong>返回的数值。</p>
 <p>格式串中的小写z表示的时<code>+0800</code>格式的时区数据。</p>
+
+            
+          </span>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/articles/2014/05/23/php-ini-note/" itemprop="url">
+                  PHP配置问题汇总
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2014-05-23T00:00:00+08:00" content="2014-05-23">
+              2014-05-23
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/LAMP-LNMP/" itemprop="url" rel="index">
+                    <span itemprop="name">LAMP/LNMP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <span itemprop="articleBody">
+            
+              <h2 id="1-短记号问题"><a href="#1-短记号问题" class="headerlink" title="1.短记号问题"></a>1.短记号问题</h2><p>一般来说PHP代码需要以<code>&lt;?php</code>开始，以<code>?&gt;</code>，但是PHP也支持短记号<code>&lt;?</code>以及<code>?&gt;</code>。</p>
+<p>在使用Yaf的过程中，在mac本机调试的时候发现模板不能正确显示，发现模板中都是短记号的形式，形如：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">"taskIdHolder"</span> <span class="attribute">data-id</span>=<span class="value">"<span class="php"><span class="preprocessor">&lt;?php</span> <span class="keyword">echo</span> <span class="variable">$task_id</span>; <span class="preprocessor">?&gt;</span></span>"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">div</span>&gt;</span>;</span><br></pre></td></tr></table></figure>
+<p>这类模板会不能正确地显示，解决的办法自然就是在php.ini中开启对短记号的支持：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="setting">short_open_tag = <span class="value"><span class="keyword">On</span></span></span></span><br></pre></td></tr></table></figure>
 
             
           </span>
@@ -609,108 +705,12 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/articles/2014/02/21/setup-my-lamp/" itemprop="url">
-                  尝试搭建LAMP环境
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2014-02-21T00:00:00+08:00" content="2014-02-21">
-              2014-02-21
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp; 分类于
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/LAMP-LNMP/" itemprop="url" rel="index">
-                    <span itemprop="name">LAMP/LNMP</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <p>之前自己一直用apt-get在Ubuntu上搭环境，实在是很方便，自动的解决了很多的依赖问题，可以说是真是很省心。用VPS的时候有时候也用比如<a href="http://www.centos.bz/ezhttp/">EZHTTP</a>这样的LAMP/LNMP一键安装包。不过老用这些方便的东西做自己就觉得有些问题，比如自己不能控制Apache、PHP、MySQL的安装位置，在需要进入这些软件的安装位置的时候，就得用dpkg -L来找到这些软件的安装位置。完全全自动的安装感觉自己也不能了解到更多的细节。</p>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2014/02/21/setup-my-lamp/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
 
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/16/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span>
+    <a class="extend prev" rel="prev" href="/page/16/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/18/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -753,7 +753,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">85</span>
+              <span class="site-state-item-count">86</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
