@@ -2,21 +2,21 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://www.liaoaoyang.com/articles/2018/02/28/host-nginx-php-based-app-in-docker/</loc>
+    
+    <lastmod>2018-04-06T09:06:29.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://www.liaoaoyang.com/articles/2018/01/31/note-of-garbage-collection-algorithms-and-implementations/</loc>
     
-    <lastmod>2018-01-31T13:07:47.000Z</lastmod>
+    <lastmod>2018-04-06T03:14:05.000Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.liaoaoyang.com/articles/2017/11/13/is-php-file-put-contents-safe-when-used-by-multi-processes/</loc>
-    
-    <lastmod>2017-12-28T15:05:08.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.liaoaoyang.com/articles/2017/04/22/crucial-conversations/</loc>
     
     <lastmod>2017-12-28T15:05:08.000Z</lastmod>
     
@@ -45,6 +45,13 @@
   
   <url>
     <loc>http://www.liaoaoyang.com/articles/2017/01/04/try-to-use-shared-memory-in-php/</loc>
+    
+    <lastmod>2017-12-28T15:05:08.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.liaoaoyang.com/articles/2017/04/22/crucial-conversations/</loc>
     
     <lastmod>2017-12-28T15:05:08.000Z</lastmod>
     
@@ -82,13 +89,6 @@
     <loc>http://www.liaoaoyang.com/articles/2017/09/17/yaf-source-code-overview-i/</loc>
     
     <lastmod>2017-09-18T16:51:58.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.liaoaoyang.com/articles/2015/12/26/setup-bullet-train-in-a-new-mac/</loc>
-    
-    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
   </url>
   
@@ -415,6 +415,13 @@
   </url>
   
   <url>
+    <loc>http://www.liaoaoyang.com/articles/2016/04/08/start-leetcode/</loc>
+    
+    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://www.liaoaoyang.com/articles/2016/08/14/high-output-management/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
@@ -422,7 +429,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/04/08/start-leetcode/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2014/06/08/sigma-35mm-lens/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -436,7 +443,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2014/06/08/sigma-35mm-lens/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2014/02/21/setup-my-lamp/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -555,7 +562,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2014/02/21/setup-my-lamp/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2014/10/18/setup-centos-test-machine/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -590,7 +597,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2014/10/18/setup-centos-test-machine/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2015/12/26/setup-bullet-train-in-a-new-mac/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
