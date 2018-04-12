@@ -64,7 +64,7 @@
 <meta property="og:description" content="TL;DRDocker作为目前主流的容器技术之一，可以更高效的利用系统资源，拥有更快的启动时间，提供一致的运行环境，能更轻松的维护和扩展。
 作为开发者，在这项技术出现多年之后，是时候将他用于加速自己的App的开发、测试、部署阶段了。
 本文是个人的学习笔记，目的在于描述如何让一个基于 Nginx + PHP 的应用程序在 Docker 中运行起来。原理性的内容会另起篇幅。">
-<meta property="og:updated_time" content="2018-04-06T09:06:29.000Z">
+<meta property="og:updated_time" content="2018-04-12T15:22:29.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用Docker运行基于Nginx+PHP的应用程序">
 <meta name="twitter:description" content="TL;DRDocker作为目前主流的容器技术之一，可以更高效的利用系统资源，拥有更快的启动时间，提供一致的运行环境，能更轻松的维护和扩展。
@@ -280,7 +280,8 @@
       
         <span itemprop="articleBody"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>Docker作为目前主流的容器技术之一，可以更高效的利用系统资源，拥有更快的启动时间，提供一致的运行环境，能更轻松的维护和扩展。</p>
 <p>作为开发者，在这项技术出现多年之后，是时候将他用于加速自己的App的开发、测试、部署阶段了。</p>
-<p>本文是个人的学习笔记，目的在于描述如何让一个基于 Nginx + PHP 的应用程序在 Docker 中运行起来。原理性的内容会另起篇幅。<br><a id="more"></a></p>
+<p>本文是个人的学习笔记，目的在于描述如何让一个基于 Nginx + PHP 的应用程序在 Docker 中运行起来。原理性的内容会另起篇幅。</p>
+<a id="more"></a>
 <h1 id="运行环境"><a href="#运行环境" class="headerlink" title="运行环境"></a>运行环境</h1><h2 id="OS"><a href="#OS" class="headerlink" title="OS"></a>OS</h2><p>使用 <code>Ubuntu 16.04 LTS</code> 完成，同样也可以选用 <code>CentOS 7</code>，因为问题较多，放弃了在 <code>CentOS 6.5</code> 上的尝试（毕竟是很老的系统了）。</p>
 <h2 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h2><p>1.13</p>
 <h2 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h2><p>选用了比较喜欢的 <code>Openresty</code>，版本为 <code>1.13.6.1</code>，镜像为 <code>openresty/openresty:alpine</code>。</p>
@@ -366,6 +367,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/articles/2018/03/31/can-we-use-pcntl-in-fpm-fcgi-sapi/" rel="prev" title="在PHP-FPM中使用pcntl扩展">
+                在PHP-FPM中使用pcntl扩展 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -434,7 +439,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">88</span>
+              <span class="site-state-item-count">89</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -448,7 +453,7 @@
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-count">66</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>

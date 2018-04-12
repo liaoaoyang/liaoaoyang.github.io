@@ -232,6 +232,106 @@
             
               
                 
+                <a class="post-title-link" href="/articles/2014/05/23/php-ini-note/" itemprop="url">
+                  PHP配置问题汇总
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2014-05-23T00:00:00+08:00" content="2014-05-23">
+              2014-05-23
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/LAMP-LNMP/" itemprop="url" rel="index">
+                    <span itemprop="name">LAMP/LNMP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <span itemprop="articleBody">
+            
+              <h2 id="1-短记号问题"><a href="#1-短记号问题" class="headerlink" title="1.短记号问题"></a>1.短记号问题</h2><p>一般来说PHP代码需要以<code>&lt;?php</code>开始，以<code>?&gt;</code>，但是PHP也支持短记号<code>&lt;?</code>以及<code>?&gt;</code>。</p>
+<p>在使用Yaf的过程中，在mac本机调试的时候发现模板不能正确显示，发现模板中都是短记号的形式，形如：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">"taskIdHolder"</span> <span class="attribute">data-id</span>=<span class="value">"<span class="php"><span class="preprocessor">&lt;?php</span> <span class="keyword">echo</span> <span class="variable">$task_id</span>; <span class="preprocessor">?&gt;</span></span>"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">div</span>&gt;</span>;</span><br></pre></td></tr></table></figure>
+<p>这类模板会不能正确地显示，解决的办法自然就是在php.ini中开启对短记号的支持：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="setting">short_open_tag = <span class="value"><span class="keyword">On</span></span></span></span><br></pre></td></tr></table></figure>
+
+            
+          </span>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/articles/2014/02/24/backwpup-not-work/" itemprop="url">
                   BackWPup不能备份的一种可能性
                 </a>
@@ -554,7 +654,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">88</span>
+              <span class="site-state-item-count">89</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -568,7 +668,7 @@
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-count">66</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>
