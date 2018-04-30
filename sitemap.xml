@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://www.liaoaoyang.com/articles/2018/04/30/persistent-connections-of-redis-and-pdo-extension-in-php/</loc>
+    
+    <lastmod>2018-04-30T15:53:12.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.liaoaoyang.com/articles/2016/08/23/use-grafana-and-influxdb-to-display-nagios-monitor-data/</loc>
+    
+    <lastmod>2018-04-18T14:16:06.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://www.liaoaoyang.com/articles/2018/03/31/can-we-use-pcntl-in-fpm-fcgi-sapi/</loc>
     
     <lastmod>2018-04-12T15:22:29.000Z</lastmod>
@@ -23,7 +37,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2017/12/28/365-days-of-github/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2017/11/13/is-php-file-put-contents-safe-when-used-by-multi-processes/</loc>
     
     <lastmod>2017-12-28T15:05:08.000Z</lastmod>
     
@@ -37,7 +51,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2017/11/13/is-php-file-put-contents-safe-when-used-by-multi-processes/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2017/04/22/crucial-conversations/</loc>
     
     <lastmod>2017-12-28T15:05:08.000Z</lastmod>
     
@@ -58,7 +72,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2017/04/22/crucial-conversations/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2017/12/28/365-days-of-github/</loc>
     
     <lastmod>2017-12-28T15:05:08.000Z</lastmod>
     
@@ -100,20 +114,6 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2015/12/06/problems-when-transform-blog-from-pelican-to-hexo/</loc>
-    
-    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.liaoaoyang.com/articles/2015/08/21/php-json-encode-emoji/</loc>
-    
-    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://www.liaoaoyang.com/articles/2014/05/23/php-ini-note/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
@@ -121,7 +121,14 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/02/17/write-a-nagios-alert-script/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2015/03/20/use-volley-in-android-studio/</loc>
+    
+    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.liaoaoyang.com/about/index.html</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -170,7 +177,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2015/03/20/use-volley-in-android-studio/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2014/12/28/use-cpp-11-with-qt-creator/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -191,7 +198,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/08/23/use-grafana-and-influxdb-to-display-nagios-monitor-data/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/02/17/write-a-nagios-alert-script/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -317,14 +324,14 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/04/12/leetcode-4/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/07/17/the-hard-thing-about-hard-things/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2014/12/28/use-cpp-11-with-qt-creator/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/04/10/leetcode-3/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -373,14 +380,14 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/about/index.html</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/04/08/start-leetcode/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/07/17/the-hard-thing-about-hard-things/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2014/06/08/sigma-35mm-lens/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -415,7 +422,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/04/08/start-leetcode/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2014/02/21/setup-my-lamp/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -429,7 +436,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2014/06/08/sigma-35mm-lens/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2014/10/18/setup-centos-test-machine/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -443,7 +450,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2014/02/21/setup-my-lamp/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2015/12/26/setup-bullet-train-in-a-new-mac/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -485,7 +492,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2014/10/18/setup-centos-test-machine/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2014/05/23/python-how-to-get-timezone/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -569,7 +576,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2015/12/26/setup-bullet-train-in-a-new-mac/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2015/12/06/problems-when-transform-blog-from-pelican-to-hexo/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -604,7 +611,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2014/05/23/python-how-to-get-timezone/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2015/08/21/php-json-encode-emoji/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -639,7 +646,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/04/10/leetcode-3/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/04/12/leetcode-4/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     

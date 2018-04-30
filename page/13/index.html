@@ -232,6 +232,105 @@
             
               
                 
+                <a class="post-title-link" href="/articles/2016/01/05/monitor-redis-by-nagios-part-2/" itemprop="url">
+                  使用Nagios监控Redis-按内存使用率监控
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-01-05T19:09:55+08:00" content="2016-01-05">
+              2016-01-05
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Learning</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>本文是 <a href="http://www.liaoaoyang.com/articles/2015/11/27/monitor-redis-by-nagios/">使用Nagios监控Redis</a> 的补充记录。</p>
+<p>根据前期选用的插件，通过直接针对 <code>used_memory_rss</code> 设定监控阈值完成监控，而这一阈值的问题在于是使用字节数的表示的，如果要按照<code>36GB</code>的<code>70%</code>设定阈值监控，就需要将监控的值设定为(结果已四舍五入)：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">36</span> * <span class="number">1024</span> * <span class="number">1024</span> * <span class="number">1024</span> * <span class="number">0.7</span> = <span class="number">27058293965</span></span><br></pre></td></tr></table></figure>
+<p>这一数字对于config文件来说，以及监控用户来说并不友好。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/articles/2016/01/05/monitor-redis-by-nagios-part-2/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/articles/2015/12/31/my-2015/" itemprop="url">
                   2015
                 </a>
@@ -583,104 +682,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/articles/2015/11/27/monitor-redis-by-nagios/" itemprop="url">
-                  使用Nagios监控Redis
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2015-11-27T00:00:00+08:00" content="2015-11-27">
-              2015-11-27
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp; 分类于
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Learning/" itemprop="url" rel="index">
-                    <span itemprop="name">Learning</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>近期新上项目之后出现了后台服务的一些诡异的问题，追查之后发现居然有个Redis的实例把分配的几十G内存给用满了……</p>
-<p>终于意识到之前“土法炼钢”的不科学的地方，惭愧之余迅速的想要给Redis加上基本的监控。</p>
-<p>最初的想法是直接自己写脚本轮询各个实例的info信息，然后自行parse，当前运行Redis的实例不多，感觉工作量并不大，然而这时候想起组内之前的监控是在用<code>Nagios</code>，觉得为什么不让更专业的软件来完成这项工作呢？于是决定通过Nagios来完成监控。</p>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2015/11/27/monitor-redis-by-nagios/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
 
   </section>
 
@@ -729,7 +730,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">89</span>
+              <span class="site-state-item-count">90</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -743,7 +744,7 @@
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">66</span>
+              <span class="site-state-item-count">67</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>

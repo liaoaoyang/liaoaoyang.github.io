@@ -54,20 +54,20 @@
 
 
 
-<meta name="description" content="Nagios 收集监控数据。InfluxDB 作为存储设施。Grafana 展现指标。">
+<meta name="description" content="TL;DRNagios 收集监控数据；InfluxDB 作为存储设施；Grafana 展现指标；Nagios 通过 graphios 向 InfluxDB写入数据。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用Grafana+InfluxDB展示Nagios监控数据">
 <meta property="og:url" content="http://www.liaoaoyang.com/articles/2016/08/23/use-grafana-and-influxdb-to-display-nagios-monitor-data/index.html">
 <meta property="og:site_name" content="A Programmer">
-<meta property="og:description" content="Nagios 收集监控数据。InfluxDB 作为存储设施。Grafana 展现指标。">
+<meta property="og:description" content="TL;DRNagios 收集监控数据；InfluxDB 作为存储设施；Grafana 展现指标；Nagios 通过 graphios 向 InfluxDB写入数据。">
 <meta property="og:image" content="https://blog.wislay.com/wp-content/uploads/2016/08/php4nagios-sample.png">
 <meta property="og:image" content="https://blog.wislay.com/wp-content/uploads/2016/08/grafana-sample-small.jpg">
 <meta property="og:image" content="https://blog.wislay.com/wp-content/uploads/2016/08/nagios-load-data-in-grafana.jpg">
 <meta property="og:image" content="https://blog.wislay.com/wp-content/uploads/2016/08/nagios-cpu-data-in-grafana.jpg">
-<meta property="og:updated_time" content="2017-09-18T16:50:13.000Z">
+<meta property="og:updated_time" content="2018-04-18T14:16:06.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用Grafana+InfluxDB展示Nagios监控数据">
-<meta name="twitter:description" content="Nagios 收集监控数据。InfluxDB 作为存储设施。Grafana 展现指标。">
+<meta name="twitter:description" content="TL;DRNagios 收集监控数据；InfluxDB 作为存储设施；Grafana 展现指标；Nagios 通过 graphios 向 InfluxDB写入数据。">
 
 
 
@@ -276,7 +276,7 @@
       
 
       
-        <span itemprop="articleBody"><p>Nagios 收集监控数据。<br>InfluxDB 作为存储设施。<br>Grafana 展现指标。</p>
+        <span itemprop="articleBody"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>Nagios 收集监控数据；<br>InfluxDB 作为存储设施；<br>Grafana 展现指标；<br>Nagios 通过 <a href="https://github.com/shawn-sterling/graphios" target="_blank" rel="external">graphios</a> 向 InfluxDB写入数据。</p>
 <a id="more"></a>
 <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><code>Nagios</code>作为监控软件来说已经让人基本满意了，但是个人在使用中感觉还存在部分问题：</p>
 <ol>
@@ -465,7 +465,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">89</span>
+              <span class="site-state-item-count">90</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -479,7 +479,7 @@
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">66</span>
+              <span class="site-state-item-count">67</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>
@@ -544,7 +544,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方案"><span class="nav-number">2.</span> <span class="nav-text">方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#绘图"><span class="nav-number">2.1.</span> <span class="nav-text">绘图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据内容"><span class="nav-number">2.2.</span> <span class="nav-text">数据内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据落地"><span class="nav-number">2.3.</span> <span class="nav-text">数据落地</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据收集"><span class="nav-number">2.4.</span> <span class="nav-text">数据收集</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据解析异常"><span class="nav-number">2.4.1.</span> <span class="nav-text">数据解析异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InfluxDB版本"><span class="nav-number">2.4.2.</span> <span class="nav-text">InfluxDB版本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#展现样例"><span class="nav-number">2.5.</span> <span class="nav-text">展现样例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#load"><span class="nav-number">2.5.1.</span> <span class="nav-text">load</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CPU"><span class="nav-number">2.5.2.</span> <span class="nav-text">CPU</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">3.</span> <span class="nav-text">小结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TL-DR"><span class="nav-number">1.</span> <span class="nav-text">TL;DR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">2.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方案"><span class="nav-number">3.</span> <span class="nav-text">方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#绘图"><span class="nav-number">3.1.</span> <span class="nav-text">绘图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据内容"><span class="nav-number">3.2.</span> <span class="nav-text">数据内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据落地"><span class="nav-number">3.3.</span> <span class="nav-text">数据落地</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据收集"><span class="nav-number">3.4.</span> <span class="nav-text">数据收集</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据解析异常"><span class="nav-number">3.4.1.</span> <span class="nav-text">数据解析异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InfluxDB版本"><span class="nav-number">3.4.2.</span> <span class="nav-text">InfluxDB版本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#展现样例"><span class="nav-number">3.5.</span> <span class="nav-text">展现样例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#load"><span class="nav-number">3.5.1.</span> <span class="nav-text">load</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CPU"><span class="nav-number">3.5.2.</span> <span class="nav-text">CPU</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">4.</span> <span class="nav-text">小结</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
