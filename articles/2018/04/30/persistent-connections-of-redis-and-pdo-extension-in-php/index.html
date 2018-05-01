@@ -54,22 +54,22 @@
 
 
 
-<meta name="description" content="TL;DRPHP 中针对 Redis / MySQL 的长连接是生命周期级别的长连接，对于同一个进程的每一次请求都不会释放当前连接对象。而针对 TCP Socket 级别的连接是否已断开，则交给操作系统维持。
+<meta name="description" content="TL;DRPHP 中针对 Redis / MySQL 的长连接是生命周期级别的长连接，对于同一个进程的每一次相同目标的请求都不会释放当前连接对象。而针对 TCP Socket 级别的连接是否已断开，则交给操作系统维持。
 使用 PDO 对 MySQL 开启持久连接，要注意 PHP 执行的进程数量，不能超过 MySQL 设定的最大连接数。
-上述结论的前提是使用 phpredis 扩展，PHP 版本为 5.4.4">
+上述结论的前提是使用 phpredis 扩展，PHP 版本为">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PHP中Redis/MySQL的长连接">
 <meta property="og:url" content="http://www.liaoaoyang.com/articles/2018/04/30/persistent-connections-of-redis-and-pdo-extension-in-php/index.html">
 <meta property="og:site_name" content="A Programmer">
-<meta property="og:description" content="TL;DRPHP 中针对 Redis / MySQL 的长连接是生命周期级别的长连接，对于同一个进程的每一次请求都不会释放当前连接对象。而针对 TCP Socket 级别的连接是否已断开，则交给操作系统维持。
+<meta property="og:description" content="TL;DRPHP 中针对 Redis / MySQL 的长连接是生命周期级别的长连接，对于同一个进程的每一次相同目标的请求都不会释放当前连接对象。而针对 TCP Socket 级别的连接是否已断开，则交给操作系统维持。
 使用 PDO 对 MySQL 开启持久连接，要注意 PHP 执行的进程数量，不能超过 MySQL 设定的最大连接数。
-上述结论的前提是使用 phpredis 扩展，PHP 版本为 5.4.4">
-<meta property="og:updated_time" content="2018-04-30T15:53:12.000Z">
+上述结论的前提是使用 phpredis 扩展，PHP 版本为">
+<meta property="og:updated_time" content="2018-04-30T16:41:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="PHP中Redis/MySQL的长连接">
-<meta name="twitter:description" content="TL;DRPHP 中针对 Redis / MySQL 的长连接是生命周期级别的长连接，对于同一个进程的每一次请求都不会释放当前连接对象。而针对 TCP Socket 级别的连接是否已断开，则交给操作系统维持。
+<meta name="twitter:description" content="TL;DRPHP 中针对 Redis / MySQL 的长连接是生命周期级别的长连接，对于同一个进程的每一次相同目标的请求都不会释放当前连接对象。而针对 TCP Socket 级别的连接是否已断开，则交给操作系统维持。
 使用 PDO 对 MySQL 开启持久连接，要注意 PHP 执行的进程数量，不能超过 MySQL 设定的最大连接数。
-上述结论的前提是使用 phpredis 扩展，PHP 版本为 5.4.4">
+上述结论的前提是使用 phpredis 扩展，PHP 版本为">
 
 
 
@@ -278,7 +278,7 @@
       
 
       
-        <span itemprop="articleBody"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>PHP 中针对 Redis / MySQL 的长连接是生命周期级别的长连接，对于同一个进程的每一次请求都不会释放当前连接对象。而针对 TCP Socket 级别的连接是否已断开，则交给操作系统维持。</p>
+        <span itemprop="articleBody"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>PHP 中针对 Redis / MySQL 的长连接是生命周期级别的长连接，对于同一个进程的每一次相同目标的请求都不会释放当前连接对象。而针对 TCP Socket 级别的连接是否已断开，则交给操作系统维持。</p>
 <p>使用 PDO 对 MySQL 开启持久连接，要注意 PHP 执行的进程数量，不能超过 MySQL 设定的最大连接数。</p>
 <p>上述结论的前提是使用 phpredis 扩展，PHP 版本为 5.4.41。</p>
 <a id="more"></a>
@@ -319,7 +319,13 @@
 <p>构建持久化标记ID的方式看起来比 phpredis 扩展稍好一些，用到了 <code>服务器Host/服务器端口/用户名/密码</code> 等元素。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// pdo_dbh.c</span></span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line">		<span class="keyword">if</span> (SUCCESS == zend_hash_index_find(Z_ARRVAL_P(options), PDO_ATTR_PERSISTENT, (<span class="keyword">void</span>**)&amp;v)) &#123;</span><br><span class="line">			<span class="keyword">if</span> (Z_TYPE_PP(v) == IS_STRING &amp;&amp; !is_numeric_string(Z_STRVAL_PP(v), Z_STRLEN_PP(v), <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="number">0</span>) &amp;&amp; Z_STRLEN_PP(v) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">				<span class="comment">/* user specified key */</span></span><br><span class="line">				plen = spprintf(&amp;hashkey, <span class="number">0</span>, <span class="string">"PDO:DBH:DSN=%s:%s:%s:%s"</span>, data_source,</span><br><span class="line">						username ? username : <span class="string">""</span>,</span><br><span class="line">						password ? password : <span class="string">""</span>,</span><br><span class="line">						Z_STRVAL_PP(v));</span><br><span class="line">				is_persistent = <span class="number">1</span>;</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				convert_to_long_ex(v);</span><br><span class="line">				is_persistent = Z_LVAL_PP(v) ? <span class="number">1</span> : <span class="number">0</span>;</span><br><span class="line">				plen = spprintf(&amp;hashkey, <span class="number">0</span>, <span class="string">"PDO:DBH:DSN=%s:%s:%s"</span>, data_source,</span><br><span class="line">						username ? username : <span class="string">""</span>,</span><br><span class="line">						password ? password : <span class="string">""</span>);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"><span class="comment">// ...</span></span><br></pre></td></tr></table></figure>
 <p>然而如果启用了持久连接，PDO并没有给出主动清理 <code>EG(persistent_list)</code> 的方法，所以，如果要使用这一个特性，需要格外注意不要启动过多的进程，以至于超过 MySQL 设定的最大连接数。</p>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>对于开启 Redis/MySQL 的持久连接，PHP 通过将资源对象通过一定的标志存储到 MSHUTDOWN 阶段才会清理的全局哈希表中实现，在针对同一个服务器进行请求时，在 PHP 执行的整个生命周期之内保证了不会重新创建连接。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>PHP 中如果使用了 Redis/MySQL 的持久连接功能，PHP 内核会通过将资源对象存储到 <strong>MSHUTDOWN</strong> 阶段才会清理的全局 HashTable 中，实现针对同一个服务器进行请求时，在 PHP 执行的整个生命周期之内保证了正常情况下不会重新创建连接。</p>
+<h1 id="相关"><a href="#相关" class="headerlink" title="相关"></a>相关</h1><ul>
+<li><a href="https://github.com/walu/phpbook/blob/master/7.1.md" target="_blank" rel="external">PHPBOOK-7.1 函数的参数</a></li>
+<li><a href="https://github.com/walu/phpbook/blob/master/9.2.md" target="_blank" rel="external">PHPBOOK-9.2 PHP中的资源类型</a></li>
+<li><a href="https://github.com/walu/phpbook/blob/master/14.1.md" target="_blank" rel="external">PHPBOOK-14.1 14.1 流的概览</a></li>
+<li><a href="http://man7.org/linux/man-pages/man2/poll.2.html" target="_blank" rel="external">Linux Programmer’s Manual-POLL(2)</a></li>
+</ul>
 </span>
       
     </div>
@@ -498,7 +504,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TL-DR"><span class="nav-number">1.</span> <span class="nav-text">TL;DR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#背景"><span class="nav-number">2.</span> <span class="nav-text">背景</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-连接的实现"><span class="nav-number">2.1.</span> <span class="nav-text">Redis 连接的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pconnect-实现"><span class="nav-number">2.1.1.</span> <span class="nav-text">pconnect 实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#参数传递"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">参数传递</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#连接"><span class="nav-number">2.1.1.2.</span> <span class="nav-text">连接</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PHP-持久性资源"><span class="nav-number">2.1.1.3.</span> <span class="nav-text">PHP 持久性资源</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL-PDO的连接实现"><span class="nav-number">2.2.</span> <span class="nav-text">MySQL PDO的连接实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">3.</span> <span class="nav-text">小结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TL-DR"><span class="nav-number">1.</span> <span class="nav-text">TL;DR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#背景"><span class="nav-number">2.</span> <span class="nav-text">背景</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-连接的实现"><span class="nav-number">2.1.</span> <span class="nav-text">Redis 连接的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pconnect-实现"><span class="nav-number">2.1.1.</span> <span class="nav-text">pconnect 实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#参数传递"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">参数传递</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#连接"><span class="nav-number">2.1.1.2.</span> <span class="nav-text">连接</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PHP-持久性资源"><span class="nav-number">2.1.1.3.</span> <span class="nav-text">PHP 持久性资源</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL-PDO的连接实现"><span class="nav-number">2.2.</span> <span class="nav-text">MySQL PDO的连接实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">3.</span> <span class="nav-text">小结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#相关"><span class="nav-number">4.</span> <span class="nav-text">相关</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">

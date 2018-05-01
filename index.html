@@ -283,7 +283,7 @@
 
       
         
-          <h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>PHP 中针对 Redis / MySQL 的长连接是生命周期级别的长连接，对于同一个进程的每一次请求都不会释放当前连接对象。而针对 TCP Socket 级别的连接是否已断开，则交给操作系统维持。</p>
+          <h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>PHP 中针对 Redis / MySQL 的长连接是生命周期级别的长连接，对于同一个进程的每一次相同目标的请求都不会释放当前连接对象。而针对 TCP Socket 级别的连接是否已断开，则交给操作系统维持。</p>
 <p>使用 PDO 对 MySQL 开启持久连接，要注意 PHP 执行的进程数量，不能超过 MySQL 设定的最大连接数。</p>
 <p>上述结论的前提是使用 phpredis 扩展，PHP 版本为 5.4.41。</p>
           <div class="post-more-link text-center">
