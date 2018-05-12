@@ -232,6 +232,115 @@
             
               
                 
+                <a class="post-title-link" href="/articles/2014/11/09/ci-may-not-use-pconnect-with-oracle/" itemprop="url">
+                  CI可能不应该使用持久连接Oracle数据库
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2014-11-09T00:00:00+08:00" content="2014-11-09">
+              2014-11-09
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <style>
+img {
+    max-width:600px;
+}
+</style>
+
+<h1 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h1><p>看过CI框架用法应该会看到，在配置CI框架连接数据库时，默认会开启<a href="http://codeigniter.org.cn/user_guide/database/configuration.html"><code>持久连接</code></a>，即类似这样的配置<code>$db[&#39;test&#39;][&#39;pconnect&#39;] = TRUE;</code>，使用MySQL时会调用<code>mysql_pconnect</code>方法实现这一个功能，而<code>oci8</code>扩展恰巧也有类似的方法<a href="http://php.net/manual/zh/function.oci-pconnect.php"><code>oci_pconnect</code></a>:</p>
+<p><img src="https://blog.wislay.com/wp-content/uploads/2014/11/oci_pconnect.jpg" alt="oci_pconnect"></p>
+<p>方法的用处文档上说的很清楚：</p>
+<blockquote>
+<p>oci_pconnect() 创建一个到 Oracle 服务器的持久连接并登录。持久连接会被缓冲并在请求之间重复使用，可以降低每个页面加载的消耗。</p>
+</blockquote>
+<p>那么按道理来说这样的功能应该是会提升处理能力的，但是问题在于，持久连接会增加Oracle的进程数，一旦进程数耗尽，那么新的连接请求可能会被拒绝，反而会使得处理能力下降。</p>
+<p>今天遇到了这样的一个问题，当双机各自开启1024个php-fpm进程时，使用sqlplus连接数据库被拒绝，同时各种操作都被拒绝执行。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/articles/2014/11/09/ci-may-not-use-pconnect-with-oracle/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/articles/2014/10/25/mysql-errno-28-solution/" itemprop="url">
                   MySQL Errno 28解决方案
                 </a>
@@ -608,109 +717,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/articles/2014/09/07/nodejs-helloworld/" itemprop="url">
-                  又写了一个Hello World
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2014-09-07T00:00:00+08:00" content="2014-09-07">
-              2014-09-07
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp; 分类于
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Node-js/" itemprop="url" rel="index">
-                    <span itemprop="name">Node.js</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <style>
-img {
-    max-width: 600px;
-}
-</style>
-
-<p>近期有两天没有需求的日子，下周leader说让我去和前端学习一下，不过要先写个通关作业简单了解一下js。于是花两天时间又写了个Hello world。</p>
-<p>简单记录一下，代码包含大量的调试语句，暂时不贴代码，后期还得试着填坑，写出一个完善的hello world。</p>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2014/09/07/nodejs-helloworld/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
 
   </section>
 
@@ -759,7 +765,7 @@ img {
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-count">92</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -773,7 +779,7 @@ img {
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">67</span>
+              <span class="site-state-item-count">68</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>
