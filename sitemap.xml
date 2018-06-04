@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://www.liaoaoyang.com/articles/2018/06/01/solution-of-high-load-when-using-php-multi-curl/</loc>
+    
+    <lastmod>2018-06-04T14:36:07.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://www.liaoaoyang.com/articles/2018/05/12/notes-of-php-design-patterns/</loc>
     
-    <lastmod>2018-05-12T15:42:56.000Z</lastmod>
+    <lastmod>2018-06-04T01:09:19.000Z</lastmod>
     
   </url>
   
@@ -65,7 +72,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2017/12/28/365-days-of-github/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2017/01/04/try-to-use-shared-memory-in-php/</loc>
     
     <lastmod>2017-12-28T15:05:08.000Z</lastmod>
     
@@ -79,7 +86,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2017/01/04/try-to-use-shared-memory-in-php/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2017/12/28/365-days-of-github/</loc>
     
     <lastmod>2017-12-28T15:05:08.000Z</lastmod>
     
@@ -170,7 +177,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2014/12/28/use-cpp-11-with-qt-creator/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/02/17/write-a-nagios-alert-script/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -184,7 +191,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/02/17/write-a-nagios-alert-script/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/07/17/the-hard-thing-about-hard-things/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -205,7 +212,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/07/17/the-hard-thing-about-hard-things/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/04/08/start-leetcode/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -331,7 +338,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/04/08/start-leetcode/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2015/03/20/use-volley-in-android-studio/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -590,7 +597,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2015/03/20/use-volley-in-android-studio/</loc>
+    <loc>http://www.liaoaoyang.com/about/index.html</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -625,7 +632,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/about/index.html</loc>
+    <loc>http://www.liaoaoyang.com/articles/2014/12/28/use-cpp-11-with-qt-creator/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
