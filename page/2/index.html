@@ -232,6 +232,200 @@
             
               
                 
+                <a class="post-title-link" href="/articles/2018/04/30/persistent-connections-of-redis-and-pdo-extension-in-php/" itemprop="url">
+                  PHP中Redis/MySQL的长连接
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2018-04-30T17:29:47+08:00" content="2018-04-30">
+              2018-04-30
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>PHP 中针对 Redis / MySQL 的长连接是生命周期级别的长连接，对于同一个进程的每一次相同目标的请求都不会释放当前连接对象。而针对 TCP Socket 级别的连接是否已断开，则交给操作系统维持。</p>
+<p>使用 PDO 对 MySQL 开启持久连接，要注意 PHP 执行的进程数量，不能超过 MySQL 设定的最大连接数。</p>
+<p>上述结论的前提是使用 phpredis 扩展，PHP 版本为 5.4.41。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/articles/2018/04/30/persistent-connections-of-redis-and-pdo-extension-in-php/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/articles/2018/03/31/can-we-use-pcntl-in-fpm-fcgi-sapi/" itemprop="url">
+                  在PHP-FPM中使用pcntl扩展
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2018-03-31T22:09:25+08:00" content="2018-03-31">
+              2018-03-31
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>在 PHP-FPM 中使用 pcntl 扩展在一定情况下是可行的，但是并不是合理的。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/articles/2018/03/31/can-we-use-pcntl-in-fpm-fcgi-sapi/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/articles/2018/02/28/host-nginx-php-based-app-in-docker/" itemprop="url">
                   使用Docker运行基于Nginx+PHP的应用程序
                 </a>
@@ -502,201 +696,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/articles/2017/11/13/is-php-file-put-contents-safe-when-used-by-multi-processes/" itemprop="url">
-                  PHP多进程中使用file_put_contents安全吗？
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2017-11-13T23:07:11+08:00" content="2017-11-13">
-              2017-11-13
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp; 分类于
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/PHP/" itemprop="url" rel="index">
-                    <span itemprop="name">PHP</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>Linux下，PHP多进程使用 <code>file_put_contents()</code> 方法记录日志时，使用追加模式（<code>FILE_APPEND</code>），简短的日志内容不会重叠，即能安全的记录日志内容。</p>
-<p><code>file_put_contents()</code> 使用 <code>write()</code> 系统调用实现数据的写入，<code>write()</code> 系统调用对普通文件保证写入数据的完整性，<code>O_APPEND</code> 打开模式保证数据写入到文件末尾。</p>
-<p>如果愿意的话，也可以考虑在标记位中使用 <code>LOCK_EX</code>。</p>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2017/11/13/is-php-file-put-contents-safe-when-used-by-multi-processes/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/articles/2017/11/01/a-quick-reading-of-effective-tcpip/" itemprop="url">
-                  泛读《Effective TCP/IP》
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2017-11-01T00:01:47+08:00" content="2017-11-01">
-              2017-11-01
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp; 分类于
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Reading/" itemprop="url" rel="index">
-                    <span itemprop="name">Reading</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>对<a href="https://book.douban.com/subject/6058986/">《Effective TCP/IP》</a>一书进行了浏览，记录了印象较为深刻的一些技巧。</p>
-<p>有趣的是，<a href="https://book.douban.com/subject/1500149/">《Unix网络编程》</a>系列书籍的作者 W. Richard Stevens 对这本书的编写提供了一些帮助，而作者也认为阅读 Stevens 的书籍也是一个提高网络编程水平的44个技巧之一 <code>:-)</code>。</p>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2017/11/01/a-quick-reading-of-effective-tcpip/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
 
   </section>
 
@@ -745,7 +744,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">93</span>
+              <span class="site-state-item-count">95</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -759,7 +758,7 @@
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">70</span>
+              <span class="site-state-item-count">75</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>
