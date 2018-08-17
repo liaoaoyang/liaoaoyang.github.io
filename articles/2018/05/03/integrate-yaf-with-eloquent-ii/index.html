@@ -64,7 +64,7 @@
 <meta property="og:description" content="TL;DR集成方法参见 Yaf集成Eloquent 。
 集成基类的多个 Model 如果要正确的运行事务，需要保证各个 Model 的实例使用的是同一个数据库连接，在代码上可以通过共用同一个  Illuminate\Database\Capsule\Manager 对象实现。
 使用 DB Facade 需要为 Facade 提供已经关联了 db 作为键，以 Illuminate\Database\">
-<meta property="og:updated_time" content="2018-05-05T05:59:48.000Z">
+<meta property="og:updated_time" content="2018-08-13T15:42:18.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Yaf集成Eloquent——使用事务以及DB Facade">
 <meta name="twitter:description" content="TL;DR集成方法参见 Yaf集成Eloquent 。
@@ -281,6 +281,7 @@
         <span itemprop="articleBody"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>集成方法参见 <a href="/articles/2017/08/01/integrate-yaf-with-eloquent/">Yaf集成Eloquent</a> 。</p>
 <p>集成基类的多个 Model 如果要正确的运行事务，需要保证各个 Model 的实例使用的是同一个数据库连接，在代码上可以通过共用同一个  <code>Illuminate\Database\Capsule\Manager</code> 对象实现。</p>
 <p>使用 DB Facade 需要为 Facade 提供已经关联了 <code>db</code> 作为键，以 <code>Illuminate\Database\Capsule\Manager</code> 的实例为值的容器。</p>
+<!-- integrate-yaf-with-eloquent-ii -->
 <a id="more"></a>
 <h1 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h1><ul>
 <li>MySQL 5.6</li>

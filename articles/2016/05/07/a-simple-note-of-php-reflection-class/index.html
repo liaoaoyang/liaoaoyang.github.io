@@ -66,7 +66,7 @@
 如果同时存在 Android 与 iOS 客户端，相信状态码的维护、沟通多少会带来一些成本，同步状态码也比较费事，且不说存在概念不一致，拼写错误（譬如当年的 Referer）等问题。
 考虑到这个问题，为什么不试着直接通过服务端的状态码生成各自语言所需的状态码定义文件呢？
 在编写生成脚本过程中，PHP的状态码全部是类的常量，如何一次性">
-<meta property="og:updated_time" content="2017-09-18T16:50:13.000Z">
+<meta property="og:updated_time" content="2018-08-16T03:29:58.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="用PHP反射类导出类的所有常量">
 <meta name="twitter:description" content="概述使用PHP作为API开发语言时，可以将状态码定义为类的常量。
@@ -287,6 +287,7 @@
 <p>在编写生成脚本过程中，PHP的状态码全部是类的常量，如何一次性导出这些常量成为了一个问题。不过PHP也提供了<a href="http://php.net/manual/en/class.reflectionclass.php" target="_blank" rel="external"><code>反射类</code></a>，可以一次性获取所有的常量。</p>
 <a id="more"></a>
 <h1 id="反射类"><a href="#反射类" class="headerlink" title="反射类"></a>反射类</h1><p>PHP 的<a href="http://php.net/manual/en/class.reflectionclass.php" target="_blank" rel="external"><code>反射类</code></a> 接受字符串类名以及类作为构造方法的参数，通过生成的对象探明传入的类中包含的常量，方法等(private 也能探明)。</p>
+<p>反射除了可以获取常量，也可以获取方法和变量，只需要针对反射类获取对应的反射对象之后，绑定当前的对象，即可改变方法和成员的可见性，进行修改和操作。</p>
 <p>这里使用的正是它的 <code>getConstants</code> 方法。</p>
 <p>其他方法参见<a href="(http://php.net/manual/en/class.reflectionclass.php">手册</a>)。</p>
 <h1 id="转换脚本"><a href="#转换脚本" class="headerlink" title="转换脚本"></a>转换脚本</h1><p>这里稍微提及一下转换脚本。</p>
