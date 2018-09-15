@@ -62,7 +62,7 @@
 <meta property="og:site_name" content="A Programmer">
 <meta property="og:description" content="概述想要在Hexo的Next主题中使用Google字体，一个问题在于这个字体的加载并不是很方便（与Next主题本身无关）。
 解决的方法可以是修改主题，在没有合适CDN的情况下，从服务器直接加载对应字体也是一种选择。">
-<meta property="og:updated_time" content="2017-09-18T16:50:13.000Z">
+<meta property="og:updated_time" content="2018-08-19T16:10:24.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Next主题中从服务器加载Google字体">
 <meta name="twitter:description" content="概述想要在Hexo的Next主题中使用Google字体，一个问题在于这个字体的加载并不是很方便（与Next主题本身无关）。
@@ -278,6 +278,7 @@
         <span itemprop="articleBody"><h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>想要在Hexo的Next主题中使用Google字体，一个问题在于这个字体的加载并不是很方便（与Next主题本身无关）。</p>
 <p>解决的方法可以是修改主题，在没有合适CDN的情况下，从服务器直接加载对应字体也是一种选择。</p>
 <a id="more"></a>
+<!-- add-google-fonts-in-hexo-theme-next -->
 <h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><h2 id="准备字体"><a href="#准备字体" class="headerlink" title="准备字体"></a>准备字体</h2><p>首先，通过Chrome开发者工具，会发现难以加载的是这一css文件以及相关联的字体：</p>
 <figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://fonts.googleapis.com/css?family=Lato:<span class="number">300,400</span>,<span class="number">700,400</span>italic&amp;subset=latin,latin-ext</span><br></pre></td></tr></table></figure>
 <p>当前使用的Next主题使用的是<code>Lato</code>这一个字体，那么应该如何得到这一字体呢？</p>
@@ -393,21 +394,21 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">95</span>
+              <span class="site-state-item-count">96</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
 
           <div class="site-state-item site-state-categories">
             <a href="/categories">
-              <span class="site-state-item-count">11</span>
+              <span class="site-state-item-count">12</span>
               <span class="site-state-item-name">分类</span>
               </a>
           </div>
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">75</span>
+              <span class="site-state-item-count">79</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>
