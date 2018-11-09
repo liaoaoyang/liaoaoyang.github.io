@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://www.liaoaoyang.com/articles/2018/10/24/java-annotation/</loc>
+    
+    <lastmod>2018-11-03T21:43:00.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://www.liaoaoyang.com/articles/2018/09/10/java-c1000k-notes/</loc>
     
     <lastmod>2018-10-13T15:33:51.000Z</lastmod>
@@ -86,14 +93,14 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2018/03/31/can-we-use-pcntl-in-fpm-fcgi-sapi/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2018/02/28/host-nginx-php-based-app-in-docker/</loc>
     
     <lastmod>2018-04-12T15:22:29.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2018/02/28/host-nginx-php-based-app-in-docker/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2018/03/31/can-we-use-pcntl-in-fpm-fcgi-sapi/</loc>
     
     <lastmod>2018-04-12T15:22:29.000Z</lastmod>
     
@@ -107,7 +114,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2017/11/13/is-php-file-put-contents-safe-when-used-by-multi-processes/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2017/01/04/try-to-use-shared-memory-in-php/</loc>
     
     <lastmod>2017-12-28T15:05:08.000Z</lastmod>
     
@@ -121,7 +128,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2017/10/30/nginx-location-from-manual-to-source-code-i/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2017/11/13/is-php-file-put-contents-safe-when-used-by-multi-processes/</loc>
     
     <lastmod>2017-12-28T15:05:08.000Z</lastmod>
     
@@ -142,7 +149,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2017/01/04/try-to-use-shared-memory-in-php/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2017/10/30/nginx-location-from-manual-to-source-code-i/</loc>
     
     <lastmod>2017-12-28T15:05:08.000Z</lastmod>
     
@@ -180,13 +187,6 @@
     <loc>http://www.liaoaoyang.com/articles/2017/09/17/yaf-source-code-overview-i/</loc>
     
     <lastmod>2017-09-18T16:51:58.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/11/30/note-of-principles-of-transaction-processing/</loc>
-    
-    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
   </url>
   
@@ -345,14 +345,14 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2014/02/21/setup-my-lamp/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/04/12/leetcode-4/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/04/10/leetcode-3/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2014/02/21/setup-my-lamp/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -436,6 +436,13 @@
   </url>
   
   <url>
+    <loc>http://www.liaoaoyang.com/articles/2014/05/23/php-ini-note/</loc>
+    
+    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://www.liaoaoyang.com/articles/2016/04/21/install-git-from-source/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
@@ -457,7 +464,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2014/05/23/php-ini-note/</loc>
+    <loc>http://www.liaoaoyang.com/about/index.html</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -471,7 +478,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/about/index.html</loc>
+    <loc>http://www.liaoaoyang.com/articles/2014/12/28/use-cpp-11-with-qt-creator/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -485,7 +492,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2014/12/28/use-cpp-11-with-qt-creator/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2017/08/11/order-system-design-ii/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -527,7 +534,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2017/08/11/order-system-design-ii/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2017/08/10/order-system-design-i/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -583,7 +590,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2017/08/10/order-system-design-i/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2014/11/09/oracle-ora27102/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -604,13 +611,6 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2014/11/09/oracle-ora27102/</loc>
-    
-    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://www.liaoaoyang.com/articles/2016/02/16/one-step-into-tmux/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
@@ -619,6 +619,13 @@
   
   <url>
     <loc>http://www.liaoaoyang.com/articles/2017/05/21/one-day-in-kyoto/</loc>
+    
+    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.liaoaoyang.com/articles/2016/02/17/write-a-nagios-alert-script/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -653,7 +660,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/02/17/write-a-nagios-alert-script/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/11/30/note-of-principles-of-transaction-processing/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -688,7 +695,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/04/12/leetcode-4/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/04/10/leetcode-3/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
