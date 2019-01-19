@@ -232,6 +232,202 @@
             
               
                 
+                <a class="post-title-link" href="/articles/2015/08/21/php-json-encode-emoji/" itemprop="url">
+                  emoji，json_encode与MySQL
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2015-08-21T00:00:00+08:00" content="2015-08-21">
+              2015-08-21
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>之前有看到过对于emoji表情这类字符，想要存入MySQL之中，需要建立或者修改表的字符集为<code>utf8mb4</code>，而且对MySQL版本还有一定的要求（<a href="https://dev.mysql.com/doc/refman/5.5/en/charset-unicode-utf8mb4.html"><code>&gt;=5.5.3</code></a>），否则MySQL会提示类似：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ERROR <span class="number">1366</span>: Incorrect <span class="keyword">string</span> <span class="keyword">value</span>: <span class="string">'\xF0\x9F\x8D\xBA'</span> <span class="keyword">for</span> column</span><br></pre></td></tr></table></figure>
+<p>的错误。</p>
+<p>然而在PHP中其实有一种情况是可以“存储”emoji表情字符的，那就是将包含emoji的字符串通过PHP的<code>json_encode</code>方法处理后再进行存储操作。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/articles/2015/08/21/php-json-encode-emoji/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/articles/2015/03/29/build-facebook-fresco/" itemprop="url">
+                  Build Facebook Fresco
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2015-03-29T00:00:00+08:00" content="2015-03-29">
+              2015-03-29
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <p>Facebook最近开源了他们的Android图片加载库 <a href="https://github.com/facebook/fresco">fresco</a> ，3月26号到现在两天多时间在github上收获了1000+ star，足见大家对这一个库的肯定。</p>
+<p>自己自然也想尝试这一个库，首要工作就是build。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/articles/2015/03/29/build-facebook-fresco/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/articles/2015/03/20/use-volley-in-android-studio/" itemprop="url">
                   Android Studio中使用Volley
                 </a>
@@ -500,206 +696,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/articles/2014/12/07/add-module-to-nginx-installed-by-yum/" itemprop="url">
-                  YUM安装的Nginx如何添加模块
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2014-12-07T00:00:00+08:00" content="2014-12-07">
-              2014-12-07
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp; 分类于
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/LAMP-LNMP/" itemprop="url" rel="index">
-                    <span itemprop="name">LAMP/LNMP</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <p>使用 yum 安装的 Nginx 添加模块也可以很简单。</p>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2014/12/07/add-module-to-nginx-installed-by-yum/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/articles/2014/11/09/oracle-ora27102/" itemprop="url">
-                  Oracle ORA27102 问题
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2014-11-09T00:00:00+08:00" content="2014-11-09">
-              2014-11-09
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp; 分类于
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Database/" itemprop="url" rel="index">
-                    <span itemprop="name">Database</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <style>
-img {
-    max-width:600px;
-}
-</style>
-
-<h1 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h1><p>在处理Oracle因为CI的持续连接引起Oracle进程用尽的问题之后，更新代码时忘记修改配置，导致了再次出现进程耗尽的问题，在处理时发现居然无法关闭数据库，同时sqlplus提示如下：</p>
-<p><img src="https://blog.wislay.com/wp-content/uploads/2014/11/ora27102.png" alt="ora27102"></p>
-<p><code>Out of memory</code>这个提示真是让人费解，内存感觉还是非常充足的样子。</p>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2014/11/09/oracle-ora27102/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
 
   </section>
 
@@ -748,7 +744,7 @@ img {
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">97</span>
+              <span class="site-state-item-count">99</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -762,7 +758,7 @@ img {
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">79</span>
+              <span class="site-state-item-count">80</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>
@@ -831,7 +827,7 @@ img {
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2018</span>
+  <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="icon-next-heart fa fa-heart"></i>
   </span>

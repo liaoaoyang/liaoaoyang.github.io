@@ -64,7 +64,7 @@
 <meta property="og:description" content="TL;DRJava 注解广泛运用在开发之中，用于增强变量/方法/类等。
 尝试说明 Java 自定义注解的使用，以及通过开源项目中的使用进行说明。
 &amp;lt;!-- java-aonnotaion --&amp;gt;">
-<meta property="og:updated_time" content="2018-11-03T21:43:00.000Z">
+<meta property="og:updated_time" content="2019-01-18T16:44:19.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java自定义注解（使用篇）">
 <meta name="twitter:description" content="TL;DRJava 注解广泛运用在开发之中，用于增强变量/方法/类等。
@@ -340,6 +340,7 @@
 <h2 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h2><h3 id="AOP"><a href="#AOP" class="headerlink" title="AOP"></a>AOP</h3><p>AOP 是常用的编程模式。</p>
 <p>在 Spring 中定义一个 Aspect，通过 <code>@Pointcut</code> 注解关联何种对象的何种操作，通过 <code>@Before</code>/<code>@After</code> 等注解指定当前 Aspect 各个阶段可以执行的方法（Advice）。</p>
 <p>Spring 框架在扫描各个 bean 时，会根据指定的 Aspect 信息，为各个 bean 的指定方法关联上各个 Advice，在执行时逐个运行。</p>
+<p>例如对外提供接口调用时，需要对一些接口提供自定的参数校验等功能，可以考虑通过自定义注解的方式，提供一个 <code>@Around</code> advice，判断参数是否合理即可。</p>
 <h1 id="Lombok"><a href="#Lombok" class="headerlink" title="Lombok"></a>Lombok</h1><p>Java 开发中对象的 Getter/Setter 方法以及常规的构造方法让代码变得臃肿，<a href="https://github.com/rzwitserloot/lombok" target="_blank" rel="external">Lombok</a> 通过注解的方式，在编译阶段修改 AST，实现生成的 class 文件中带有对应的方法。</p>
 <p>以上内容还可以另起篇幅详细说明。</p>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
@@ -371,6 +372,10 @@
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2018/11/01/packet-capture-i/" rel="prev" title="抓包那点事儿（常用工具简介）">
+                抓包那点事儿（常用工具简介） <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -440,7 +445,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">97</span>
+              <span class="site-state-item-count">99</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -454,7 +459,7 @@
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">79</span>
+              <span class="site-state-item-count">80</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>
@@ -540,7 +545,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2018</span>
+  <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="icon-next-heart fa fa-heart"></i>
   </span>

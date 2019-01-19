@@ -232,6 +232,209 @@
             
               
                 
+                <a class="post-title-link" href="/articles/2014/07/18/directories-should-be-existed-in-apache-vhost-conf-file/" itemprop="url">
+                  Vhost中目录不存在引起Apache不能启动
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2014-07-18T00:00:00+08:00" content="2014-07-18">
+              2014-07-18
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/LAMP-LNMP/" itemprop="url" rel="index">
+                    <span itemprop="name">LAMP/LNMP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <span itemprop="articleBody">
+            
+              <p>环境配置始终是工作过程中一个最为折腾人的环节，为了解决这个问题，最后写了个简单地装机脚本给大家使用。</p>
+<p>环境配置包括软件的安装和设置的更改，一套LAMP每个组成部分设置都以百计，功能的强大的同时如果对每个部分的了解程度不足尤其容易出现一些看似很难以解决的问题，往往这些问题解决之后都会让人觉得沮丧不已。</p>
+<p>今天配置环境出现了一个问题，就是只要在<code>httpd.conf</code>中添加了包含vhost设置的语句之后，Apache使用</p>
+<blockquote>
+<p>apachectl -k gracecful</p>
+</blockquote>
+<p>等方式启动时总会提示</p>
+<blockquote>
+<p>httpd not running, trying to start</p>
+</blockquote>
+<p>让人沮丧的是这种错误并没有打印error_log，同时使用语法检查也不能发现有任何错误，在逐句注释掉vhost中的设置语句之后，发现当注释掉所有提及的主机路径之后，居然可以重新启动了，于是检查发现这些目录都在主机上不存在，添加目录之后Apache能正常启动了。</p>
+<p>尝试出来的结果，后面打算去找找更为具体的原因。</p>
+
+            
+          </span>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/articles/2014/07/11/how-to-prepare-a-tech-discussion/" itemprop="url">
+                  技术方案评审学习笔记
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2014-07-11T00:00:00+08:00" content="2014-07-11">
+              2014-07-11
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Career/" itemprop="url" rel="index">
+                    <span itemprop="name">Career</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>作为初级工程师，技术方案评审是都会经历的过程之一吧。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/articles/2014/07/11/how-to-prepare-a-tech-discussion/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/articles/2014/06/08/sigma-35mm-lens/" itemprop="url">
                   小试Sigma黑科技
                 </a>
@@ -426,106 +629,6 @@
             
               
                 
-                <a class="post-title-link" href="/articles/2014/05/23/php-ini-note/" itemprop="url">
-                  PHP配置问题汇总
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2014-05-23T00:00:00+08:00" content="2014-05-23">
-              2014-05-23
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp; 分类于
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/LAMP-LNMP/" itemprop="url" rel="index">
-                    <span itemprop="name">LAMP/LNMP</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <span itemprop="articleBody">
-            
-              <h2 id="1-短记号问题"><a href="#1-短记号问题" class="headerlink" title="1.短记号问题"></a>1.短记号问题</h2><p>一般来说PHP代码需要以<code>&lt;?php</code>开始，以<code>?&gt;</code>，但是PHP也支持短记号<code>&lt;?</code>以及<code>?&gt;</code>。</p>
-<p>在使用Yaf的过程中，在mac本机调试的时候发现模板不能正确显示，发现模板中都是短记号的形式，形如：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">"taskIdHolder"</span> <span class="attribute">data-id</span>=<span class="value">"<span class="php"><span class="preprocessor">&lt;?php</span> <span class="keyword">echo</span> <span class="variable">$task_id</span>; <span class="preprocessor">?&gt;</span></span>"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">div</span>&gt;</span>;</span><br></pre></td></tr></table></figure>
-<p>这类模板会不能正确地显示，解决的办法自然就是在php.ini中开启对短记号的支持：</p>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="setting">short_open_tag = <span class="value"><span class="keyword">On</span></span></span></span><br></pre></td></tr></table></figure>
-
-            
-          </span>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
                 <a class="post-title-link" href="/articles/2014/05/23/python-how-to-get-timezone/" itemprop="url">
                   Python如何获取时区
                 </a>
@@ -604,107 +707,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/articles/2014/02/24/backwpup-not-work/" itemprop="url">
-                  BackWPup不能备份的一种可能性
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2014-02-24T00:00:00+08:00" content="2014-02-24">
-              2014-02-24
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp; 分类于
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Try/" itemprop="url" rel="index">
-                    <span itemprop="name">Try</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <span itemprop="articleBody">
-            
-              <p><a href="http://wordpress.org/plugins/backwpup" target="_blank" rel="external">BackWPup</a>是一款非常赞的WP备份插件，可以自动增加定时任务实现对Wordpress的备份，并且可以指定目录文件以及数据库的具体备份规则，并且提供了备份到Dropbox的功能。不想折腾的话用这款插件是非常适合的。</p>
-<p>由于<a href="https://www.kvmla.com" target="_blank" rel="external">VPS</a>性能比较一般，为了能够提高响应速度，使用了Wordpress的<a href="http://wordpress.org/plugins/memcached" target="_blank" rel="external">Memcached</a>插件做缓存操作，这样可以减少数据库的查询操作，经过测试提升速度还是比较明显的，用法参见<a href="http://blog.wpjam.com/m/wordpress-memcached" target="_blank" rel="external">我爱水煮鱼</a>。</p>
-<p>在没有一次的自动备份完成后，由于新增了一些配置，决定自己手动备份一下，点击 <em>立即执行</em> 手动备份计划时，却被通知“每周备份”正在进行中（ <strong><em>每周备份</em></strong> 是我设定的一个备份计划的名称），无法进行备份操作。</p>
-<p>简单看了一下BackWPup的代码，发现这里读取的是缓存中的 <strong><em>site-options</em></strong> 类型的数据，而在Memcached插件的readme中找到可能缓存的数据组中包含了这一数据，并且在Memcached插件的object-cache.php文件中，发现默认超时为0，即缓存的数据不失效，那么应该是上一次写入缓存标记BackWPup正在执行的数据尚未过期，所以引起的这个问题。</p>
-<p>解决方法目前就是直接用 <strong><em>kill -9</em></strong> 杀死memcached的进程，之后手动执行备份操作。</p>
-<p>这样做坏处就在于缓存都没了，后面打算想想办法如何能够针对这一插件做一些特殊处理。</p>
-
-            
-          </span>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
 
   </section>
 
@@ -753,7 +755,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">97</span>
+              <span class="site-state-item-count">99</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -767,7 +769,7 @@
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">79</span>
+              <span class="site-state-item-count">80</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>
@@ -836,7 +838,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2018</span>
+  <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="icon-next-heart fa fa-heart"></i>
   </span>
