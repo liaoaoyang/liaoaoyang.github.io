@@ -56,7 +56,7 @@
 
 <meta name="description" content="TL;DR发号器用于为系统中各个模块提供ID生成服务。
 设计一个发号器至少需要考虑ID唯一性，有序性，性能，可用性，使用成本，以及一定的数据安全问题。
-作为一个极其成熟的业务功能，发号器有大量的实现，有海量的文章描述各类要点，按序选择即可，无需重复造轮子。
+作为一个极其成熟的业务功能，发号器有大量的实现，有海量的文章描述各类要点，按需选择即可，无需重复造轮子。
 &amp;lt;!-- id-generator --&amp;gt;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="发号器设计简述">
@@ -64,14 +64,14 @@
 <meta property="og:site_name" content="A Programmer">
 <meta property="og:description" content="TL;DR发号器用于为系统中各个模块提供ID生成服务。
 设计一个发号器至少需要考虑ID唯一性，有序性，性能，可用性，使用成本，以及一定的数据安全问题。
-作为一个极其成熟的业务功能，发号器有大量的实现，有海量的文章描述各类要点，按序选择即可，无需重复造轮子。
+作为一个极其成熟的业务功能，发号器有大量的实现，有海量的文章描述各类要点，按需选择即可，无需重复造轮子。
 &amp;lt;!-- id-generator --&amp;gt;">
-<meta property="og:updated_time" content="2019-01-19T06:06:42.000Z">
+<meta property="og:updated_time" content="2019-01-21T14:22:53.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="发号器设计简述">
 <meta name="twitter:description" content="TL;DR发号器用于为系统中各个模块提供ID生成服务。
 设计一个发号器至少需要考虑ID唯一性，有序性，性能，可用性，使用成本，以及一定的数据安全问题。
-作为一个极其成熟的业务功能，发号器有大量的实现，有海量的文章描述各类要点，按序选择即可，无需重复造轮子。
+作为一个极其成熟的业务功能，发号器有大量的实现，有海量的文章描述各类要点，按需选择即可，无需重复造轮子。
 &amp;lt;!-- id-generator --&amp;gt;">
 
 
@@ -283,7 +283,7 @@
       
         <span itemprop="articleBody"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>发号器用于为系统中各个模块提供ID生成服务。</p>
 <p>设计一个发号器至少需要考虑ID唯一性，有序性，性能，可用性，使用成本，以及一定的数据安全问题。</p>
-<p>作为一个极其成熟的业务功能，发号器有大量的实现，有海量的文章描述各类要点，按序选择即可，无需重复造轮子。</p>
+<p>作为一个极其成熟的业务功能，发号器有大量的实现，有海量的文章描述各类要点，按需选择即可，无需重复造轮子。</p>
 <!-- id-generator -->
 <a id="more"></a>
 <h1 id="为什么不使用UUID？"><a href="#为什么不使用UUID？" class="headerlink" title="为什么不使用UUID？"></a>为什么不使用UUID？</h1><p><a href="https://zh.wikipedia.org/wiki/%E9%80%9A%E7%94%A8%E5%94%AF%E4%B8%80%E8%AF%86%E5%88%AB%E7%A0%81" target="_blank" rel="external">UUID</a> 算法上使用部分硬件信息，从前面提到的几个维度来分析一下：</p>
@@ -359,6 +359,8 @@
 <li><a href="https://tech.meituan.com/2017/04/21/mt-leaf.html" target="_blank" rel="external">Leaf——美团点评分布式ID生成系统</a></li>
 <li><a href="https://github.com/baidu/uid-generator/blob/master/README.zh_cn.md" target="_blank" rel="external">baidu/uid-generator</a> </li>
 <li><a href="https://www.infoq.cn/article/wechat-serial-number-generator-architecture" target="_blank" rel="external">微信序列号生成器架构设计及演变</a></li>
+<li><a href="http://www.10tiao.com/html/773/201712/2247487246/2.html" target="_blank" rel="external">分布式ID生成系统怎么做</a></li>
+<li><a href="https://tech.youzan.com/id_generator/" target="_blank" rel="external">如何做一个靠谱的发号器</a></li>
 </ul>
 </span>
       
