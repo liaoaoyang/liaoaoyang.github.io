@@ -232,6 +232,104 @@
             
               
                 
+                <a class="post-title-link" href="/articles/2017/11/13/is-php-file-put-contents-safe-when-used-by-multi-processes/" itemprop="url">
+                  PHP多进程中使用file_put_contents安全吗？
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2017-11-13T23:07:11+08:00" content="2017-11-13">
+              2017-11-13
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>Linux下，PHP多进程使用 <code>file_put_contents()</code> 方法记录日志时，使用追加模式（<code>FILE_APPEND</code>），简短的日志内容不会重叠，即能安全的记录日志内容。</p>
+<p><code>file_put_contents()</code> 使用 <code>write()</code> 系统调用实现数据的写入，<code>write()</code> 系统调用对普通文件保证写入数据的完整性，<code>O_APPEND</code> 打开模式保证数据写入到文件末尾。</p>
+<p>如果愿意的话，也可以考虑在标记位中使用 <code>LOCK_EX</code>。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/articles/2017/11/13/is-php-file-put-contents-safe-when-used-by-multi-processes/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/articles/2017/11/01/a-quick-reading-of-effective-tcpip/" itemprop="url">
                   泛读《Effective TCP/IP》
                 </a>
@@ -617,108 +715,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/articles/2017/09/07/make-elasticsearch-index-better/" itemprop="url">
-                  Elasticsearch 索引小优化
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2017-09-07T16:22:54+08:00" content="2017-09-07">
-              2017-09-07
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp; 分类于
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/系统/" itemprop="url" rel="index">
-                    <span itemprop="name">系统</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>ES 中的索引想要减小体积，可以尝试通过如下几个方法实现：</p>
-<ul>
-<li>使用合适的模板字段映射类型</li>
-<li>减少不必要的字段</li>
-<li>对无需检索的字段关闭分词</li>
-</ul>
-<p>此外索引个数不宜过多，影响集群操作以及集群恢复速度，适当关闭，合并，提前建立索引。</p>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2017/09/07/make-elasticsearch-index-better/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
 
   </section>
 
@@ -767,7 +763,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">99</span>
+              <span class="site-state-item-count">100</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -781,7 +777,7 @@
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">80</span>
+              <span class="site-state-item-count">83</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>

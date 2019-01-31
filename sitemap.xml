@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://www.liaoaoyang.com/articles/2019/01/28/mutilple-wechat-oauth-callback-urls/</loc>
+    
+    <lastmod>2019-01-29T16:36:43.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://www.liaoaoyang.com/articles/2018/12/25/id-generator/</loc>
     
     <lastmod>2019-01-21T14:22:53.000Z</lastmod>
@@ -114,14 +121,14 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2018/02/28/host-nginx-php-based-app-in-docker/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2018/03/31/can-we-use-pcntl-in-fpm-fcgi-sapi/</loc>
     
     <lastmod>2018-04-12T15:22:29.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2018/03/31/can-we-use-pcntl-in-fpm-fcgi-sapi/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2018/02/28/host-nginx-php-based-app-in-docker/</loc>
     
     <lastmod>2018-04-12T15:22:29.000Z</lastmod>
     
@@ -135,13 +142,6 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/04/03/get-progress-when-mysql-load-data-infile/</loc>
-    
-    <lastmod>2017-12-28T15:05:08.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://www.liaoaoyang.com/articles/2017/11/13/is-php-file-put-contents-safe-when-used-by-multi-processes/</loc>
     
     <lastmod>2017-12-28T15:05:08.000Z</lastmod>
@@ -149,7 +149,21 @@
   </url>
   
   <url>
+    <loc>http://www.liaoaoyang.com/articles/2016/04/03/get-progress-when-mysql-load-data-infile/</loc>
+    
+    <lastmod>2017-12-28T15:05:08.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://www.liaoaoyang.com/articles/2017/01/04/try-to-use-shared-memory-in-php/</loc>
+    
+    <lastmod>2017-12-28T15:05:08.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.liaoaoyang.com/articles/2017/04/22/crucial-conversations/</loc>
     
     <lastmod>2017-12-28T15:05:08.000Z</lastmod>
     
@@ -164,13 +178,6 @@
   
   <url>
     <loc>http://www.liaoaoyang.com/articles/2017/10/30/nginx-location-from-manual-to-source-code-i/</loc>
-    
-    <lastmod>2017-12-28T15:05:08.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.liaoaoyang.com/articles/2017/04/22/crucial-conversations/</loc>
     
     <lastmod>2017-12-28T15:05:08.000Z</lastmod>
     
@@ -219,13 +226,6 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/11/30/note-of-principles-of-transaction-processing/</loc>
-    
-    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://www.liaoaoyang.com/articles/2014/07/28/mysql-note-add-instance-and-start/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
@@ -248,6 +248,13 @@
   
   <url>
     <loc>http://www.liaoaoyang.com/articles/2015/12/31/my-2015/</loc>
+    
+    <lastmod>2017-09-18T16:50:13.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.liaoaoyang.com/articles/2016/11/30/note-of-principles-of-transaction-processing/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -352,14 +359,14 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/04/12/leetcode-4/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2014/09/07/nodejs-helloworld/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/12/14/note-of-building-microservices/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/04/10/leetcode-3/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -457,7 +464,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2014/09/07/nodejs-helloworld/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/12/14/note-of-building-microservices/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
@@ -709,7 +716,7 @@
   </url>
   
   <url>
-    <loc>http://www.liaoaoyang.com/articles/2016/04/10/leetcode-3/</loc>
+    <loc>http://www.liaoaoyang.com/articles/2016/04/12/leetcode-4/</loc>
     
     <lastmod>2017-09-18T16:50:13.000Z</lastmod>
     
