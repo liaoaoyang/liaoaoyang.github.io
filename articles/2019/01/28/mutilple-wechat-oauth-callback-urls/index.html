@@ -64,7 +64,7 @@
 <meta property="og:description" content="TL;DR只有一个公众号但需要让多个域名获取OAuth返回的用户信息或微信登录功能，可以考虑使用集中的回调域名进行中转。
 本文也是对个人实验项目 SWAN 相关功能的说明。
 &amp;lt;!-- mutilple-wechat-oauth-callback-urls --&amp;gt;">
-<meta property="og:updated_time" content="2019-01-29T16:36:43.000Z">
+<meta property="og:updated_time" content="2019-02-06T06:14:35.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="微信多回调域名">
 <meta name="twitter:description" content="TL;DR只有一个公众号但需要让多个域名获取OAuth返回的用户信息或微信登录功能，可以考虑使用集中的回调域名进行中转。
@@ -292,6 +292,11 @@
 <h4 id="url"><a href="#url" class="headerlink" title="url"></a>url</h4><p>业务方的回跳URL。在微信授权成功后，会在回跳URL中追加一个参数<code>wx_tauth_data</code>，参数内容为JSON格式的用户信息</p>
 <h4 id="key"><a href="#key" class="headerlink" title="key"></a>key</h4><p>可以为随机数。</p>
 <h4 id="scope"><a href="#scope" class="headerlink" title="scope"></a>scope</h4><p>即微信 OAuth 中的 scope 值，即<code>snsapi_base</code> 与 <code>snsapi_userinfo</code>。</p>
+<p>当 <code>scope</code> 为 <code>snsapi_base</code> 时，会使用静默登录，返回的数据格式为：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;"<span class="attribute">id</span>":<span class="value"><span class="string">"oatEjwAVy4H_1FsftYTBD2beKwBE"</span></span>&#125;</span><br></pre></td></tr></table></figure>
+<p>如果需要比如用户头像等信息，需要将 <code>scope</code> 设定为 <code>snsapi_userinfo</code> 并进入授权模式。</p>
+<p>返回数据格式样例为：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">"<span class="attribute">openid</span>": <span class="value"><span class="string">"oatEjwAVy4H_1FsftYTBD2beKwBE"</span></span>,</span><br><span class="line">"<span class="attribute">nickname</span>": <span class="value"><span class="string">"TEST"</span></span>,</span><br><span class="line">"<span class="attribute">sex</span>": <span class="value"><span class="number">1</span></span>,</span><br><span class="line">"<span class="attribute">language</span>": <span class="value"><span class="string">"en"</span></span>,</span><br><span class="line">"<span class="attribute">city</span>": <span class="value"><span class="string">"朝阳"</span></span>,</span><br><span class="line">"<span class="attribute">province</span>": <span class="value"><span class="string">"北京"</span></span>,</span><br><span class="line">"<span class="attribute">country</span>": <span class="value"><span class="string">"中国"</span></span>,</span><br><span class="line">"<span class="attribute">headimgurl</span>": <span class="value"><span class="string">"http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4dwGTeTIeRzJ65COm8ia2MMpjbNUo0GtDJWy4g1dJHDClV6BmMt9gr5gDicHXxJsyB1GicSiae2rxkIE5LfsCmA/132"</span></span>,</span><br><span class="line">"<span class="attribute">privilege</span>": <span class="value">[]</span><br><span class="line"></span>&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h3><p>假设域名为 <code>wxtauth.foo.com</code>，<code>bid</code> 为 <code>test</code>，回调地址 <code>url</code> 为 <code>https://wxtauth.foo.com/callback</code>，<code>scope</code> 为 <code>snsapi_userinfo</code>，客户端和服务端需要完成的工作为：</p>
 <h4 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h4><p>假设服务端的域名为 <code>swan.bar.com</code>，默认情况下（假设服务端使用HTTPS），用于中转的登录接口 URL 为 <code>https://swan.bar.com/wechat/swan/wxtauth</code>。</p>
 <p>完成自己的业务逻辑之后拼接出 URL：</p>
