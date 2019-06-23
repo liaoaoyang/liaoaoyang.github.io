@@ -209,6 +209,107 @@
 
     
     
+      
+      
+
+      
+    
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/articles/2017/08/11/order-system-design-ii/" itemprop="url">
+                  订单系统设计的思考（状态一致篇）
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2017-08-11T11:57:50+08:00" content="2017-08-11">
+              2017-08-11
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/系统/" itemprop="url" rel="index">
+                    <span itemprop="name">系统</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>订单最后都要关联到上层支付系统（如微信/支付宝/Apple Pay）之上，使用 HTTP API 进行操作时会存在未知状态，可以通过实现各个操作之间的幂等接口，结合回调与状态查询，实现各层系统之间状态最终一致。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/articles/2017/08/11/order-system-design-ii/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
 
     
       
@@ -597,116 +698,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/articles/2017/07/22/codeigniter3/" itemprop="url">
-                  CodeIgniter3
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2017-07-22T22:31:01+08:00" content="2017-07-22">
-              2017-07-22
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp; 分类于
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/PHP/" itemprop="url" rel="index">
-                    <span itemprop="name">PHP</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>CodeIgniter3是一个相当轻量、简便的并且上手难度低的PHP应用开发框架。在CodeIgnitor2时代曾经接触并开发了一些项目。目前最新版本是<code>3.1.5</code>。优点个人认为有：</p>
-<ul>
-<li>轻量</li>
-<li>对MySQL查询有较为友好的代码编写方式</li>
-<li>功能扩展较为简便</li>
-<li>可以支持较低版本的PHP（5.4.8+）</li>
-<li>可以不使用模板引擎</li>
-</ul>
-<p>同时，个人也认为以下功能还可以有所变化：</p>
-<ul>
-<li>内置日志功能不够强大</li>
-<li>内置读写分离</li>
-<li>RESTful API开发支持</li>
-</ul>
-<p>文章的剩余内容将会针对以上的各个方面详细说明。</p>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2017/07/22/codeigniter3/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
 
   </section>
 
@@ -755,7 +746,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">102</span>
+              <span class="site-state-item-count">103</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -769,7 +760,7 @@
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">83</span>
+              <span class="site-state-item-count">86</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>
