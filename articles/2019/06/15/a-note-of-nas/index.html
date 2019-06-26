@@ -65,7 +65,7 @@
 <meta property="og:image" content="https://blog.wislay.com/wp-content/uploads/2019/06/qnap-551-with-ram-n-hdd.jpg">
 <meta property="og:image" content="https://blog.wislay.com/wp-content/uploads/2019/06/qnap-551-ram.jpg">
 <meta property="og:image" content="https://blog.wislay.com/wp-content/uploads/2019/06/qnap-551-thunder-in-vm.jpg">
-<meta property="og:updated_time" content="2019-06-23T14:42:42.000Z">
+<meta property="og:updated_time" content="2019-06-24T16:33:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NAS笔记">
 <meta name="twitter:description" content="TL;DR近期对NAS充满了兴趣，在这里开始记录家用NAS的一些内容，偏新手和体验向。
@@ -335,6 +335,11 @@
 <p>这一方案在 QNAP TS-551 上主要存在性能问题，考虑到不能过于影响宿主机性能，分配单核心处理，如果下载并行个数超过2个，虚拟机卡顿到无法使用。事实上，2个任务都已经让 CPU 负载高达 100% 了，鱼与熊掌不可得兼，能用就好。</p>
 <p><img src="https://blog.wislay.com/wp-content/uploads/2019/06/qnap-551-thunder-in-vm.jpg" alt="qnap-551-thunder-in-vm"></p>
 <p>桌面管理上，推荐直接远程桌面，使用安装Office自带的远程桌面连接工具，还可以做到共享剪贴板，方便添加任务。VNC Viewer也有尝试使用，没有解决共享剪贴板问题，放弃。</p>
+<p>同理百度网盘应该也能用类似方式解决。</p>
+<h2 id="Time-Machine"><a href="#Time-Machine" class="headerlink" title="Time Machine"></a>Time Machine</h2><p>无线的备份 Mac 也是入手 NAS 的巨大动力之一，个人电脑谁也不知道什么时候会遇上硬盘坏掉这个问题，有一些数据真的相对价值很高。</p>
+<p>新购入的机器要初始化用时间机器应该也是个好办法，适度折腾就好。</p>
+<p>在 App Center 中安装 Hybrid Backup Sync 后<code>备份服务器</code>中选择 Time Machine，设定密码并开启即可，在 Mac 上当然也要选择磁盘，挂载用户名为 TimeMachine，密码是刚刚设置的密码。</p>
+<p>首次备份大约需要一个通宵，完成后就可以在家中悄无声息的完成备份。</p>
 <p>未完待续，将会逐渐更新。</p>
 </span>
       
@@ -508,7 +513,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TL-DR"><span class="nav-number">1.</span> <span class="nav-text">TL;DR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么要使用NAS"><span class="nav-number">2.</span> <span class="nav-text">为什么要使用NAS</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#选择"><span class="nav-number">3.</span> <span class="nav-text">选择</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#上手"><span class="nav-number">4.</span> <span class="nav-text">上手</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题与解决方案"><span class="nav-number">5.</span> <span class="nav-text">问题与解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#DTS支持"><span class="nav-number">5.1.</span> <span class="nav-text">DTS支持</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#迅雷下载"><span class="nav-number">5.2.</span> <span class="nav-text">迅雷下载</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TL-DR"><span class="nav-number">1.</span> <span class="nav-text">TL;DR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么要使用NAS"><span class="nav-number">2.</span> <span class="nav-text">为什么要使用NAS</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#选择"><span class="nav-number">3.</span> <span class="nav-text">选择</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#上手"><span class="nav-number">4.</span> <span class="nav-text">上手</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题与解决方案"><span class="nav-number">5.</span> <span class="nav-text">问题与解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#DTS支持"><span class="nav-number">5.1.</span> <span class="nav-text">DTS支持</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#迅雷下载"><span class="nav-number">5.2.</span> <span class="nav-text">迅雷下载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Time-Machine"><span class="nav-number">5.3.</span> <span class="nav-text">Time Machine</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
