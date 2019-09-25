@@ -232,6 +232,116 @@
             
               
                 
+                <a class="post-title-link" href="/articles/2017/08/22/php-daemon/" itemprop="url">
+                  PHP实现daemon
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2017-08-22T21:39:12+08:00" content="2017-08-22">
+              2017-08-22
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>PHP实现守护进程可以通过 <code>pcntl</code> 与 <code>posix</code> 扩展实现。</p>
+<p>编程中需要注意的地方有：</p>
+<ul>
+<li>通过二次 <code>pcntl_fork()</code> 以及 <code>posix_setsid</code> 让主进程脱离终端</li>
+<li>通过 <code>pcntl_signal()</code> 忽略或者处理 <code>SIGHUP</code> 信号</li>
+<li>多进程程序需要通过二次 <code>pcntl_fork()</code> 或者 <code>pcntl_signal()</code> 忽略 <code>SIGCHLD</code> 信号防止子进程变成 Zombie 进程</li>
+<li>通过 <code>umask()</code> 设定文件权限掩码，防止继承文件权限而来的权限影响功能</li>
+<li>将运行进程的 <code>STDIN/STDOUT/STDERR</code> 重定向到 <code>/dev/null</code> 或者其他流上</li>
+</ul>
+<p>如果要做的更好，还需要注意：</p>
+<ul>
+<li>如果通过 root 启动，运行时更换到低权限用户身份</li>
+<li>及时 <code>chdir()</code> 防止操作错误路径</li>
+<li>多进程程序考虑定时重启，防止内存泄露</li>
+</ul>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/articles/2017/08/22/php-daemon/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/articles/2017/08/11/order-system-design-ii/" itemprop="url">
                   订单系统设计的思考（状态一致篇）
                 </a>
@@ -596,103 +706,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/articles/2017/07/25/modern-php/" itemprop="url">
-                  《Modern PHP》
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2017-07-25T21:36:32+08:00" content="2017-07-25">
-              2017-07-25
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp; 分类于
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/PHP/" itemprop="url" rel="index">
-                    <span itemprop="name">PHP</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <p>PHP也是一门在不断变化的语言。</p>
-<p>本书介绍了PHP 5.3之后出现的一些新特性，对PSR标准做了介绍，但是因为年代（2015年出版）的问题，PSR标准建议到官网进行阅读，本书最后还对配置、部署方面提出了一些建议。</p>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2017/07/25/modern-php/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
 
   </section>
 
@@ -741,7 +754,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">103</span>
+              <span class="site-state-item-count">104</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -755,7 +768,7 @@
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">86</span>
+              <span class="site-state-item-count">91</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>

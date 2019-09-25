@@ -65,7 +65,7 @@
 <meta property="og:image" content="https://blog.wislay.com/wp-content/uploads/2019/06/qnap-551-with-ram-n-hdd.jpg">
 <meta property="og:image" content="https://blog.wislay.com/wp-content/uploads/2019/06/qnap-551-ram.jpg">
 <meta property="og:image" content="https://blog.wislay.com/wp-content/uploads/2019/06/qnap-551-thunder-in-vm.jpg">
-<meta property="og:updated_time" content="2019-06-30T15:06:56.000Z">
+<meta property="og:updated_time" content="2019-09-21T07:12:21.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NAS笔记">
 <meta name="twitter:description" content="TL;DR近期对NAS充满了兴趣，在这里开始记录家用NAS的一些内容，偏新手和体验向。
@@ -331,6 +331,7 @@
 <p>最好开启 Samba 3，播放拖动会更顺畅。</p>
 <h2 id="迅雷下载"><a href="#迅雷下载" class="headerlink" title="迅雷下载"></a>迅雷下载</h2><p>早期迅雷远程可以支持的设备很多，然而17年之后逐渐停止支持。</p>
 <p>xware Docker 方案没有使用成功。</p>
+<p>如果有下载宝硬件，可以考虑使用 <a href="https://github.com/keli/docker-xiazaibao-xware" target="_blank" rel="external">https://github.com/keli/docker-xiazaibao-xware</a> 这一工具。</p>
 <p>目标转向虚拟机方案，通过虚拟机安装 Windows 系统，结合迅雷U享版，映射 NAS 上的目录为网络驱动器，通过远程桌面管理。</p>
 <p>这一方案在 QNAP TS-551 上主要存在性能问题，考虑到不能过于影响宿主机性能，分配单核心处理，如果下载并行个数超过2个，虚拟机卡顿到无法使用。事实上，2个任务都已经让 CPU 负载高达 100% 了，鱼与熊掌不可得兼，能用就好。</p>
 <p><img src="https://blog.wislay.com/wp-content/uploads/2019/06/qnap-551-thunder-in-vm.jpg" alt="qnap-551-thunder-in-vm"></p>
@@ -366,6 +367,10 @@
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2019/09/21/hakushu-distillery/" rel="prev" title="白州蒸馏所">
+                白州蒸馏所 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -435,7 +440,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">103</span>
+              <span class="site-state-item-count">104</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -449,7 +454,7 @@
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">86</span>
+              <span class="site-state-item-count">91</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>
