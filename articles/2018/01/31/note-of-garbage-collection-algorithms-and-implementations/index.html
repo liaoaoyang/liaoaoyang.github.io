@@ -1,0 +1,789 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="GC," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="TL;DR《垃圾回收的算法与实现》一书的读书笔记。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《垃圾回收的算法与实现》">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2018/01/31/note-of-garbage-collection-algorithms-and-implementations/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="TL;DR《垃圾回收的算法与实现》一书的读书笔记。">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.482Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《垃圾回收的算法与实现》">
+<meta name="twitter:description" content="TL;DR《垃圾回收的算法与实现》一书的读书笔记。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 《垃圾回收的算法与实现》 | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                《垃圾回收的算法与实现》
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2018-01-31T21:00:00+08:00" content="2018-01-31">
+              2018-01-31
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Reading/" itemprop="url" rel="index">
+                    <span itemprop="name">Reading</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p><a href="https://book.douban.com/subject/26821357/" target="_blank" rel="external">《垃圾回收的算法与实现》</a>一书的读书笔记。</p>
+<a id="more"></a>
+<h1 id="笔记"><a href="#笔记" class="headerlink" title="笔记"></a>笔记</h1><h2 id="第1章-学习GC之前"><a href="#第1章-学习GC之前" class="headerlink" title="第1章 学习GC之前"></a>第1章 学习GC之前</h2><h3 id="GC-是什么"><a href="#GC-是什么" class="headerlink" title="GC 是什么"></a>GC 是什么</h3><p>GC实际上可以看做管理堆上内存中对象的一个应用程序。</p>
+<p>GC主要做清理工作，然而GC的实现会影响新对象的分配。</p>
+<h3 id="对象的头部以及域"><a href="#对象的头部以及域" class="headerlink" title="对象的头部以及域"></a>对象的头部以及域</h3><p>对象分为<code>头部</code>和<code>域</code>两个部分，<code>头部</code>包含对象的基础信息以及GC相关的信息，<code>域</code>则是对象使用者可以直接操作的部分。如果对应到 PHP 上(参见<code>zend_gc.h</code>)，在生成 ZVAL 时，实际上会申请一个 <code>zval_gc_info</code> 大小的空间：</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">typedef <span class="class"><span class="keyword">struct</span> <span class="title">_zval_gc_info</span> &#123;</span></span><br><span class="line">	zval z;</span><br><span class="line">	<span class="class"><span class="keyword">union</span> &#123;</span></span><br><span class="line">		gc_root_buffer       *buffered;</span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">_zval_gc_info</span> *<span class="title">next</span>;</span></span><br><span class="line">	&#125; u;</span><br><span class="line">&#125; zval_gc_info;</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> ...</span><br><span class="line"></span><br><span class="line">/* <span class="constant">The</span> following macros override macros from zend_alloc.h *<span class="regexp">/</span><br><span class="line">#undef  ALLOC_ZVAL</span><br><span class="line">#define ALLOC_ZVAL(z) 									\</span><br><span class="line">	do &#123;												\</span><br><span class="line">		(z) = (zval*)emalloc(sizeof(zval_gc_info));		\</span><br><span class="line">		GC_ZVAL_INIT(z);								\</span><br><span class="line">	&#125; while (0)</span></span><br></pre></td></tr></table></figure>
+<p>那么对于上述结构来说，头部应该是名为<code>u</code>的联合体以及<code>zval</code>中关于引用计数的部分，<code>zval z</code>则是对象的域。</p>
+<h3 id="GC算法的评价标准"><a href="#GC算法的评价标准" class="headerlink" title="GC算法的评价标准"></a>GC算法的评价标准</h3><h4 id="常用的四大标准"><a href="#常用的四大标准" class="headerlink" title="常用的四大标准"></a>常用的四大标准</h4><ul>
+<li>吞吐量，即单位时间内GC处理的内存大小</li>
+<li>最大暂停时间，即GC会中断程序正常执行的时间</li>
+<li>堆的使用效率，即内存的使用方式以及头信息的占用比例</li>
+<li>访问的局部性，即是否能更好的利用高速寄存器</li>
+</ul>
+<h2 id="第2章-GC标记-清除算法"><a href="#第2章-GC标记-清除算法" class="headerlink" title="第2章 GC标记-清除算法"></a>第2章 GC标记-清除算法</h2><p><code>标记-清除</code>算法的核心是从根出发，通过 DFS 逐个标记活动的对象，标记完成之后遍历堆，回收不活动的对象。</p>
+<p>这一算法可能会有如下的一些问题：</p>
+<ul>
+<li>碎片化引起分配操作时延增大</li>
+<li>不兼容写时拷贝（标记内容位于堆中，执行标记动作时触发不必要的复制操作）</li>
+</ul>
+<p>碎片化带来的问题是找到合适内存空间可能需要较长的线性查找操作时间。</p>
+<p>为了能减低清除操作带来的时间花费，会把清理工作推迟到需要分配新空间时进行，但是可能会影响分配的速度。</p>
+<h3 id="碎片化问题的权衡"><a href="#碎片化问题的权衡" class="headerlink" title="碎片化问题的权衡"></a>碎片化问题的权衡</h3><p>碎片化问题，<code>标记-清除</code>算法的解决思路是通过对堆中内存分类进行处理，可以是通过划分多个大小的堆的方式，只允许在特定堆上申请空间，或者是 BiBOP(Big Bag Of Pages) 方法，将堆划分为多个块，每个块只能申请特定大小的空间。</p>
+<h3 id="写时拷贝问题"><a href="#写时拷贝问题" class="headerlink" title="写时拷贝问题"></a>写时拷贝问题</h3><p>为了兼容这一个问题，通过独立设定标记位的形式，管理堆内存，只处理不在堆上的标记位。</p>
+<h2 id="第3章-引用计数法"><a href="#第3章-引用计数法" class="headerlink" title="第3章 引用计数法"></a>第3章 引用计数法</h2><p>引用计数法的特点在于内存空间的管理和对象的管理同时进行。</p>
+<p>引用计数有：</p>
+<ul>
+<li>即刻回收垃圾</li>
+<li>缩短了最大暂停时间</li>
+<li>不需要大规模的指针操作</li>
+</ul>
+<p>这些优点。</p>
+<p>但是也有：</p>
+<ul>
+<li>计数器操作繁重</li>
+<li>降低内存利用率</li>
+<li>实现繁琐</li>
+<li>无法解决循环引用问题</li>
+</ul>
+<p>等缺点，不过上述部分问题都有成熟的应对方案。</p>
+<h3 id="计数器操作繁重"><a href="#计数器操作繁重" class="headerlink" title="计数器操作繁重"></a>计数器操作繁重</h3><p>通过延迟引用计数法解决根引用计数操作频繁的问题。</p>
+<p>核心是预留出ZCT(Zero Count Table)，当一个对象引用计数到达0时加入ZCT，之后在ZCT满之后对根可达的对象引用计数增加，之后在清理引用计数为0的对象。</p>
+<p>但是这个会带来的问题是ZCT的大小阈值设定问题，过小频繁触发ZCT扫描，过大导致扫描时长过长。</p>
+<h3 id="降低内存使用率"><a href="#降低内存使用率" class="headerlink" title="降低内存使用率"></a>降低内存使用率</h3><h4 id="Sticky引用计数法"><a href="#Sticky引用计数法" class="headerlink" title="Sticky引用计数法"></a>Sticky引用计数法</h4><p>可以通过Sticky引用计数法，减少用于计数的数据存储空间（研究证明很少有对象有超过32次引用，即在5个bit的存储空间的情况下），之后通过改进后的<code>标记-清除</code>算法进行GC操作，无论是否因为计数器溢出，总能进行GC操作。</p>
+<p>改进后的<code>标记-清除</code>算法主要的区别在于：</p>
+<ul>
+<li>先将所有对象引用计数设置为0</li>
+<li>从根引用的对象出发，使用堆栈记录子对象，并且每个对象保证只进入堆栈一次的前提下，逐个增加引用计数</li>
+<li>清理上述递归过程后引用计数仍然为0对象</li>
+</ul>
+<p>上述操作完成之后可以处理循环引用问题，简单思考一下：如果A对象引用B对象，B对象引用A对象，根据引用计数原理，二者虽然没有其他对象引用，但是因为计数都为1，所以无法被回收。通过上述方法首先引用计数置0之后，由于从根开始，发现没有任何可达的路径，那么这两个对象最后的引用计数为0，可以被GC。</p>
+<p>溢出导致引用计数变为0不会影响GC的原因在于从根出发，如果一个对象是垃圾，那么必定没有可以到达的路径，也就是无法将引用计数增加，即最终引用计数为0。但是如果只是因为溢出，对象总有路径可达，所以不会引起无法GC的问题。</p>
+<h3 id="循环引用问题"><a href="#循环引用问题" class="headerlink" title="循环引用问题"></a>循环引用问题</h3><p>在<code>Sticky引用计数法</code>中提到可以通过<code>标记-清除</code>算法可以解决循环引用问题，因为遍历整个堆的过程，所以效率会比较底下，所以充满智慧的前人Rafael D.Lins研究出了<code>部分标记-清除</code>算法解决了这个问题。</p>
+<p>和常规的<code>标记-清除</code>算法有所不同的是，<code>部分标记-清除</code>算法关注非活动对象（<code>标记-清除</code>算法会找出所有的活动或者说可达的对象）。</p>
+<p><code>部分标记-清除</code>算法的核心在<em>关注非活动对象</em>，即只是进行限定范围内的搜索。对于引用计数直接置为0的对象，是引用计数法的经典情况，当然可以直接进行GC操作，进行回收。但是在引用计数-1之后，引用计数仍然大于0的，会认为疑似是循环引用。最常见的情况，如A引用B，B引用A，C引用B：</p>
+<figure class="highlight nimrod"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+----------+     +----------+     +----------+</span><br><span class="line">|          | --&gt; |          | --&gt; |          |</span><br><span class="line">| <span class="type">Object</span> C |     | <span class="type">Object</span> B |     | <span class="type">Object</span> A |</span><br><span class="line">|          |     |  <span class="keyword">ref</span>:<span class="number">2</span>   | &lt;-- |  <span class="keyword">ref</span>:<span class="number">1</span>   |</span><br><span class="line">+----------+     +----------+     +----------+</span><br></pre></td></tr></table></figure>
+<p>那么A引用计数为1，B引用计数为2，在回收C之后，发现B的引用计数仍然为1，可以怀疑B存在循环引用情况：</p>
+<figure class="highlight nimrod"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+----------+      +----------+     +----------+</span><br><span class="line">|          | -X-&gt; |          | --&gt; |          |</span><br><span class="line">| <span class="type">Object</span> C |      | <span class="type">Object</span> B |     | <span class="type">Object</span> A |</span><br><span class="line">|   <span class="type">GC</span> ed  |      |  <span class="keyword">ref</span>:<span class="number">1</span>   | &lt;-- |  <span class="keyword">ref</span>:<span class="number">1</span>   |</span><br><span class="line">+----------+      +----------+     +----------+</span><br></pre></td></tr></table></figure>
+<p>首先要明确几个颜色的概念（即对象的状态）：</p>
+<ol>
+<li>黑(BLACK):绝对不是垃圾的对象(对象产生时的初始颜色) </li>
+<li>白(WHITE):绝对是垃圾的对象</li>
+<li>灰(GRAY):搜索完毕的对象</li>
+<li>阴影(HATCH):可能是循环垃圾的对象</li>
+</ol>
+<p>对于上述问题，<code>部分标记-清除</code>算法采用的是在引用计数减少时，将疑似垃圾对象入队列，并记录对象颜色为阴影状态<code>HATCH</code>，如果已经是<code>HATCH</code>了，说明对象已经是在队列之中，不用重复入队列。</p>
+<p>在需要进行GC操作时，从队列中扫描所有阴影（HATCH）或者黑色（BLACK）的对象，将这些对象的<strong>子对象</strong>引用计数-1，并且将<strong>当前对象</strong>颜色标记为灰色（GRAY），即已经访问过的对象，防止重复操作，对于对象的子对象，做同样的处理，因为子对象是从队列触达的，有可能并不在队列之中，也就是没有标记成HATCH，而是BLACK这样的正常状态，因为是一个递归调用，所以在最开始的描述中，会告知可以处理黑色的对象。</p>
+<p>队列在此处的作用相当重要：<strong>队列保留了对象一旦从根切断访问路径之后仍能被GC程序访问到的唯一路径</strong>。</p>
+<p>之后对队列中所有的灰色（GRAY）对象，对所有引用计数仍然大于0的对象，认定不存在循环引用问题，尝试涂为黑色（BLACK）并+1引用计数，对于黑色对象的不为黑色的子对象也做同样的操作；否则将对象标记为白色（WHITE），同样的，对于白色对象的子对象也做一样的操作。</p>
+<p>最终，回收被标记为白色（WHITE）的所有对象。</p>
+<p>看到这里，PHPer会不会突然想起，这不很类似PHP5.3之后的GC实现方式吗？从<a href="http://www.php-internals.com/book/?p=chapt06/06-04-01-new-garbage-collection" target="_blank" rel="external">TIPI</a>中可以读到，只不过是把HATCH用PURPLE这一颜色替代了。</p>
+<p>来看如下例子：</p>
+<figure class="highlight nimrod"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+----------+      +----------+     +----------+</span><br><span class="line">|          | ---&gt; |  <span class="type">BLACK</span>   | --&gt; |  <span class="type">BLACK</span>   |</span><br><span class="line">|   <span class="type">ROOT</span>   |      | <span class="type">Object</span> B |     | <span class="type">Object</span> A |</span><br><span class="line">|          |      |  <span class="keyword">ref</span>:<span class="number">2</span>   | &lt;-- |  <span class="keyword">ref</span>:<span class="number">1</span>   |</span><br><span class="line">+----------+      +----------+     +----------+</span><br></pre></td></tr></table></figure>
+<p>对于对象B来说，如果执行 <code>unset($b)</code> 操作，此时引用计数会-1，但是对象B的引用计数目前仍然为1，符合我们对疑似循环引用的推断：</p>
+<figure class="highlight nimrod"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+----------+      +----------+     +----------+</span><br><span class="line">|          | -X-&gt; |  <span class="type">HATCH</span>   | --&gt; |  <span class="type">BLACK</span>   |</span><br><span class="line">|   <span class="type">ROOT</span>   |      | <span class="type">Object</span> B |     | <span class="type">Object</span> A |</span><br><span class="line">|          |      |  <span class="keyword">ref</span>:<span class="number">1</span>   | &lt;-- |  <span class="keyword">ref</span>:<span class="number">1</span>   |</span><br><span class="line">+----------+      +----------+     +----------+</span><br></pre></td></tr></table></figure>
+<p>如果按照常规的引用计数的处理，目前对象B引用计数仍然大于0，是不能被回收的。</p>
+<p>对象B入HATCH队列，假设开始GC操作，首先执行灰色标记操作：</p>
+<figure class="highlight nimrod"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+----------+      +----------+     +----------+</span><br><span class="line">|          | -X-&gt; |   <span class="type">GRAY</span>   | --&gt; |  <span class="type">BLACK</span>   |</span><br><span class="line">|   <span class="type">ROOT</span>   |      | <span class="type">Object</span> B |     | <span class="type">Object</span> A |</span><br><span class="line">|          |      |  <span class="keyword">ref</span>:<span class="number">1</span>   | &lt;-- |  <span class="keyword">ref</span>:<span class="number">0</span>   |</span><br><span class="line">+----------+      +----------+     +----------+</span><br></pre></td></tr></table></figure>
+<p>根据算法，对于对象B的子对象对象A也需要进行标记操作：</p>
+<figure class="highlight nimrod"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+----------+      +----------+     +----------+</span><br><span class="line">|          | -X-&gt; |   <span class="type">GRAY</span>   | --&gt; |   <span class="type">GRAY</span>   |</span><br><span class="line">|   <span class="type">ROOT</span>   |      | <span class="type">Object</span> B |     | <span class="type">Object</span> A |</span><br><span class="line">|          |      |  <span class="keyword">ref</span>:<span class="number">1</span>   | &lt;-- |  <span class="keyword">ref</span>:<span class="number">0</span>   |</span><br><span class="line">+----------+      +----------+     +----------+</span><br></pre></td></tr></table></figure>
+<p>根据算法，对于对象A的子对象对象B也需要进行标记操作，但是因为对象B已经标记为灰色，所以无需进行标记操作，但是仍然需要进行子对象引用计数-1操作，下一步执行扫描灰色对象操作：</p>
+<figure class="highlight nimrod"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+----------+      +----------+     +----------+</span><br><span class="line">|          | -X-&gt; |   <span class="type">WHITE</span>  | --&gt; |   <span class="type">WHITE</span>  |</span><br><span class="line">|   <span class="type">ROOT</span>   |      | <span class="type">Object</span> B |     | <span class="type">Object</span> A |</span><br><span class="line">|          |      |  <span class="keyword">ref</span>:<span class="number">0</span>   | &lt;-- |  <span class="keyword">ref</span>:<span class="number">0</span>   |</span><br><span class="line">+----------+      +----------+     +----------+</span><br></pre></td></tr></table></figure>
+<p>不幸的是，对象B作为一个灰色对象并且引用计数已经为0，需要标记成白色，确认是一个垃圾对象。根据算法也要对子对象进行同样的操作，所以对象A也会标记成白色，因为当前没有存在黑色的对象，所以标记黑色操作不进行。</p>
+<p>最后回收所有白色对象。</p>
+<p>对于需要对<strong>子对象</strong>引用计数先-1，而不是对象本身-1，如果首先对对象本身-1，那么假设对象A当前引用计数为2，存在子对象B，子对象B没有引用A。现在从根对象中解除引用，A的引用计数变为1，在标记操作过程中会使得A对象引用计数边为0，而B对象引用计数也会变为0，但是事实上，B并没有引用A，不存在循环引用情况，但是这样的操作步骤却使得A误认为是垃圾，被清理。</p>
+<p>来看一下PHP中的标记阶段 <code>zobj_mark_grey()</code> 函数：</p>
+<figure class="highlight zephir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> void zobj_mark_grey(struct _store_object *obj, zval *pz TSRMLS_DC)</span><br><span class="line">&#123;</span><br><span class="line">	Bucket *p;</span><br><span class="line">	zend_object_get_gc_t get_gc;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (GC_GET_COLOR(obj-&gt;buffered) != GC_GREY) &#123;</span><br><span class="line">		GC_BENCH_INC(zobj_marked_grey);</span><br><span class="line">		GC_SET_COLOR(obj-&gt;buffered, GC_GREY);</span><br><span class="line">		<span class="keyword">if</span> (EXPECTED(EG(objects_store).object_buckets[Z_OBJ_HANDLE_P(pz)].valid &amp;&amp;</span><br><span class="line">		             (get_gc = Z_OBJ_HANDLER_P(pz, get_gc)) != <span class="keyword">NULL</span>)) &#123;</span><br><span class="line">			<span class="keyword">int</span> i, n;</span><br><span class="line">			zval **table;</span><br><span class="line">			HashTable *props = get_gc(pz, &amp;table, &amp;n TSRMLS_CC);</span><br><span class="line"></span><br><span class="line">			<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">				<span class="keyword">if</span> (table[i]) &#123;</span><br><span class="line">					pz = table[i];</span><br><span class="line">					<span class="keyword">if</span> (Z_TYPE_P(pz) != IS_ARRAY || Z_ARRVAL_P(pz) != &amp;EG(symbol_table)) &#123;</span><br><span class="line">						pz-&gt;refcount__gc--;</span><br><span class="line">					&#125;</span><br><span class="line">					zval_mark_grey(pz TSRMLS_CC);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> (!props) &#123;</span><br><span class="line">				<span class="keyword">return</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			p = props-&gt;pListHead;</span><br><span class="line">			<span class="keyword">while</span> (p != <span class="keyword">NULL</span>) &#123;</span><br><span class="line">				pz = *(zval**)p-&gt;pData;</span><br><span class="line">				<span class="keyword">if</span> (Z_TYPE_P(pz) != IS_ARRAY || Z_ARRVAL_P(pz) != &amp;EG(symbol_table)) &#123;</span><br><span class="line">					pz-&gt;refcount__gc--;</span><br><span class="line">				&#125;</span><br><span class="line">				zval_mark_grey(pz TSRMLS_CC);</span><br><span class="line">				p = p-&gt;pListNext;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里确实是对子对象先行操作引用计数的。</p>
+<p>未完待续。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/GC/" rel="tag">#GC</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2017/12/28/365-days-of-github/" rel="next" title="在GitHub上记录了一年">
+                <i class="fa fa-chevron-left"></i> 在GitHub上记录了一年
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2018/02/28/host-nginx-php-based-app-in-docker/" rel="prev" title="使用Docker运行基于Nginx+PHP的应用程序">
+                使用Docker运行基于Nginx+PHP的应用程序 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TL-DR"><span class="nav-number">1.</span> <span class="nav-text">TL;DR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#笔记"><span class="nav-number">2.</span> <span class="nav-text">笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#第1章-学习GC之前"><span class="nav-number">2.1.</span> <span class="nav-text">第1章 学习GC之前</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#GC-是什么"><span class="nav-number">2.1.1.</span> <span class="nav-text">GC 是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的头部以及域"><span class="nav-number">2.1.2.</span> <span class="nav-text">对象的头部以及域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GC算法的评价标准"><span class="nav-number">2.1.3.</span> <span class="nav-text">GC算法的评价标准</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#常用的四大标准"><span class="nav-number">2.1.3.1.</span> <span class="nav-text">常用的四大标准</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第2章-GC标记-清除算法"><span class="nav-number">2.2.</span> <span class="nav-text">第2章 GC标记-清除算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#碎片化问题的权衡"><span class="nav-number">2.2.1.</span> <span class="nav-text">碎片化问题的权衡</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#写时拷贝问题"><span class="nav-number">2.2.2.</span> <span class="nav-text">写时拷贝问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第3章-引用计数法"><span class="nav-number">2.3.</span> <span class="nav-text">第3章 引用计数法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#计数器操作繁重"><span class="nav-number">2.3.1.</span> <span class="nav-text">计数器操作繁重</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#降低内存使用率"><span class="nav-number">2.3.2.</span> <span class="nav-text">降低内存使用率</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Sticky引用计数法"><span class="nav-number">2.3.2.1.</span> <span class="nav-text">Sticky引用计数法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#循环引用问题"><span class="nav-number">2.3.3.</span> <span class="nav-text">循环引用问题</span></a></li></ol></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

@@ -1,0 +1,792 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Snowflake," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="TL;DR发号器用于为系统中各个模块提供ID生成服务。
+设计一个发号器至少需要考虑ID唯一性，有序性，性能，可用性，使用成本，以及一定的数据安全问题。
+作为一个极其成熟的业务功能，发号器有大量的实现，有海量的文章描述各类要点，按需选择即可，无需重复造轮子。
+&amp;lt;!-- id-generator --&amp;gt;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="发号器设计简述">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2018/12/25/id-generator/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="TL;DR发号器用于为系统中各个模块提供ID生成服务。
+设计一个发号器至少需要考虑ID唯一性，有序性，性能，可用性，使用成本，以及一定的数据安全问题。
+作为一个极其成熟的业务功能，发号器有大量的实现，有海量的文章描述各类要点，按需选择即可，无需重复造轮子。
+&amp;lt;!-- id-generator --&amp;gt;">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.473Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="发号器设计简述">
+<meta name="twitter:description" content="TL;DR发号器用于为系统中各个模块提供ID生成服务。
+设计一个发号器至少需要考虑ID唯一性，有序性，性能，可用性，使用成本，以及一定的数据安全问题。
+作为一个极其成熟的业务功能，发号器有大量的实现，有海量的文章描述各类要点，按需选择即可，无需重复造轮子。
+&amp;lt;!-- id-generator --&amp;gt;">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 发号器设计简述 | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                发号器设计简述
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2018-12-25T23:00:00+08:00" content="2018-12-25">
+              2018-12-25
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/系统/" itemprop="url" rel="index">
+                    <span itemprop="name">系统</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>发号器用于为系统中各个模块提供ID生成服务。</p>
+<p>设计一个发号器至少需要考虑ID唯一性，有序性，性能，可用性，使用成本，以及一定的数据安全问题。</p>
+<p>作为一个极其成熟的业务功能，发号器有大量的实现，有海量的文章描述各类要点，按需选择即可，无需重复造轮子。</p>
+<!-- id-generator -->
+<a id="more"></a>
+<h1 id="为什么不使用UUID？"><a href="#为什么不使用UUID？" class="headerlink" title="为什么不使用UUID？"></a>为什么不使用UUID？</h1><p><a href="https://zh.wikipedia.org/wiki/%E9%80%9A%E7%94%A8%E5%94%AF%E4%B8%80%E8%AF%86%E5%88%AB%E7%A0%81" target="_blank" rel="external">UUID</a> 算法上使用部分硬件信息，从前面提到的几个维度来分析一下：</p>
+<ul>
+<li>唯一性上差强人意（虚假的硬件信息等）</li>
+<li>有序性上不完全能够保证</li>
+<li>性能上由于可以是本地生成没有太大问题</li>
+<li>可用性亦然</li>
+<li>使用成本上开发成本低，然而占用空间等较大</li>
+<li>安全性上不能被遍历，高版本的生成算法可以让机器无法回溯</li>
+</ul>
+<p>综上，使用 UUID 带来的问题首先就是有序性上考量让人质疑，同时占用的空间较为巨大，生成的ID也较难理解，使用了不同算法实现的UUID需要深入实现才能人工制造出一个同类型的UUID。</p>
+<p>最直接的影响，就是当前大量系统使用数据库，UUID 作为主键会<a href="http://imysql.com/2014/09/14/mysql-faq-why-innodb-table-using-autoinc-int-as-pk.shtml" target="_blank" rel="external">严重影响性能</a>。</p>
+<p>并不是说不能使用UUID，而是需要慎重考虑，属于架构上的取舍。</p>
+<h1 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h1><p>合理设计的发号器可以解决如下问题（部分）：</p>
+<h2 id="分库分表的分区键"><a href="#分库分表的分区键" class="headerlink" title="分库分表的分区键"></a>分库分表的分区键</h2><p>业务在初始阶段往往是一个单体应用，往往选择依赖数据库生成自增ID来标示新增数据。</p>
+<p>随着业务增长，单表数据增长到千万及以上，或者出现了激烈的竞争条件，需要考虑进行分库分表操作。</p>
+<p>此时的ID成了问题，通过发号器为每条记录生成一个全局唯一的ID，可以避免不必要的主键冲突等问题，让数据各得其所。</p>
+<h2 id="自增ID的数据安全性"><a href="#自增ID的数据安全性" class="headerlink" title="自增ID的数据安全性"></a>自增ID的数据安全性</h2><p>例如订单相关的业务，每日的流水属于业务的机密数据，如果直接选用自增ID作为订单号，竞对很容易直接估算出每天的下单量（例如间隔24小时下单）。</p>
+<p>通过特定算法实现的发号器，一定程度可以规避这一问题。</p>
+<h2 id="ID的可读性"><a href="#ID的可读性" class="headerlink" title="ID的可读性"></a>ID的可读性</h2><p>业务上的ID如果单纯是数字的信息量就太小了。</p>
+<p>可以在ID中包含一些业务信息，帮助快速的定位问题。</p>
+<h1 id="常见架构"><a href="#常见架构" class="headerlink" title="常见架构"></a>常见架构</h1><h2 id="生成算法"><a href="#生成算法" class="headerlink" title="生成算法"></a>生成算法</h2><p>大量的发号器设计上都使用 <a href="https://github.com/twitter-archive/snowflake" target="_blank" rel="external">Snowflake</a> 作为ID生成算法。</p>
+<p>核心就是<code>时间戳</code>+<code>节点信息</code>+<code>业务数据</code>，通过位运算组合，在10进制模式下，数字基本单调递增而不连续。</p>
+<p>生成的 ID 是64位数字，存储空间和表现力上来说对于绝大多数系统足够。</p>
+<h3 id="时间戳"><a href="#时间戳" class="headerlink" title="时间戳"></a>时间戳</h3><p>默认的算法是41位用于毫秒级别的时间戳，通常还会搭配一个起始时间（默认是时间戳的0点），可供使用<code>相对</code>的69年时间，日常使用中可以考虑缩减，腾出更多空间用于业务数据，毕竟6年之后的事情都难以预知。</p>
+<h3 id="节点信息"><a href="#节点信息" class="headerlink" title="节点信息"></a>节点信息</h3><p>一般每个服务器分配一个编号，可以结合 ZK / Etcd 等分布式协同组件管理编号，机器本身也可以配置一个默认编号用于降级，多台服务器使用一个编号主要带来的问题就是冲突。</p>
+<h3 id="业务数据"><a href="#业务数据" class="headerlink" title="业务数据"></a>业务数据</h3><p>业务数据包含两个方面，一个是业务区分信息，即表示这一类型的ID是何种ID，便于查询问题，能够迅速判断应当从哪一系统入手。</p>
+<p>另一个方面自然是核心的编号，也就是自增的数字序列。</p>
+<p>虽然已经做了<code>时间</code>（ID 中携带时间戳）以及<code>空间</code>（ID 中的节点信息)上的隔离，但是限于 ID 的数据长度，1秒（或者1毫秒）内同一节点上生成的是有限个的，取决于数据长度。</p>
+<h2 id="架构设计"><a href="#架构设计" class="headerlink" title="架构设计"></a>架构设计</h2><p>为了实现全局唯一，需要一个中心节点。</p>
+<p>从对中心节点的依赖程度出发，可以分为两类实现，</p>
+<h3 id="纯中心实现"><a href="#纯中心实现" class="headerlink" title="纯中心实现"></a>纯中心实现</h3><p>对于强依赖类型的发号器，每个 ID 的生成需要从中心节点获取。</p>
+<p>最常见的实现方式就是直接使用数据库的自增 ID 生成序列，或者基于 Redis 这类 NoSQL 的内置特性完成。</p>
+<p>一般采用这类方案的问题在于存在单点问题以及性能有上限（然而又有多少系统可以达到系统性能的上限呢？），项目中的订单系统实战过自增 ID + Snowflake的方案。</p>
+<p>基于 Redis 的自增 ID 方案可以参考 <a href="https://weibo.com/tangfl" target="_blank" rel="external">唐福林</a> 老师的博文《6行代码实现一个 id 发号器》，结合 Lua 实现，言简意赅。由于原文链接已经失效，这里摘抄一下：</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">id 发号器的问题， @一乐 的这篇文章说的很透彻了： http://weibo.com/p/1001603800404851831206 但参考实现就显得有些复杂。最近在雪球工作中正好需要用到发号器，于是用 Lua 在 Redis 上实现了一个最简单的：</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">-- usage: redis-cli -h 10.10.201.100 -p 10401 EVAL <span class="string">"$(cat getID.lua)"</span> 1 XID:01:02 </span><br><span class="line">local arg = KEYS<span class="keyword">[</span>1] </span><br><span class="line">-- project id must has 2 digits, 01 - 15 </span><br><span class="line">local pid =<span class="function"> tonumber(</span>string.sub(arg, 5, 6<span class="function">)</span><span class="function">)</span> </span><br><span class="line">--<span class="instruction"> instance </span>id must has 2 digits, 01 - 15 </span><br><span class="line">local iid =<span class="function"> tonumber(</span>string.sub(arg, 8, 9<span class="function">)</span><span class="function">)</span> </span><br><span class="line">local idnum =<span class="function"> redis.call(</span><span class="string">"INCR"</span>, <span class="string">"ID_IDX"</span><span class="function">)</span> % 65536 </span><br><span class="line">local sec =<span class="function"> redis.call(</span><span class="string">"TIME"</span><span class="function">)</span><span class="keyword">[</span>1] - 1420041600 <span class="instruction"></span><br><span class="line">return </span>sec*16777216 + pid*1048576 + iid*65536 + idnum </span><br><span class="line"></span><br><span class="line">解释：</span><br><span class="line"></span><br><span class="line">id 总长度 52bit，为了兼容 js，php，flex 等语言<span class="instruction"> long </span>类型最长只能 52 bit</span><br><span class="line">最高 28 bit 为秒级时间戳，因为位数限制，不能从 1970.1.1 开始，-1420041600 表示从 2015.1.1 开始，大约可以使用10年（3106天）</span><br><span class="line">接下来4个bit为 project id，客户端传入，区分业务</span><br><span class="line">再接下来4个bit为<span class="instruction"> instance </span>id，HA 用的，支持最多16个instance。如果业务只需要“秒级粗略有序”，比如发微博或发评论，则可以多个<span class="instruction"> instance </span>同时使用，不需要做任何特殊处理；如果业务需要“因果有序”，比如某个user短期内快速做的多个操作必须有因果顺序（程序化交易，必须先卖再买，几个毫秒内完成），那么就需要做一些特殊处理，要么用 uid 做一致性hash，或者像我们这样偷懒：一段时间内固定使用一个<span class="instruction"> instance</span><br><span class="line"></span>最低16个bit是 sequence id，每个<span class="instruction"> instance </span>支持每秒 65535 个 id。bit数再大，redis 该成为瓶颈了。</span><br><span class="line">twitter和微博都是把<span class="instruction"> instance </span>id 写死到 server 端，这样 server端就变成有状态的了：16个instance，每个<span class="instruction"> instance </span>都与其它的配置不一样。在雪球我们不希望 server 端有状态，于是设计成<span class="instruction"> instance </span>id 由客户端传入，server 端退化成一个普通的 redis cache server （不需要 rdb，不需要 aof，宕机重启即可）</span><br><span class="line">几个注意点：宕机不能自动立即重启，必须间隔1秒以上，避免 sequence id 重复导致 id 重复；迁移时必须先 kill 老的 instance，再启动新的，也是为了避免 sequence id 重复。</span><br><span class="line">id 发号器说简单也确实挺简单。任何一个技术点，只要理解了本质，大约都是这么简单罢。</span><br></pre></td></tr></table></figure>
+<p>这类方案几乎能满足中小业务的需求了，成本上可以复用现有基础设施，如果是做成了公共服务，成本会进一步降低。</p>
+<p>纯中心实现有一个优势，就是所有ID能保证全局单调递增。</p>
+<h3 id="中心-客户端实现"><a href="#中心-客户端实现" class="headerlink" title="中心-客户端实现"></a>中心-客户端实现</h3><p>这部分又可以分为<code>序列中心分配</code>和<code>序列客户端自行生成</code>两类：</p>
+<h4 id="序列中心分配"><a href="#序列中心分配" class="headerlink" title="序列中心分配"></a>序列中心分配</h4><p>这类方案可以参考 <a href="https://github.com/Meituan-Dianping/Leaf" target="_blank" rel="external">Leaf</a> 。简单来说，有如下一些特点：</p>
+<ul>
+<li>通过预先分配 ID 区间解决性能问题，每次按照特定步长分配ID，客户端缓存区间本地生成 ID</li>
+<li>通过为不同客户端分配不同区间解决 ID 唯一性问题，在客户端内实现 ID 的单调递增</li>
+<li>结合 Snowflake 算法解决 ID 信息安全性问题</li>
+</ul>
+<p>在某些数据库中间件中也会提供类似的方案，专门的发号系统还会增加如下的一些组件，解决部分问题：</p>
+<ul>
+<li>使用 ZK/Etcd 保证节点信息的唯一性</li>
+<li>引入时钟修正机制解决节点时间错乱问题，保证 ID 全局唯一</li>
+<li>预先获取下一区间降低TP999，减少系统响应时间毛刺</li>
+<li>同机房优先调用/中心节点自动切换等运维手段提升中心的可用性</li>
+</ul>
+<p>这类方案仍然需要中心节点实现高可用，但是极大程度的降低了中心节点的压力。</p>
+<p>然而，这类方案也存在一些问题：</p>
+<ul>
+<li>难于在线调整步长</li>
+<li>闰秒的处理（几乎所有基于时间的方案都需要注意）</li>
+<li>对序列数据直接使用仍然有可能猜测出业务量级</li>
+<li>ID 只是局部单调递增</li>
+<li>有大量组件依赖，适合做成公共服务</li>
+</ul>
+<p>由于需要客户端缓存，对于 PHP 这类非常驻进程的语言，可以考虑引入共享内存完成功能。</p>
+<h4 id="序列客户端自行生成"><a href="#序列客户端自行生成" class="headerlink" title="序列客户端自行生成"></a>序列客户端自行生成</h4><p>如果固定了序列的位数，同时引入分布式协同组件，为客户端提供时间校正以及分配节点ID，结合 Snowflake 算法，可以在客户端自定生成序列。这类方案的优点在于：</p>
+<ul>
+<li>去除了数据库等序列生成中心组件的依赖</li>
+</ul>
+<p>这一类方案的问题是，1个时间片内（1s/1ms）序列使用完毕后，不能再生成新的ID，为了防止覆盖已生成ID，需要等到下一个时间片内才能继续生成。</p>
+<p>另一个问题是，单个节点上存在多个应用时，面临着多个应用竞争同一个 ID 的情况，需要通过一些锁定的手段，保证序列正常发放。当然，如果节点的概念是每个应用，则这个问题可以忽略，但是带来的问题就是分配的节点信息的位数可能需要增加。</p>
+<p>虽然去除了数据库的依赖，仍然存在 ZK / Etcd 等协同组件的依赖，对于小型业务系统来说，在有限节点的情况下，可以考虑直接使用 IP 转化为节点 ID，结合 NTP 服务器，去除分布式协同组件的依赖，彻底实现分布式的 ID 生成。</p>
+<h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><ul>
+<li><a href="http://ericliang.info/2015/01/18/what-kind-of-id-generator-we-need-in-business-systems.html" target="_blank" rel="external">业务系统需要怎样的全局唯一ID？</a></li>
+<li><a href="https://tech.meituan.com/2017/04/21/mt-leaf.html" target="_blank" rel="external">Leaf——美团点评分布式ID生成系统</a></li>
+<li><a href="https://github.com/baidu/uid-generator/blob/master/README.zh_cn.md" target="_blank" rel="external">baidu/uid-generator</a> </li>
+<li><a href="https://www.infoq.cn/article/wechat-serial-number-generator-architecture" target="_blank" rel="external">微信序列号生成器架构设计及演变</a></li>
+<li><a href="http://www.10tiao.com/html/773/201712/2247487246/2.html" target="_blank" rel="external">分布式ID生成系统怎么做</a></li>
+<li><a href="https://tech.youzan.com/id_generator/" target="_blank" rel="external">如何做一个靠谱的发号器</a></li>
+<li><a href="https://github.com/ramsey/uuid" target="_blank" rel="external">PHP ramsey/uuid</a></li>
+</ul>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Snowflake/" rel="tag">#Snowflake</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2018/11/01/packet-capture-i/" rel="next" title="抓包那点事儿（常用工具简介）">
+                <i class="fa fa-chevron-left"></i> 抓包那点事儿（常用工具简介）
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2019/01/28/mutilple-wechat-oauth-callback-urls/" rel="prev" title="微信多回调域名">
+                微信多回调域名 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TL-DR"><span class="nav-number">1.</span> <span class="nav-text">TL;DR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么不使用UUID？"><span class="nav-number">2.</span> <span class="nav-text">为什么不使用UUID？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解决问题"><span class="nav-number">3.</span> <span class="nav-text">解决问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分库分表的分区键"><span class="nav-number">3.1.</span> <span class="nav-text">分库分表的分区键</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自增ID的数据安全性"><span class="nav-number">3.2.</span> <span class="nav-text">自增ID的数据安全性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ID的可读性"><span class="nav-number">3.3.</span> <span class="nav-text">ID的可读性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常见架构"><span class="nav-number">4.</span> <span class="nav-text">常见架构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#生成算法"><span class="nav-number">4.1.</span> <span class="nav-text">生成算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#时间戳"><span class="nav-number">4.1.1.</span> <span class="nav-text">时间戳</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#节点信息"><span class="nav-number">4.1.2.</span> <span class="nav-text">节点信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#业务数据"><span class="nav-number">4.1.3.</span> <span class="nav-text">业务数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#架构设计"><span class="nav-number">4.2.</span> <span class="nav-text">架构设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#纯中心实现"><span class="nav-number">4.2.1.</span> <span class="nav-text">纯中心实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#中心-客户端实现"><span class="nav-number">4.2.2.</span> <span class="nav-text">中心-客户端实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#序列中心分配"><span class="nav-number">4.2.2.1.</span> <span class="nav-text">序列中心分配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#序列客户端自行生成"><span class="nav-number">4.2.2.2.</span> <span class="nav-text">序列客户端自行生成</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他"><span class="nav-number">5.</span> <span class="nav-text">其他</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

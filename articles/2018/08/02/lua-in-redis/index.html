@@ -1,0 +1,779 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Lua,Redis," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="TL;DRRedis 中使用 Lua 的相关笔记。
+&amp;lt;!-- lua-in-redis --&amp;gt;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis中的Lua">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2018/08/02/lua-in-redis/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="TL;DRRedis 中使用 Lua 的相关笔记。
+&amp;lt;!-- lua-in-redis --&amp;gt;">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.479Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis中的Lua">
+<meta name="twitter:description" content="TL;DRRedis 中使用 Lua 的相关笔记。
+&amp;lt;!-- lua-in-redis --&amp;gt;">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> Redis中的Lua | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Redis中的Lua
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2018-08-02T23:42:23+08:00" content="2018-08-02">
+              2018-08-02
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/系统/" itemprop="url" rel="index">
+                    <span itemprop="name">系统</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>Redis 中使用 Lua 的相关笔记。</p>
+<!-- lua-in-redis -->
+<a id="more"></a>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>Lua 这门语言的运行时库大小相当之小，可以嵌入由 C 语言实现的应用程序之中，动态的执行功能。</p>
+<p>具体设计与实现在文档中十分清晰，传送门：</p>
+<ul>
+<li><a href="http://redisbook.readthedocs.io/en/latest/feature/scripting.html" target="_blank" rel="external">http://redisbook.readthedocs.io/en/latest/feature/scripting.html</a></li>
+<li><a href="http://redisdoc.com/script/eval.html" target="_blank" rel="external">http://redisdoc.com/script/eval.html</a></li>
+</ul>
+<p>简而言之，即 Redis 集成了 Lua 的运行时库，加载部分 Lua 的基本库函数，通过伪客户端完成脚本与数据库的交互，转换数据格式。</p>
+<h1 id="Redis-Lua-适合做什么"><a href="#Redis-Lua-适合做什么" class="headerlink" title="Redis + Lua 适合做什么"></a>Redis + Lua 适合做什么</h1><p>个人理解，这个组合赋予了 Redis 更强大的服务端计算能力，适合如下特点的任务：</p>
+<ol>
+<li>带有特定判断逻辑的操作</li>
+<li>耗时低的操作</li>
+</ol>
+<h2 id="为什么适合带有特定判断逻辑的操作？"><a href="#为什么适合带有特定判断逻辑的操作？" class="headerlink" title="为什么适合带有特定判断逻辑的操作？"></a>为什么适合带有特定判断逻辑的操作？</h2><h3 id="原子操作里的逻辑判断"><a href="#原子操作里的逻辑判断" class="headerlink" title="原子操作里的逻辑判断"></a>原子操作里的逻辑判断</h3><p>Redis 的原子性在 <a href="https://liaoaoyang.cn/articles/2017/08/06/interesting-and-useful-designs-of-redis/" target="_blank" rel="external">Redis里那些有用又有趣的设计</a> 一文中有过讨论，单进程单线程按序执行（即按客户端可读可写事件触发事件处理顺序）保证了原子性。</p>
+<p>Redis 本身也可以通过 MULTI/EXEC 等命令实现一组原子的操作。</p>
+<p>然而，需要注意的是，MULTI 是在所有指令发送完成之后，一次性执行，在执行的过程中，客户端是没有办法及时获得反馈的。如果需要根据某一指令的操作结果，决定下一步执行何种操作，是无法实现的。</p>
+<p>Lua 脚本则可以带有判断逻辑，在客户端指令发出后，根据入参可以控制指令的运行分支。</p>
+<h3 id="CAS"><a href="#CAS" class="headerlink" title="CAS"></a>CAS</h3><p>Redis 的 CAS 操作可以通过 WATCH 来实现，但是也可以直接通过 Lua 脚本的形式完成，如果还想根据操作的结果完成其他工作，Lua 脚本可能就更为适合了。</p>
+<p>希望对事务进行干预的操作，可以考虑使用 Lua 脚本完成。</p>
+<h2 id="为什么适合耗时低的操作"><a href="#为什么适合耗时低的操作" class="headerlink" title="为什么适合耗时低的操作"></a>为什么适合耗时低的操作</h2><p>Redis 的运行模型，决定了强计算任务会阻塞住其他指令的执行，在通过 Lua 扩展功能时也需要注意。</p>
+<p>Redis在执行 Lua 脚本时，最大执行时间的长短由 lua-time-limit 选项来控制(以毫秒为单位)，可以通过编辑 redis.conf 文件或者使用 CONFIG GET 和 CONFIG SET 命令来修改它。</p>
+<p>当执行超时时，只是重新开始接受新的操作，但是只能处理 <code>SCRIPT KILL</code> 和 <code>SHUTDOWN NOSAVE</code> 两个命令。如果已经执行了写操作，只能通过 <code>SHUTDOWN NOSAVE</code> 重启服务器完成工作了。</p>
+<p>所以，从性能和安全角度出发，短小精悍的 Lua 脚本是值得推荐的。</p>
+<h1 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h1><p>在 Redis 中通过 Lua 扩展自身的功能，可以有两种方式：直接提供脚本，先导入后使用。</p>
+<p>以 <a href="https://github.com/liaoaoyang/toolbox/blob/master/softwares/redis/incrby_not_over.lua" target="_blank" rel="external">incrby_not_over.lua</a> 为例：</p>
+<p>既可以通过：</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli <span class="built_in">eval</span> <span class="string">"$(cat incrby_not_over.lua)"</span> <span class="number">1</span> key_name max_value [<span class="keyword">step</span> expire]</span><br></pre></td></tr></table></figure>
+<p>也可以：</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli evalsha xxx <span class="number">1</span> key_name max_value <span class="string">[step expire]</span></span><br></pre></td></tr></table></figure>
+<p>当然，在使用 <a href="http://redisdoc.com/script/eval.html" target="_blank" rel="external">EVAL</a> 命令一次之后，可以直接通过 <a href="http://redisdoc.com/script/evalsha.html" target="_blank" rel="external">EVALSHA</a> 结合当前脚本的 sha1 值进行调用。</p>
+<p>执行过一次 EVAL 和 <a href="http://redisdoc.com/script/script_load.html" target="_blank" rel="external">SCRIPT LOAD</a> 的效果基本是一致的，后者不会实际执行脚本。</p>
+<p>可以通过 <a href="http://redisdoc.com/script/script_exists.html" target="_blank" rel="external">SCRIPT EXISTS</a> 指令判断特定的 sha1 值对应的脚本是否存在。</p>
+<p>在 Redis 重启之后，脚本需要重新导入。</p>
+<h1 id="脚本-sha1-值的生成方式"><a href="#脚本-sha1-值的生成方式" class="headerlink" title="脚本 sha1 值的生成方式"></a>脚本 sha1 值的生成方式</h1><p>想要迅速求得 Lua 脚本（假设文件名为<code>script.lua</code>）导入之后 sha1 值，可以在 Shell 中使用如下方法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span> <span class="string">"<span class="variable">$(cat script.lua)</span>"</span> | sha1sum</span><br></pre></td></tr></table></figure>
+<p>或者：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> -n <span class="string">"<span class="variable">$(cat script.lua)</span>"</span> | sha1sum</span><br></pre></td></tr></table></figure>
+<p>获取了对应的 sha1 值，可以在编程时预先在代码中写入 sha1 值。</p>
+<h1 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h1><h2 id="生产者生产速度控制"><a href="#生产者生产速度控制" class="headerlink" title="生产者生产速度控制"></a>生产者生产速度控制</h2><p>在生产者-消费者模型中，假若下游消费速度较慢，可以使用队列等方式暂存生产者生产的任务，起到削峰填谷的作用。</p>
+<p>然而，在上游生产速度极快时，队列容量过大也会造成问题。</p>
+<p>首先，可以判断队列现有容量，如果队列已经过长，则暂停生产。然而在并发较大的情况下，同一瞬间读取到的队列长度相同且小于最大长度，那么生产者仍会继续生产，给下游带来巨大的压力。</p>
+<p>如果直接使用计数器呢？同样的，在同一个瞬间有多个请求一起请求生产，计数器递增，如果计数器值超过了限定的最大值，将计数器回退。如果后续各个请求出现异常，计数器将不会回退值，导致上游无法继续生产。</p>
+<h3 id="带有超时效果的脚本"><a href="#带有超时效果的脚本" class="headerlink" title="带有超时效果的脚本"></a>带有超时效果的脚本</h3><p>计数器不自动回退的问题，可以通过超时进行处理。由于即要计数，又要拥有超时，Redis 原有的 Hash 结构不能满足需求，可以通过 ZSET 模拟超时以及完成计数。将时间戳作为分数即可，每个请求需要有唯一标示。</p>
+<p>利用 Redis 命令的原子性，通过 Lua 脚本实现相关逻辑，控制速度。</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--[[</span><br><span class="line">Usage:</span><br><span class="line">redis-cli eval "$(cat incrby_not_overby_zset.lua)" 1 zset_name max_value client_req_id client_req_timestamp [expire_second]</span><br><span class="line"></span><br><span class="line">or</span><br><span class="line"></span><br><span class="line">redis-cli evalsha xxx 1 zset_name max_value client_req_id [expire_second]</span><br><span class="line">--]]</span></span><br><span class="line"><span class="keyword">if</span> #ARGV &gt;=<span class="number">4</span> <span class="keyword">then</span></span><br><span class="line">    redis.call(<span class="string">"ZREMRANGEBYSCORE"</span>, KEYS[<span class="number">1</span>], <span class="number">0</span>, <span class="built_in">tonumber</span>(ARGV[<span class="number">3</span>]) - <span class="built_in">tonumber</span>(ARGV[<span class="number">4</span>]))</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="built_in">tonumber</span>(redis.call(<span class="string">"ZCARD"</span>, KEYS[<span class="number">1</span>])) &gt;= <span class="built_in">tonumber</span>(ARGV[<span class="number">1</span>]) <span class="keyword">then</span></span><br><span class="line">    <span class="keyword">return</span> -<span class="built_in">tonumber</span>(ARGV[<span class="number">1</span>])</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">redis.call(<span class="string">"ZADD"</span>, KEYS[<span class="number">1</span>], ARGV[<span class="number">3</span>], ARGV[<span class="number">2</span>])</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="built_in">tonumber</span>(redis.call(<span class="string">"ZCARD"</span>, KEYS[<span class="number">1</span>]))</span><br></pre></td></tr></table></figure>
+<p>Mac上可以通过如下方式测试命令：</p>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli eval <span class="string">"$(cat incrby_not_over_by_zset.lua)"</span> <span class="number">1</span> ks1 <span class="number">10</span> <span class="escape">`u</span>uidgen<span class="escape">` </span><span class="escape">`d</span>ate +<span class="var_expand">%s<span class="escape">` </span>10</span></span><br></pre></td></tr></table></figure>
+<p>即 10 秒内只能允许 10 次生产。</p>
+<p>但是上述方法存在一个隐患，即各个生产者的时间戳并不一定同步，有可能出现超前或者靠后的情况，造成意外的过期问题。</p>
+<p>此处有人会疑问，为何不通过 <code>redis.call(&quot;TIME&quot;)[1]</code> 获取时间戳，一旦使用了这个方法，在 3.2 以下版本的 Redis 中将无法继续执行任何写入操作（参见SO上的 <a href="https://stackoverflow.com/questions/40013598/why-redis-cannot-execute-non-deterministic-commands-in-lua-script" target="_blank" rel="external">Why redis cannot execute non deterministic commands in lua script
+</a> 答案）。</p>
+<blockquote>
+<p>The scripts are replicated to slaves by sending the script over and running it on the slave, so the script needs to always produce the same results every time it’s run or the data on the slave will diverge from the data on the master.</p>
+</blockquote>
+<blockquote>
+<p>You could try the new ‘scripts effects replication’ in the same link if you need perform non deterministic operations in a script.</p>
+</blockquote>
+<p>脚本中的操作尚不能像 MySQL 的 Binlog 一样采用混合模式传输，对于随机等操作的值直接传输值。</p>
+<h3 id="根据队列长度进行控制"><a href="#根据队列长度进行控制" class="headerlink" title="根据队列长度进行控制"></a>根据队列长度进行控制</h3><p>直接将判断队列长度和 PUSH 操作合二为一：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--[[</span><br><span class="line">Usage:</span><br><span class="line">redis-cli eval "$(cat incrby_not_over_by_llen.lua)" 2 queue_name max_value msg [LPUSH]</span><br><span class="line"></span><br><span class="line">or</span><br><span class="line"></span><br><span class="line">redis-cli evalsha xxx 2 queue_name max_value msg [LPUSH]</span><br><span class="line">--]]</span></span><br><span class="line"><span class="keyword">local</span> PUSH = <span class="string">"LPUSH"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> #ARGV &gt;= <span class="number">3</span> <span class="keyword">then</span></span><br><span class="line">    PUSH = <span class="string">"RPUSH"</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> redis.call(<span class="string">"LLEN"</span>, KEYS[<span class="number">1</span>]) &gt;= <span class="built_in">tonumber</span>(ARGV[<span class="number">1</span>]) <span class="keyword">then</span></span><br><span class="line">    <span class="keyword">return</span> -<span class="built_in">tonumber</span>(ARGV[<span class="number">1</span>])</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> redis.call(<span class="string">"LPUSH"</span>, KEYS[<span class="number">1</span>], ARGV[<span class="number">2</span>])</span><br></pre></td></tr></table></figure>
+<p>这个方法的问题是每次都会带上需要加入的数据，如果生产者单次需要PUSH数据量小，并且获取数据的成本比较低，可以考虑直接如此改造。</p>
+<h2 id="优先级队列"><a href="#优先级队列" class="headerlink" title="优先级队列"></a>优先级队列</h2><p>来看开源项目 <a href="https://github.com/redisson/redisson" target="_blank" rel="external">Redisson</a> 中 Lua 的应用：<a href="https://github.com/redisson/redisson/blob/master/redisson/src/main/java/org/redisson/RedissonPriorityQueue.java" target="_blank" rel="external">RedissonPriorityQueue</a>。</p>
+<p>着重来看添加方法：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">@<span class="function">Override</span><br><span class="line"><span class="keyword">public</span> boolean <span class="title">add</span>(<span class="params">V <span class="keyword">value</span></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">lock</span>.<span class="keyword">lock</span>();</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        checkComparator();</span><br><span class="line">    </span><br><span class="line">        BinarySearchResult&lt;V&gt; res = binarySearch(<span class="keyword">value</span>, codec);</span><br><span class="line">        <span class="keyword">int</span> index = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (res.getIndex() &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            index = -(res.getIndex() + <span class="number">1</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            index = res.getIndex() + <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">            </span><br><span class="line">        commandExecutor.evalWrite(getName(), RedisCommands.EVAL_VOID, </span><br><span class="line">           <span class="string">"local len = redis.call('llen', KEYS[1]);"</span></span><br><span class="line">            + <span class="string">"if tonumber(ARGV[1]) &lt; len then "</span></span><br><span class="line">                + <span class="string">"local pivot = redis.call('lindex', KEYS[1], ARGV[1]);"</span></span><br><span class="line">                + <span class="string">"redis.call('linsert', KEYS[1], 'before', pivot, ARGV[2]);"</span></span><br><span class="line">                + <span class="string">"return;"</span></span><br><span class="line">            + <span class="string">"end;"</span></span><br><span class="line">            + <span class="string">"redis.call('rpush', KEYS[1], ARGV[2]);"</span>, </span><br><span class="line">                Arrays.&lt;Object&gt;asList(getName()), </span><br><span class="line">                index, encode(<span class="keyword">value</span>));</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">lock</span>.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>中间的 Lua 代码即通过二分查找，在队列中寻找新元素的位置，如果在队列中间则插入，否则则追加到队尾。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://redisbook.readthedocs.io/en/latest/feature/scripting.html" target="_blank" rel="external">http://redisbook.readthedocs.io/en/latest/feature/scripting.html</a></li>
+<li><a href="http://redisdoc.com/script/eval.html" target="_blank" rel="external">http://redisdoc.com/script/eval.html</a></li>
+<li><a href="https://github.com/hellokangning/Redis-note/blob/master/20.%20Lua%E8%84%9A%E6%9C%AC.md" target="_blank" rel="external">https://github.com/hellokangning/Redis-note/blob/master/20.%20Lua%E8%84%9A%E6%9C%AC.md</a></li>
+<li><a href="http://wiki.jikexueyuan.com/project/redis/lua.html" target="_blank" rel="external">http://wiki.jikexueyuan.com/project/redis/lua.html</a></li>
+</ul>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Lua/" rel="tag">#Lua</a>
+          
+            <a href="/tags/Redis/" rel="tag">#Redis</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2018/07/28/a-tour-to-kota-kinabalu/" rel="next" title="亚庇">
+                <i class="fa fa-chevron-left"></i> 亚庇
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2018/09/10/java-c1000k-notes/" rel="prev" title="Java C1000K 笔记">
+                Java C1000K 笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TL-DR"><span class="nav-number">1.</span> <span class="nav-text">TL;DR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原理"><span class="nav-number">2.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis-Lua-适合做什么"><span class="nav-number">3.</span> <span class="nav-text">Redis + Lua 适合做什么</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么适合带有特定判断逻辑的操作？"><span class="nav-number">3.1.</span> <span class="nav-text">为什么适合带有特定判断逻辑的操作？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原子操作里的逻辑判断"><span class="nav-number">3.1.1.</span> <span class="nav-text">原子操作里的逻辑判断</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CAS"><span class="nav-number">3.1.2.</span> <span class="nav-text">CAS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么适合耗时低的操作"><span class="nav-number">3.2.</span> <span class="nav-text">为什么适合耗时低的操作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何使用"><span class="nav-number">4.</span> <span class="nav-text">如何使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#脚本-sha1-值的生成方式"><span class="nav-number">5.</span> <span class="nav-text">脚本 sha1 值的生成方式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实例"><span class="nav-number">6.</span> <span class="nav-text">实例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#生产者生产速度控制"><span class="nav-number">6.1.</span> <span class="nav-text">生产者生产速度控制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#带有超时效果的脚本"><span class="nav-number">6.1.1.</span> <span class="nav-text">带有超时效果的脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#根据队列长度进行控制"><span class="nav-number">6.1.2.</span> <span class="nav-text">根据队列长度进行控制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优先级队列"><span class="nav-number">6.2.</span> <span class="nav-text">优先级队列</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

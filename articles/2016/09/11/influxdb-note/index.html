@@ -1,0 +1,848 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="InfluxDB," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="概述InfluxDB是 InfluxData 公司发布的一款开源时序数据库产品。
+关于时序数据库，除了常用的ElasticSearch之外，InfluxDB也是一个选择。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="InfluxDB使用笔记">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2016/09/11/influxdb-note/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="概述InfluxDB是 InfluxData 公司发布的一款开源时序数据库产品。
+关于时序数据库，除了常用的ElasticSearch之外，InfluxDB也是一个选择。">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.473Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="InfluxDB使用笔记">
+<meta name="twitter:description" content="概述InfluxDB是 InfluxData 公司发布的一款开源时序数据库产品。
+关于时序数据库，除了常用的ElasticSearch之外，InfluxDB也是一个选择。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> InfluxDB使用笔记 | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                InfluxDB使用笔记
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-09-11T23:55:44+08:00" content="2016-09-11">
+              2016-09-11
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/系统/" itemprop="url" rel="index">
+                    <span itemprop="name">系统</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><a href="https://www.influxdata.com/time-series-platform/influxdb/" target="_blank" rel="external">InfluxDB</a>是 <code>InfluxData</code> 公司发布的一款开源时序数据库产品。</p>
+<p>关于时序数据库，除了常用的ElasticSearch之外，InfluxDB也是一个选择。</p>
+<a id="more"></a>
+<p>InfluxDB 使用 go 语言编写。个人认为几个外在的优点在于：</p>
+<ol>
+<li>无特殊依赖，几乎开箱即用（如ES需要Java）；</li>
+<li>自带HTTP管理界面，免插件配置（如ES的kopf或者head）；</li>
+<li>自带数据过期功能；</li>
+<li>类SQL查询语句（再提ES，查询使用自己的DSL，虽然也可以通过sql插件来使用类SQL进行查询）；</li>
+<li>自带权限管理，精细到“表”级别；</li>
+</ol>
+<p>这些好处<a href="https://docs.influxdata.com/influxdb/v1.0/" target="_blank" rel="external">官网</a>都有提及。</p>
+<h1 id="关键概念"><a href="#关键概念" class="headerlink" title="关键概念"></a>关键概念</h1><p><a href="https://docs.influxdata.com/influxdb/v1.0/concepts/glossary" target="_blank" rel="external">手册</a>中对这些名词有了详细的定义，这里稍微提及一下。</p>
+<h2 id="time"><a href="#time" class="headerlink" title="time"></a>time</h2><p><code>Time</code> 在 InfluxDB 中的每一行数据中都会存在。</p>
+<p><code>Time</code> 即数据生成时的时间戳。</p>
+<p>类比更为熟悉的 MySQL 来说，InfluxDB 中的 <code>Time</code> 几乎可以看做是主键的代名词了。</p>
+<h2 id="field"><a href="#field" class="headerlink" title="field"></a>field</h2><p><code>Field</code> 在 InfluxDB 中是必须的数据的组成部分。</p>
+<p><code>Field</code> 未被索引。这意味着如果查询field的话将会扫描所有数据，找出匹配项；手册上也建议不要在field中存储将会频繁查询的数据（存储区分度更高的数据）。</p>
+<p>类比 MySQL，<code>Field</code> 可以看做没有索引的列。</p>
+<h2 id="tag"><a href="#tag" class="headerlink" title="tag"></a>tag</h2><p><code>Tag</code> 在 InfluxDB 中是可选的数据组成部分。</p>
+<p>不同于 <code>Filed</code>，<code>Tag</code> 的数据会被索引。</p>
+<p>类比 MySQL，<code>Tag</code>就是有索引的列。</p>
+<h2 id="measurement"><a href="#measurement" class="headerlink" title="measurement"></a>measurement</h2><p>InfluxDB 是时序数据库，时间数据 <code>time</code> 与 <code>Tag</code> 以及 <code>Field</code> 组合成了 <code>Measurement</code>。</p>
+<p>类比 MySQL，<code>Measurement</code>可以看做的是表。</p>
+<h2 id="retention-policy"><a href="#retention-policy" class="headerlink" title="retention policy"></a>retention policy</h2><p>应用程序记录日志的情况下，如果没有关注，很有可能会出现打爆硬盘的情况出现。运维同学一般会在服务器上部署自动清理脚本。</p>
+<p>在InfluxDB中，合理的设置了 <code>Measurement</code> 的 <code>Retention Policy</code> 的情况下，无需太过担心磁盘被打爆的情况。</p>
+<p><code>Retention Policy</code> 可以看做是数据清理策略。基础应用个人认为应该关注如下的一些参数：</p>
+<ul>
+<li><code>DURATION</code>，即保存时间，有 <code>m</code> <code>h</code> <code>d</code> <code>w</code> <code>INF</code>几种，即分，小时，天，周以及无限（Infinity）；</li>
+<li><code>REPLICATION</code>，即副本数，即会有多少份副本保留在集群之中。</li>
+</ul>
+<h2 id="point"><a href="#point" class="headerlink" title="point"></a>point</h2><p><code>Point</code> 即同一时间戳产生的数据的集合。</p>
+<h2 id="series"><a href="#series" class="headerlink" title="series"></a>series</h2><p><code>Series</code> 表示<code>Measurement</code>、<code>Retention Policy</code>、<code>Tag</code>都相同（tag的名称与值）的一组数据，<code>Field</code>不在考虑衡量范围之内。</p>
+<h1 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h1><p>基本操作简单提及数据的 <code>CURD</code> 以及数据库管理方面的一些使用方式。</p>
+<h2 id="CURD"><a href="#CURD" class="headerlink" title="CURD"></a>CURD</h2><h3 id="CREATE"><a href="#CREATE" class="headerlink" title="CREATE"></a>CREATE</h3><p>在已创建数据库的前提下，新增数据，可以通过两种基本的方式进行数据的写入：</p>
+<ul>
+<li>CLI</li>
+<li>InfluxDB HTTP API</li>
+</ul>
+<h4 id="CLI"><a href="#CLI" class="headerlink" title="CLI"></a>CLI</h4><p>CLI 自然与 MySQL 类似，通过 InfluxDB 提供的 CLI 工具，使用类 SQL 语句进行写入。<br>但是 CLI 毕竟不是使用 InfluxDB 作为后端存储的好方式，InfluxDB 也提供了非常方便的HTTP API 供开发者们使用。</p>
+<p>InfluxDB 的特点是无结构的，即文档中提到的 <code>schemaless</code>，可以随时的动态增添数据域和表，所以使用时直接写入，无需考虑关系型数据库中类似建表等过程。</p>
+<p>不过，CLI 虽然不能做到随时随地的的使用，但是类 SQL 语句还是在特定场景下还是有应用空间的（例如使用默认的Web管理端）。</p>
+<p>CLI 写入数据时，语法相当简单，只需要使用：<code>INSERT 数据</code> 这样的语句即可。但是数据部分有InfluxDB自己的一些协议，目前在使用的规则叫做 <a href="https://docs.influxdata.com/influxdb/v1.0/write_protocols/write_syntax/#line-protocol" target="_blank" rel="external"><code>Line Protocol</code></a>。</p>
+<h5 id="Line-Protocol"><a href="#Line-Protocol" class="headerlink" title="Line Protocol"></a>Line Protocol</h5><p>文档中已有详细描述，这里总结一下，简单来说，个人认为可以关注如下的特点：</p>
+<ul>
+<li>第一个字段是表名</li>
+<li>如果有tag，表名之后使用<code>英文逗号</code>分隔，以k=v的方式逐个列出</li>
+<li>field在前两部分之后，用空格分隔开，之后所有的field，也使用<code>英文逗号</code>分隔，以k=v的方式逐个列出</li>
+<li>如果要指定时间戳，那么在field之后，通过空格分隔，将纳秒级别的时间戳写入</li>
+<li>在 <code>tag</code> 的键，值，以及 <code>field</code> 的键中包含<code>,</code> 、<code>=</code> 以及空格的，需要进行转义（变为<code>\,</code> <code>\=</code> <code>\</code>），<code>field</code> 的值可以通过 <code>英文双引号</code> 包裹起来（但是双引号决定了这个值必然是一个字符串）</li>
+<li>数据分为 <code>string</code> <code>int64</code> <code>float64</code> <code>boolean</code> 几种类型</li>
+<li><code>string</code> 最大存储的长度为64KB</li>
+<li><code>float64</code> 是默认的的类型，如果整数值要存成整数，需要在数字后通过字母 <code>i</code> 标明</li>
+</ul>
+<h4 id="InfluxDB-HTTP-API"><a href="#InfluxDB-HTTP-API" class="headerlink" title="InfluxDB HTTP API"></a>InfluxDB HTTP API</h4><p>InfluxDB 启动后，会默认监听 <code>8086</code> 端口，在这一端口上可以通过 HTTP POST 的方式，请求 <code>/write</code> ，写入数据。</p>
+<p>写入方式<a href="https://docs.influxdata.com/influxdb/v1.0/guides/writing_data/#creating-a-database-using-the-http-api" target="_blank" rel="external">手册</a>已很清楚，即将 Line Protocol 格式的的数据提交到 InfluxDB 之上。</p>
+<p>需要注意的是，InfluxDB 在通过HTTP方式操作时，需要注意下HTTP的状态码，尤其要注意<code>204</code>这一状态码，InfluxDB在返回这一状态码时认为请求合理但是并未完成，当返回这一个数值是需要注意HTTP的body段中附加的错误信息。至于<code>4xx</code>与<code>5xx</code>则是真的存在错误的情况。</p>
+<h4 id="时序相关"><a href="#时序相关" class="headerlink" title="时序相关"></a>时序相关</h4><p>既然是时序数据库，时间作为重要的维度需要单独一提。</p>
+<p>通过 <code>Line Protocol</code> 写入数据时，如果没有指定时间，将会根据系统时间指定时间，所以手册中提到：</p>
+<blockquote>
+<p> If you do not specify a timestamp for your data point InfluxDB uses the server’s local nanosecond timestamp in UTC.</p>
+</blockquote>
+<p>这个和 ES 的默认行为不太相同，所以这里需要注意。</p>
+<p>如果要人工指定时间，需要按照 <a href="https://www.ietf.org/rfc/rfc3339.txt" target="_blank" rel="external">RFC3389</a> 里提及的格式指定，即指定一个<code>ns</code>级别的时间戳，形如<code>1465839830100400200</code>。</p>
+<h3 id="RETRIEVE"><a href="#RETRIEVE" class="headerlink" title="RETRIEVE"></a>RETRIEVE</h3><p>与 <code>CREATE</code> 这一动作相同，数据的获取同样可以通过在 CLI 中执行InfluxQL（即InfluxDB中定义的类 SQL 语言），或者通过 HTTP API 提交查询语句的方式进行。通过 HTTP API 访问的话，InfluxDB会返回JSON格式的<a href="https://docs.influxdata.com/influxdb/v1.0/guides/querying_data/#querying-data-using-the-http-api" target="_blank" rel="external">数据</a>。</p>
+<p>InfluxDB使用类 SQL 语言进行查询，确实是降低了使用的门槛，类似 SQL 的 <code>SELECT</code> <code>GROUP BY</code> <code>LIMIT</code> <code>ORDER BY</code> 操作的用法参见<a href="https://docs.influxdata.com/influxdb/v1.0/query_language/data_exploration/" target="_blank" rel="external">手册</a>。</p>
+<h4 id="GROUP-BY"><a href="#GROUP-BY" class="headerlink" title="GROUP BY"></a>GROUP BY</h4><p>值得一提的是，作为时序数据库，InfluxDB在查询上有一些时间相关的操作，例如 <code>GROUP BY</code> 操作可以按照时间戳进行聚合，获得每个时间片级别上的聚合数据。即通过 <code>GROUP BY time(interval)</code> 方法进行聚合，<code>interval</code> 即支持的时间片，支持的范围有：</p>
+<table>
+<thead>
+<tr>
+<th>时间片单位</th>
+<th>范围</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>u</td>
+<td>微秒</td>
+</tr>
+<tr>
+<td>ms</td>
+<td>毫秒</td>
+</tr>
+<tr>
+<td>s</td>
+<td>秒</td>
+</tr>
+<tr>
+<td>m</td>
+<td>分钟</td>
+</tr>
+<tr>
+<td>h</td>
+<td>小时</td>
+</tr>
+<tr>
+<td>d</td>
+<td>天</td>
+</tr>
+<tr>
+<td>w</td>
+<td>周</td>
+</tr>
+</tbody>
+</table>
+<p>比如 <code>time(3d)</code> 表示按照<code>3天</code>作为周期进行聚合。</p>
+<p>同时 <code>fill()</code> 方法也是一个有意思的功能，使用 <code>GROUP BY</code> 之后，如果某个聚合的结果内没有值，可以通过 <code>fill()</code> 设定为自己需要的值。更详细的用法参见<a href="https://docs.influxdata.com/influxdb/v1.0/query_language/data_exploration/#the-group-by-clause-and-fill" target="_blank" rel="external">手册</a>。</p>
+<h4 id="INTO"><a href="#INTO" class="headerlink" title="INTO"></a>INTO</h4><p>如果说上述的的一些操作看起来和平常使用的关系型数据库没有特别大的区别的话，我想从 <code>INTO</code> 开始，InfluxQL就体现出时序数据库的一些特点了。</p>
+<p>比如机器性能数据的采集，数据点多了之后，很可能我们期望能够看到的不是单一时间点上的数据，而是机器阶段性的表现和趋势，这样的数据自然可以通过聚合具体的采集数据获得，但是为什么不直接读取已经聚合完成的数据并展现呢？重复的计算是对机器性能的巨大浪费。</p>
+<p>通常情况下，我们可能需要编写程序完成这样的工作。但是在InfluxDB中，可以通过内置的 <code>INTO</code> 语句来完成，无需额外的工作。</p>
+<p>结合<a href="https://docs.influxdata.com/influxdb/v1.0/query_language/data_exploration/#the-into-clause" target="_blank" rel="external">手册</a>中的例子：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator"><span class="keyword">SELECT</span> MEAN(<span class="string">"water_level"</span>) <span class="keyword">INTO</span> <span class="string">"average"</span> <span class="keyword">FROM</span> <span class="string">"h2o_feet"</span> <span class="keyword">WHERE</span> <span class="string">"location"</span> = <span class="string">'santa_monica'</span> <span class="keyword">AND</span> <span class="keyword">time</span> &gt;= <span class="string">'2015-08-18T00:00:00Z'</span> <span class="keyword">AND</span> <span class="keyword">time</span> &lt;= <span class="string">'2015-08-18T00:30:00Z'</span> <span class="keyword">GROUP</span> <span class="keyword">BY</span> <span class="keyword">time</span>(<span class="number">12</span><span class="keyword">m</span>)</span></span><br></pre></td></tr></table></figure>
+<p>即在<code>2015-08-18T00:00:00Z</code>到<code>2015-08-18T00:30:00Z</code>的时间范围内，将每12分钟在<code>santa_monica</code>区域的水位的平均值存入<code>average</code>表中。</p>
+<p>如是，如果要了解平均值，无需重复计算原始数值。</p>
+<p>对于实际业务来说，统计接口PV/UV的场景很适合使用这一个子句，因为阶段统计中，并不关心具体的访问用户，而是期望了解趋势（对于UV的定义需要结合实际的业务场景）。</p>
+<h4 id="LIMIT-amp-SLIMIT"><a href="#LIMIT-amp-SLIMIT" class="headerlink" title="LIMIT &amp; SLIMIT"></a>LIMIT &amp; SLIMIT</h4><p><code>LIMIT</code> 限制的是数据的行数，而 <code>SLIMIT</code> 限制的则是返回的 <code>Series</code> 的个数，如果二者都要限制，则先设定 <code>LIMIT</code>，之后再设定 <code>SLIMIT</code>。</p>
+<h4 id="OFFSET-amp-SOFFSET"><a href="#OFFSET-amp-SOFFSET" class="headerlink" title="OFFSET &amp; SOFFSET"></a>OFFSET &amp; SOFFSET</h4><p>分页是查询数据的一个基本方式，InfluxQL中通过 <code>OFFSET</code> 以及 <code>SOFFSET</code> 进行。</p>
+<p>类似 LIMIT &amp; SLIMIT， <code>OFFSET</code> 是针对数据行的翻页，<code>SOFFSET</code> 是针对 <code>Series</code> 的翻页。</p>
+<h4 id="时序相关-1"><a href="#时序相关-1" class="headerlink" title="时序相关"></a>时序相关</h4><p>时序数据库，自然查询的数据经常会与时间有关。前面提及的时间单位，在选定时间范围时，可以通过组合简化时间区间的确定。</p>
+<p>例如选出当前时间前3天到5小时前的数据，那么只需要指定条件为<code>time &gt;= now() - 3d AND time &lt; now() - 5h</code>即可。</p>
+<p>如果你愿意，也可以与 <a href="https://www.ietf.org/rfc/rfc3339.txt" target="_blank" rel="external">RFC3339</a> 格式的时间做对比。</p>
+<h3 id="UPDATE-amp-DELETE"><a href="#UPDATE-amp-DELETE" class="headerlink" title="UPDATE &amp; DELETE"></a>UPDATE &amp; DELETE</h3><p>InfluxDB不存在常规意义上的 <code>UPDATE</code> 和 <code>DELETE</code> 这些动作！需要注意！</p>
+<p>InfluxDB的设计初衷是为了记录时序相关的数据，这些数据被认为是不常变的，并且是仅仅有一次写入操作的（瞬时应当是唯一的）。</p>
+<p>综上，InfluxDB期望通过牺牲了数据的灵活性，换取了更好的写入与查询性能。</p>
+<h1 id="实例：grahios使用InfluxDB作为后端"><a href="#实例：grahios使用InfluxDB作为后端" class="headerlink" title="实例：grahios使用InfluxDB作为后端"></a>实例：grahios使用InfluxDB作为后端</h1><p><a href="https://github.com/shawn-sterling/graphios" target="_blank" rel="external">grahios</a> 是一个将 Nagios 性能数据，使用不同的后端数据收集工具（or 时序数据库）进行收集的工具。在之前的笔记 <a href="http://www.liaoaoyang.com/articles/2016/08/23/use-grafana-and-influxdb-to-display-nagios-monitor-data/">使用Grafana+InfluxDB展示Nagios监控数据</a> 之中有所提及。</p>
+<p>graphios 使用 InfluxDB 作为存储后端，首先完成的步骤，是将 PERFDATA 解析，之后按照 <code>Line Protocol</code> 拼装，发送到后端。</p>
+<p>由于 InfluxDB 是 Schemaless 的，所以 graphios 无需进行提前建表这一操作，直接发送数据即记录。</p>
+<p>比较让我关心的是 <code>Line Protocol</code> 的运用，参见提交 sha 值为 <a href="https://github.com/shawn-sterling/graphios/commit/02098f3dd08ffa2f649016c4489d6665900bdc65" target="_blank" rel="external">02098f</a> 的 <code>graphios_backends.p</code> 的文件的667行的 <code>format_metric</code> 方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">format_metric</span><span class="params">(self, timestamp, path, tags, value)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> self.influxdb_line_protocol:</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="string">"timestamp"</span>: timestamp,</span><br><span class="line">            <span class="string">"measurement"</span>: path,</span><br><span class="line">            <span class="string">"tags"</span>: tags,</span><br><span class="line">            <span class="string">"fields"</span>: &#123;<span class="string">"value"</span>: value&#125;&#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">'%s,%s value=%s %d'</span> % (</span><br><span class="line">	         path,</span><br><span class="line">	         <span class="string">','</span>.join([<span class="string">'%s=%s'</span> % (k, v) <span class="keyword">for</span> k, v <span class="keyword">in</span> tags.iteritems() <span class="keyword">if</span> v]),</span><br><span class="line">	         value,</span><br><span class="line">	         timestamp * <span class="number">10</span> ** <span class="number">9</span></span><br><span class="line">	    )</span><br></pre></td></tr></table></figure>
+<h2 id="生成Measurement"><a href="#生成Measurement" class="headerlink" title="生成Measurement"></a>生成Measurement</h2><p>使用了 <code>Line Protocol</code> 的情况下，输入变量<code>path</code>将会作为 <code>Measurement</code>的名称，这里的 <code>path</code> 即 Nagios 中的 <code>HOSTCHECKCOMMAND</code> 或者 <code>SERVICEDESC</code> Macro 的值，即检测服务的名称。例如磁盘就是 <code>Disk</code>。</p>
+<h2 id="生成Tags"><a href="#生成Tags" class="headerlink" title="生成Tags"></a>生成Tags</h2><p>所有的检测数据都会作为 tags 存在，目的应是便于查询。检测数据的格式形如：</p>
+<font color="red">DISK OK - free space: / 3326 MB (56%);</font> | <font color="#FFAA10">/=2643MB;5948;5958;0;5968</font><br><font color="blue">/ 15272 MB (77%);</font><br><font color="blue">/boot 68 MB (69%);</font><br><font color="blue">/home 69357 MB (27%);</font><br><font color="blue">/var/log 819 MB (84%);</font> | <font color="#FFAA10">/boot=68MB;88;93;0;98</font><br><font color="#FFAA10">/home=69357MB;253404;253409;0;253414</font><br><font color="#FFAA10">/var/log=818MB;970;975;0;980</font>
+
+<p><font color="#FFAA10">橙色</font>部分是 <code>PERFDATA</code>，将会被解析成Tags所需的格式：</p>
+<p><code>/=2643MB,/boot=68MB,/home=69357MB,/var/log=818MB</code></p>
+<p>由于 Nagios 中 <code>/</code> 一般被设定为需要转义的字符，所以，写入数据库时，可能会被转换为：</p>
+<p><code>_=2643MB,_boot=68MB,_home=69357MB,_var_log=818MB</code></p>
+<p>至于如 PERFDATA 中的 <code>WARNING</code> <code>CRITICAL</code> 等标识去哪里了，可以看到提交 sha 值为<a href="https://github.com/shawn-sterling/graphios/commit/8aa93b6ea3895777c5d8e372d72d253c4f511a42" target="_blank" rel="external">8aa93b</a> 的 <code>graphios.py</code> 文件的358行的 <code>process_log</code>方法，文件387行开始：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(nobj<span class="class">.LABEL</span>, d) = metric.<span class="function"><span class="title">split</span><span class="params">(<span class="string">'='</span>)</span></span></span><br><span class="line">v = d.<span class="function"><span class="title">split</span><span class="params">(<span class="string">';'</span>)</span></span>[<span class="number">0</span>]</span><br><span class="line">u = v</span><br><span class="line">nobj<span class="class">.VALUE</span> = re.<span class="function"><span class="title">sub</span><span class="params">(<span class="string">"[a-zA-Z%]"</span>, <span class="string">""</span>, v)</span></span></span><br><span class="line">nobj<span class="class">.UOM</span> = re.<span class="function"><span class="title">sub</span><span class="params">(<span class="string">"[^a-zA-Z]+"</span>, <span class="string">""</span>, u)</span></span></span><br></pre></td></tr></table></figure>
+<p>说明了实际上原始日志处理过后，只会有等号后的第一个数据存在。</p>
+<h2 id="生成Fileds"><a href="#生成Fileds" class="headerlink" title="生成Fileds"></a>生成Fileds</h2><p>由于 <code>Fileds</code> 是InfluxDB数据不可缺少的一部分，但是实际上，由于没有索引的原因，查询时的成本比较大，所以 graphios 把 <code>PERFDATA</code> 的value作为数据的一个field <code>value</code>记录，个人任务因为这个value并没有足够的细节，具有足够的细节的数据已都做为tag存在。</p>
+<h2 id="生成时间戳"><a href="#生成时间戳" class="headerlink" title="生成时间戳"></a>生成时间戳</h2><p>由于需要ns级别的时间戳，所以需要在检测的时间戳上乘以特定倍数即可。</p>
+<h2 id="查询"><a href="#查询" class="headerlink" title="查询"></a>查询</h2><p>查询的工作，则交给Grafana这类专业的数据展现工具完成。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>以上是InfluxDB的基础使用笔记，数据库的诸如<code>认证</code>，<code>部署</code>，<code>集群</code>，以及使用上的如<code>降采样(Downsampling)</code>预计将会在后续笔记中提及。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/InfluxDB/" rel="tag">#InfluxDB</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2016/08/23/use-grafana-and-influxdb-to-display-nagios-monitor-data/" rel="next" title="使用Grafana+InfluxDB展示Nagios监控数据">
+                <i class="fa fa-chevron-left"></i> 使用Grafana+InfluxDB展示Nagios监控数据
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2016/09/18/a-brief-note-between-mysql-5-5-5-6-5-7-and-8/" rel="prev" title="简要了解 MySQL 5.5/5.6/5.7/8 出现的新特性">
+                简要了解 MySQL 5.5/5.6/5.7/8 出现的新特性 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关键概念"><span class="nav-number">2.</span> <span class="nav-text">关键概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#time"><span class="nav-number">2.1.</span> <span class="nav-text">time</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#field"><span class="nav-number">2.2.</span> <span class="nav-text">field</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tag"><span class="nav-number">2.3.</span> <span class="nav-text">tag</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#measurement"><span class="nav-number">2.4.</span> <span class="nav-text">measurement</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#retention-policy"><span class="nav-number">2.5.</span> <span class="nav-text">retention policy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#point"><span class="nav-number">2.6.</span> <span class="nav-text">point</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#series"><span class="nav-number">2.7.</span> <span class="nav-text">series</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基本操作"><span class="nav-number">3.</span> <span class="nav-text">基本操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CURD"><span class="nav-number">3.1.</span> <span class="nav-text">CURD</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CREATE"><span class="nav-number">3.1.1.</span> <span class="nav-text">CREATE</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CLI"><span class="nav-number">3.1.1.1.</span> <span class="nav-text">CLI</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Line-Protocol"><span class="nav-number">3.1.1.1.1.</span> <span class="nav-text">Line Protocol</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#InfluxDB-HTTP-API"><span class="nav-number">3.1.1.2.</span> <span class="nav-text">InfluxDB HTTP API</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#时序相关"><span class="nav-number">3.1.1.3.</span> <span class="nav-text">时序相关</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RETRIEVE"><span class="nav-number">3.1.2.</span> <span class="nav-text">RETRIEVE</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#GROUP-BY"><span class="nav-number">3.1.2.1.</span> <span class="nav-text">GROUP BY</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#INTO"><span class="nav-number">3.1.2.2.</span> <span class="nav-text">INTO</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LIMIT-amp-SLIMIT"><span class="nav-number">3.1.2.3.</span> <span class="nav-text">LIMIT & SLIMIT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#OFFSET-amp-SOFFSET"><span class="nav-number">3.1.2.4.</span> <span class="nav-text">OFFSET & SOFFSET</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#时序相关-1"><span class="nav-number">3.1.2.5.</span> <span class="nav-text">时序相关</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UPDATE-amp-DELETE"><span class="nav-number">3.1.3.</span> <span class="nav-text">UPDATE & DELETE</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实例：grahios使用InfluxDB作为后端"><span class="nav-number">4.</span> <span class="nav-text">实例：grahios使用InfluxDB作为后端</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#生成Measurement"><span class="nav-number">4.1.</span> <span class="nav-text">生成Measurement</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生成Tags"><span class="nav-number">4.2.</span> <span class="nav-text">生成Tags</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生成Fileds"><span class="nav-number">4.3.</span> <span class="nav-text">生成Fileds</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生成时间戳"><span class="nav-number">4.4.</span> <span class="nav-text">生成时间戳</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询"><span class="nav-number">4.5.</span> <span class="nav-text">查询</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">5.</span> <span class="nav-text">小结</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

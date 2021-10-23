@@ -1,0 +1,762 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="LAMP," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="之前自己一直用apt-get在Ubuntu上搭环境，实在是很方便，自动的解决了很多的依赖问题，可以说是真是很省心。用VPS的时候有时候也用比如EZHTTP这样的LAMP/LNMP一键安装包。不过老用这些方便的东西做自己就觉得有些问题，比如自己不能控制Apache、PHP、MySQL的安装位置，在需要进入这些软件的安装位置的时候，就得用dpkg -L来找到这些软件的安装位置。完全全自动的安装感觉自己">
+<meta property="og:type" content="article">
+<meta property="og:title" content="尝试搭建LAMP环境">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2014/02/21/setup-my-lamp/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="之前自己一直用apt-get在Ubuntu上搭环境，实在是很方便，自动的解决了很多的依赖问题，可以说是真是很省心。用VPS的时候有时候也用比如EZHTTP这样的LAMP/LNMP一键安装包。不过老用这些方便的东西做自己就觉得有些问题，比如自己不能控制Apache、PHP、MySQL的安装位置，在需要进入这些软件的安装位置的时候，就得用dpkg -L来找到这些软件的安装位置。完全全自动的安装感觉自己">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.486Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="尝试搭建LAMP环境">
+<meta name="twitter:description" content="之前自己一直用apt-get在Ubuntu上搭环境，实在是很方便，自动的解决了很多的依赖问题，可以说是真是很省心。用VPS的时候有时候也用比如EZHTTP这样的LAMP/LNMP一键安装包。不过老用这些方便的东西做自己就觉得有些问题，比如自己不能控制Apache、PHP、MySQL的安装位置，在需要进入这些软件的安装位置的时候，就得用dpkg -L来找到这些软件的安装位置。完全全自动的安装感觉自己">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 尝试搭建LAMP环境 | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                尝试搭建LAMP环境
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2014-02-21T00:00:00+08:00" content="2014-02-21">
+              2014-02-21
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/LAMP-LNMP/" itemprop="url" rel="index">
+                    <span itemprop="name">LAMP/LNMP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>之前自己一直用apt-get在Ubuntu上搭环境，实在是很方便，自动的解决了很多的依赖问题，可以说是真是很省心。用VPS的时候有时候也用比如<a href="http://www.centos.bz/ezhttp/" target="_blank" rel="external">EZHTTP</a>这样的LAMP/LNMP一键安装包。不过老用这些方便的东西做自己就觉得有些问题，比如自己不能控制Apache、PHP、MySQL的安装位置，在需要进入这些软件的安装位置的时候，就得用dpkg -L来找到这些软件的安装位置。完全全自动的安装感觉自己也不能了解到更多的细节。</p>
+<a id="more"></a>
+<p>此外还有个很头疼的情况是Windows下对于一些软件的使用实在是很折腾，比如上个星期使用npm安装几个包，结果因为需要重新编译node，折腾了好长时间，各种花费时间成本，而在Linux下这些工作难度就会降低不少（相对的……）。在开发的时候经常需要部署代码到开发机上，然而在有跳板机的情况下，不能使用IDE直连开发环境，配Samba不知道是否可以，但是感觉上这样做不够安全。回家之后想要测点东西，开发机也难连上。最后还是决定在自己的PC上安装虚拟机的方式进行部署环境了。此外个人觉得在Linux下安装PHP扩展比在Win下安装方便好多，完全没有Win下那么的让人困惑。因为在自己工作中，目前只是需要一套LAMP的环境即可，发行版就用了自己用的比较多的Ubuntu。除了安装Apache、MySQL、PHP之外，还需要安装了memcached和Redis。</p>
+<p>Apache、MySQL、PHP的安装过程基本上和自己接触过的一些Linux软件安装过程相似，都是<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">configure</span><br><span class="line"><span class="built_in">make</span></span><br><span class="line">sudo <span class="built_in">make</span> install</span><br></pre></td></tr></table></figure></p>
+<p>这几个步骤，个人觉得关键的部分就在于configure这个地方。</p>
+<p>安装顺序自己选择了Apache-&gt;MySQL-&gt;PHP-&gt;Redis-&gt;memcahced。这样选择原因是是PHP需要整合进Apache并且要对MySQL进行支持，所以首先安装好前面两者。整个安装过程还算便捷，其实安装过程中出现过各种依赖、错误，很多时候完全可以通过Google就能解决。</p>
+<p>本次安装过程中安装的软件版本为:</p>
+<ul>
+<li>Apache 2.2.26</li>
+<li>MySQL 5.5.35</li>
+<li>PHP 5.4.24</li>
+<li>Redis 2.8.6</li>
+<li>Memcached 1.4.17</li>
+<li>libevent 2.0.21</li>
+<li>libmemcached 1.0.16</li>
+<li>PHP Memcached extension 2.1.0</li>
+</ul>
+<hr>
+<h1 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h1><p>安装Apache时，在configure这一步的时候，因为想要尽量和生产环境一致，使用了<br><figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat <span class="variable">$APACHE</span>_PATH/build/config.nice</span><br></pre></td></tr></table></figure></p>
+<p>来查看安装时配置，$APACHE_PATH为生产环境上实际的Apache安装位置。例如：<br><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">➜  local  cat /usr/local/lamp/apache/build/config.nice</span><br><span class="line"><span class="string">\#!</span> /bin/sh</span><br><span class="line"><span class="string">\#</span></span><br><span class="line"><span class="string">\#</span> Created <span class="keyword">by</span> configure</span><br><span class="line"></span><br><span class="line"><span class="string">"./configure"</span> <span class="string">\</span></span><br><span class="line"><span class="string">"--prefix=/usr/local/lamp/apache"</span> <span class="string">\</span></span><br><span class="line"><span class="string">"--enable-so"</span> <span class="string">\</span></span><br><span class="line"><span class="string">"--enable-rewrite=shared"</span> <span class="string">\</span></span><br><span class="line"><span class="string">"--enable-mime=shared"</span> <span class="string">\</span></span><br><span class="line"><span class="string">"$@"</span></span><br></pre></td></tr></table></figure></p>
+<p>上面的配置很少，实际配置项还是很多的，如果只用<br><figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./configure --prefix=<span class="regexp">/usr/local</span><span class="regexp">/lamp/apache</span></span><br></pre></td></tr></table></figure></p>
+<p>进行configure实际上也是能跑的，之后如果需要再安装其他模块，比如rewrite模块，可以通过<a href="http://apache.jz123.cn/programs/apxs.html" target="_blank" rel="external">apxs</a>进行安装。</p>
+<h2 id="apxs安装模块rewrite"><a href="#apxs安装模块rewrite" class="headerlink" title="apxs安装模块rewrite"></a>apxs安装模块rewrite</h2><p>在Apache的源代码目录中下的modules/mappers中存在rewrite模块的源码，通过<br><figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$APACHE</span>_PATH/bin/apxs -c mod_rewrite.c</span><br><span class="line">sudo <span class="variable">$APACHE</span>_PATH/bin/apxs -i -a -n rewrite mod_rewrite.la</span><br></pre></td></tr></table></figure></p>
+<p>其中-c选项表示编译，-i表示安装，-a表示在httpd中增加一句LoadModule语句，而增加的名称则通过-n的参数决定。<br>上述命令可以解释为编译mod_rewrite，之后安装，并在$APACHE_PATH/conf/httpd.conf中增加<br><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword"><span class="common">LoadModule</span></span> rewrite_module modules/mod_rewrite.so</span><br></pre></td></tr></table></figure></p>
+<p>其中LoadModule语句中第一个参数由安装命令中的-n选项指定。之后重启apache即可测试是否能够正常使用该模块。</p>
+<hr>
+<h1 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h1><p>MySQL的安装比Apache的安装过程稍微麻烦了一些，在配置的时候需要使用cmake而不是用一般软件都自带的configure。<br><figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cmake -DCMAKE_INSTALL_PREFIX=/usr/local/lamp/mysql \</span><br><span class="line">      -<span class="ruby"><span class="constant">DDEFAULT_CHARSET</span>=utf8 \</span><br><span class="line"></span>      -<span class="ruby"><span class="constant">DDEFAULT_COLLATION</span>=utf8_general_ci \</span><br><span class="line"></span>      -<span class="ruby"><span class="constant">DWITH_MYISAM_STORAGE_ENGINE</span>=<span class="number">1</span> \</span><br><span class="line"></span>      -<span class="ruby"><span class="constant">DWITH_INNOBASE_STORAGE_ENGINE</span>=<span class="number">1</span> \</span><br><span class="line"></span>      -<span class="ruby"><span class="constant">DMYSQL_DATADIR</span>=<span class="regexp">/usr/local</span><span class="regexp">/lamp/mysql</span><span class="regexp">/data .</span></span></span><br></pre></td></tr></table></figure></p>
+<p>上述命令主要指定了使用的目录以及默认的字符集以及校对（DEFAULT_COLLATION，关于校对问题，参见<a href="https://dev.mysql.com/doc/refman/5.1/zh/charset.html" target="_blank" rel="external">MySQL文档-字符集支持</a>），同时开启了MyISAM和InnoDB存储引擎。之后就是熟悉的make &amp;&amp; sudo make install过程。Ubuntu上需要先安装好libncurses5-dev。</p>
+<p>好在MySQL的<a href="https://dev.mysql.com/doc/refman/5.1/zh/installing.html" target="_blank" rel="external">安装文档</a>写得很详细，基本上按照文档中的操作方式就不会出岔子。</p>
+<p>之后可以给mysql单独建立用户和用户组，例如均为mysql。之后将整个mysql的安装目录都更改所属人为建立的用户和用户组，同时还有复制标准配置文件并修改成自己的配置文件。这之后有一步非常关键的建立基本数据库的的操作：<br><figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo sh <span class="variable">$MYSQL</span>_PATH/scripts/mysql_install_db.sh \</span><br><span class="line">        --basedir=<span class="variable">$MYSQL</span>_PATH --datadir=<span class="variable">$MYSQL</span>_PATH/data \</span><br><span class="line">        --user=mysql</span><br></pre></td></tr></table></figure></p>
+<p>这一个操作使得数据库创建了基本的授权表，使得数据库可以开始使用。</p>
+<p>由于使用mysql连接数据库需要使用套接字文件，文件的位置又是通过配置文件获取的，而且mysql读取配置文件的默认顺序为/etc/my.cnf&gt;/etc/mysql/my.cnf&gt;$MYSQL_PATH/etc/my.cnf&gt;~/.my.cnf，所以需要在这些文件中指定套接字文件位置。例如配置成：<br><figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">port            = <span class="number">3306</span></span><br><span class="line">socket          = <span class="regexp">/usr/local</span><span class="regexp">/lamp/mysql</span><span class="regexp">/data/mysql</span>.sock</span><br><span class="line"></span><br><span class="line">\<span class="comment"># Here is entries for some specific programs</span></span><br><span class="line">\<span class="comment"># The following values assume you have at least 32M ram</span></span><br><span class="line"></span><br><span class="line">\<span class="comment"># This was formally known as [safe_mysqld]. Both versions are currently parsed.</span></span><br><span class="line">[mysqld_safe]</span><br><span class="line">socket          = <span class="regexp">/usr/local</span><span class="regexp">/lamp/mysql</span><span class="regexp">/data/mysql</span>.sock</span><br><span class="line">nice            = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">\<span class="comment">#</span></span><br><span class="line">\<span class="comment"># * Basic Settings</span></span><br><span class="line">\<span class="comment">#</span></span><br><span class="line">user            = mysql</span><br><span class="line">socket          = <span class="regexp">/usr/local</span><span class="regexp">/lamp/mysql</span><span class="regexp">/data/mysql</span>.sock</span><br></pre></td></tr></table></figure></p>
+<p>配置结束之后，可以通过mysql_safe脚本启动mysql:<br><figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sudo mysqld_safe --defaults-file=<span class="variable">$MYSQL</span>_PATH/conf/mysql.conf \</span><br><span class="line">                 --basedir=<span class="variable">$MYSQL</span>_PATH/ \</span><br><span class="line">                 --datadir=<span class="variable">$MYSQL</span>_PATH/data/ \</span><br><span class="line">                 --plugin-dir=<span class="variable">$MYSQL</span>_PATH/lib/plugin \</span><br><span class="line">                 --user=mysql \</span><br><span class="line">                 --log-error=/var/lamp/log/mysql/mysql_error_log \</span><br><span class="line">                 --pid-file=<span class="variable">$MYSQL</span>_PATH/data/mysql.pid \</span><br><span class="line">                 --socket=<span class="variable">$MYSQL</span>_PATH/data/mysql.sock --port=<span class="number">3306</span> &amp;</span><br></pre></td></tr></table></figure></p>
+<p>在命令中指定了pid文件位置和socket文件的位置。socket文件的路径可以用于关闭mysql。</p>
+<p>关闭mysql的操作可以使用mysqladmin进行：<br><figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo mysqladmin --socket=<span class="variable">$MYSQL</span>_PATH/data/mysql.sock shutdown</span><br></pre></td></tr></table></figure></p>
+<p>通过socket参数指定关闭哪一个mysql实例。<br>同样的，mysql工具也可以指定使用哪一个sock文件进行连接。</p>
+<hr>
+<h1 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h1><p>PHP安装过程中最让人头疼的就是那些依赖，好在还有apt-get，安装时一般将对应的依赖包安装即可（例如需要libpng，那么一般安装上libpng和libpng-dev即可，dev一般包含了头文件等），这里不再赘述。</p>
+<p>PHP的configure参数也比较多，但是主要是指指定了需要开启的功能支持：<br><figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">./configure --prefix=/usr/local/lamp/php \</span><br><span class="line">            -<span class="ruby">-with-apxs2=<span class="variable">$APACHE_PATH</span>/bin/apxs \</span><br><span class="line"></span>            -<span class="ruby">-with-mysql=<span class="variable">$MYSQL_PATH</span> \</span><br><span class="line"></span>            -<span class="ruby">-with-mysqli=<span class="variable">$MYSQL_PATH</span>/bin/mysql_config \</span><br><span class="line"></span>            -<span class="ruby">-with-zlib-dir \</span><br><span class="line"></span>            -<span class="ruby">-enable-mbstring=all \</span><br><span class="line"></span>            -<span class="ruby">-with-iconv-dir \</span><br><span class="line"></span>            -<span class="ruby">-enable-sockets \</span><br><span class="line"></span>            -<span class="ruby">-with-pear \</span><br><span class="line"></span>            -<span class="ruby">-enable-ftp \</span><br><span class="line"></span>            -<span class="ruby">-with-jpeg-dir \</span><br><span class="line"></span>            -<span class="ruby">-with-png-dir \</span><br><span class="line"></span>            -<span class="ruby">-with-freetype-dir \</span><br><span class="line"></span>            -<span class="ruby">-with-libxml-dir \</span><br><span class="line"></span>            -<span class="ruby">-with-xsl \</span><br><span class="line"></span>            -<span class="ruby">-with-mcrypt \</span><br><span class="line"></span>            -<span class="ruby">-with-pdo-mysql=<span class="variable">$MYSQL_PATH</span> \</span><br><span class="line"></span>            -<span class="ruby">-enable-pcntl \</span><br><span class="line"></span>            -<span class="ruby">-with-curl \</span><br><span class="line"></span>            -<span class="ruby">-enable-soap \</span><br><span class="line"></span>            -<span class="ruby">-enable-shmop \</span><br><span class="line"></span>            -<span class="ruby">-with-openssl \</span><br><span class="line"></span>            -<span class="ruby">-with-ldap</span></span><br></pre></td></tr></table></figure></p>
+<p>参数本身也很清晰，在只阅读参数的情况下，大致可以确定需要安装的依赖库的名称。</p>
+<p>但是依赖库中也需要注意，在Ubuntu下，实验得知对于curl的支持还需要安装libcurl4-gnutls-dev。参数中的–with-apxs2指定了Apache中的apxs的路径，这里用于生成mod_php5（即对应文件libphp5.so）模块（参见<a href="http://www.php-internals.com/book/?p=chapt02/02-02-01-apache-php-module" target="_blank" rel="external">TIPI 第二章 用户代码的执行 »    第二节 SAPI概述 »     Apache模块</a>）。</p>
+<p>由于使用的PC是联想的K29，使用的是Pentium B960 CPU，不能虚拟出64位主机，所以使用的是32位系统，这里就有一个安装了ldap之后对应的so文件找不到的问题，通过<em>dpkg -L</em>可以看到这些文件在/usr/lib/i386-linux-gnu/目录下，这里解决的方法是在/usr/lib中创建对应文件的软链。<br><figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo ln -s /usr/<span class="class"><span class="keyword">lib</span>/<span class="title">i386</span>-<span class="title">linux</span>-<span class="title">gnu</span>/<span class="title">libldap_r</span>.<span class="title">so</span> /<span class="title">usr</span>/<span class="title">lib</span>/<span class="title">libldap</span>.<span class="title">so</span></span></span><br><span class="line">sudo ln -sf /usr/<span class="class"><span class="keyword">lib</span>/<span class="title">i386</span>-<span class="title">linux</span>-<span class="title">gnu</span>/<span class="title">libldap_r</span>.<span class="title">so</span> /<span class="title">usr</span>/<span class="title">lib</span>/<span class="title">libldap</span>.<span class="title">so</span></span></span><br><span class="line">sudo ln -sf /usr/<span class="class"><span class="keyword">lib</span>/<span class="title">i386</span>-<span class="title">linux</span>-<span class="title">gnu</span>/<span class="title">libldap_r</span>-2.4.<span class="title">so</span>.2.8.1 /<span class="title">usr</span>/<span class="title">lib</span>/<span class="title">libldap_r</span>.<span class="title">so</span></span></span><br><span class="line">sudo ln -sf /usr/<span class="class"><span class="keyword">lib</span>/<span class="title">i386</span>-<span class="title">linux</span>-<span class="title">gnu</span>/<span class="title">libldap_r</span>-2.4.<span class="title">so</span>.2.8.1 /<span class="title">usr</span>/<span class="title">lib</span>/<span class="title">libldap_r</span>-2.4.<span class="title">so</span>.2</span></span><br><span class="line">sudo ln -sf /usr/<span class="class"><span class="keyword">lib</span>/<span class="title">i386</span>-<span class="title">linux</span>-<span class="title">gnu</span>/<span class="title">libldap_r</span>.<span class="title">a</span> /<span class="title">usr</span>/<span class="title">lib</span>/<span class="title">libldap</span>.<span class="title">a</span></span></span><br><span class="line">sudo ln -sf /usr/<span class="class"><span class="keyword">lib</span>/<span class="title">i386</span>-<span class="title">linux</span>-<span class="title">gnu</span>/<span class="title">libldap_r</span>.<span class="title">a</span> /<span class="title">usr</span>/<span class="title">lib</span>/<span class="title">libldap</span>-2.4.<span class="title">so</span>.2</span></span><br><span class="line">sudo ln -sf /usr/<span class="class"><span class="keyword">lib</span>/<span class="title">i386</span>-<span class="title">linux</span>-<span class="title">gnu</span>/<span class="title">libldap_r</span>-2.4.<span class="title">so</span>.2 /<span class="title">usr</span>/<span class="title">lib</span>/<span class="title">libldap</span>-2.4.<span class="title">so</span>.2</span></span><br></pre></td></tr></table></figure></p>
+<p>make过程中，编译ldap相关的代码时出现了一个liblber.so could not read symbols的问题，通过修改configure完成之后Makefile中的<em>EXTRA_LIBS</em>参数，增加-llber字段，这个问题得以解决。</p>
+<p>安装完成之后需要设定php.ini文件配置PHP的运行属性，其中一些在编译过程中没有添加的支持，例如gd库，可以通过扩展的方式进行安装。</p>
+<p>最后还要设定php文件需要通过执行才能显示，否则请求php就会显示具体代码了……<br><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&amp;<span class="operator">lt</span>;IfModule mime_module&amp;<span class="operator">gt</span>;</span><br><span class="line">    TypesConfig conf/mime.types</span><br><span class="line">    AddType application/x-compress .Z</span><br><span class="line">    AddType application/x-gzip .gz .tgz</span><br><span class="line">    AddType application/x-httpd-php .php</span><br><span class="line">&amp;<span class="operator">lt</span>;/IfModule&amp;<span class="operator">gt</span>;</span><br></pre></td></tr></table></figure></p>
+<hr>
+<h1 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h1><p>Redis的安装非常方便，只需要进行configure &amp;&amp; make即可，完成安装之后需要的是将src目录下编译完成的</p>
+<ul>
+<li>redis-benchmark</li>
+<li>redis-check-aof</li>
+<li>redis-check-dump</li>
+<li>redis-cli</li>
+<li>redis-server</li>
+</ul>
+<p>复制到需要安装的目录，同时设定配置文件，位置随意，之后用redis-server启动服务：<br><figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo <span class="variable">$REDIS</span>_PATH/bin/redis-server <span class="variable">$REDIS</span>_PATH/conf/redis_789<span class="number">0</span>.conf</span><br></pre></td></tr></table></figure></p>
+<p>配置项中需要将redis作为daemon方式执行，即在配置项目中将<em>daemonize</em>配置设定为<em>yes</em>。</p>
+<hr>
+<h1 id="Memcached"><a href="#Memcached" class="headerlink" title="Memcached"></a>Memcached</h1><p>Memcached的安装需要已安装libevent，之后在configure时加入libevent目录路径：<br><figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./configure --prefix=<span class="regexp">/usr/local</span><span class="regexp">/srv/memcached</span> --<span class="keyword">with</span>-libevent=<span class="regexp">/usr/lib</span><span class="regexp">/libevent</span></span><br></pre></td></tr></table></figure></p>
+<p>Memcached的启动参数中的-u选项值得注意，如果使用PHP操作Memcached，当用户为www时，需要将-u也设定为www，才可以进行读写。<br><figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/<span class="keyword">local</span>/srv/memcached/bin/memcached -<span class="keyword">d</span> -<span class="keyword">u</span> www -<span class="keyword">m</span> 256 -P /<span class="keyword">var</span>/srv/memcached.pid</span><br></pre></td></tr></table></figure></p>
+<p>其中-d以daemon方式运行，-m表示可以使用内存的MB数目，-P即pid文件的位置。</p>
+<hr>
+<h1 id="PHP的Memcached扩展"><a href="#PHP的Memcached扩展" class="headerlink" title="PHP的Memcached扩展"></a>PHP的Memcached扩展</h1><p>这一个扩展的安装比较麻烦，首先需要需要安装libmemcached，而libmemcached的安装需要注意版本，实验中必须安装1.0以上版本才能成功的编译PHP的Memcached扩展，并且需要通过apt-get安装libcloog-ppl0。在：<br><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./configure  --prefix=/usr/<span class="keyword">local</span>/libmemcached --<span class="keyword">with</span>-memcached</span><br></pre></td></tr></table></figure></p>
+<p>之后编译安装libmemcached。</p>
+<p>在编译安装完libmemcached之后，在PHP的Memcached扩展的代码顶级目录下，执行：<br><figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">phpize</span><br><span class="line">./configure --enable-memcached \</span><br><span class="line">            -<span class="ruby">-with-php-config=<span class="variable">$PHP_PATH</span>/bin/php-config \</span><br><span class="line"></span>            -<span class="ruby">-with-libmemcached-dir=<span class="regexp">/usr/local</span><span class="regexp">/libmemcached</span><br><span class="line"></span></span>make</span><br><span class="line">sudo make install</span><br></pre></td></tr></table></figure></p>
+<p>完成PHP的Memcached扩展的安装，同时在php.ini中启用扩展。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/LAMP/" rel="tag">#LAMP</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2014/02/22/add-auth-to-mediawiki/" rel="prev" title="Mediawiki 登录操作">
+                Mediawiki 登录操作 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Apache"><span class="nav-number">1.</span> <span class="nav-text">Apache</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#apxs安装模块rewrite"><span class="nav-number">1.1.</span> <span class="nav-text">apxs安装模块rewrite</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL"><span class="nav-number">2.</span> <span class="nav-text">MySQL</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PHP"><span class="nav-number">3.</span> <span class="nav-text">PHP</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis"><span class="nav-number">4.</span> <span class="nav-text">Redis</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Memcached"><span class="nav-number">5.</span> <span class="nav-text">Memcached</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PHP的Memcached扩展"><span class="nav-number">6.</span> <span class="nav-text">PHP的Memcached扩展</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

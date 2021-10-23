@@ -1,0 +1,733 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Git," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="起因日常Coding使用git的一个问题是，公司工作和个人项目有时候会使用不同的用户信息，例如公司项目要求个人信息必须为your_name@your_company.com的形式，而你自己在使用Gmail，这里自然有些冲突。
+如果忘记在 clone 的项目中配置一下，极有可能会把自己的日常使用邮箱提交到公司的repo中，反之亦然。
+虽然git本身可以通过--global进行配置，默认各个项目都用自">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git根据仓库url修改用户信息">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2015/12/03/change-repo-user-info-by-git-hooks/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="起因日常Coding使用git的一个问题是，公司工作和个人项目有时候会使用不同的用户信息，例如公司项目要求个人信息必须为your_name@your_company.com的形式，而你自己在使用Gmail，这里自然有些冲突。
+如果忘记在 clone 的项目中配置一下，极有可能会把自己的日常使用邮箱提交到公司的repo中，反之亦然。
+虽然git本身可以通过--global进行配置，默认各个项目都用自">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.470Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Git根据仓库url修改用户信息">
+<meta name="twitter:description" content="起因日常Coding使用git的一个问题是，公司工作和个人项目有时候会使用不同的用户信息，例如公司项目要求个人信息必须为your_name@your_company.com的形式，而你自己在使用Gmail，这里自然有些冲突。
+如果忘记在 clone 的项目中配置一下，极有可能会把自己的日常使用邮箱提交到公司的repo中，反之亦然。
+虽然git本身可以通过--global进行配置，默认各个项目都用自">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> Git根据仓库url修改用户信息 | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Git根据仓库url修改用户信息
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2015-12-03T00:00:00+08:00" content="2015-12-03">
+              2015-12-03
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Learning</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>日常Coding使用git的一个问题是，公司工作和个人项目有时候会使用不同的用户信息，例如公司项目要求个人信息必须为<code>your_name@your_company.com</code>的形式，而你自己在使用<code>Gmail</code>，这里自然有些冲突。</p>
+<p>如果忘记在 clone 的项目中配置一下，极有可能会把自己的日常使用邮箱提交到公司的repo中，反之亦然。</p>
+<p>虽然git本身可以通过<code>--global</code>进行配置，默认各个项目都用自己的常用个人提交信息，但是对于公司项目，每次都要单独配置也是做了太多无用功，那么如果能让这个任务更加自动化想必是可以提高工作效率的。</p>
+<a id="more"></a>
+<h1 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h1><p>决定采用<code>git</code>的<a href="http://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks" target="_blank" rel="external"><code>hooks</code></a>进行处理，在每一次的<code>commit</code>操作前触发，判断当前项目的远端仓库url是否为公司url，若为公司url则修改当前项目目录下的git用户信息，即：</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// <span class="variable">$1</span> 为公司repo url关键字</span><br><span class="line">// <span class="variable">$2</span> 为用户名</span><br><span class="line">// <span class="variable">$3</span> 为用户邮箱</span><br><span class="line"><span class="keyword">if</span> (index(push_url, <span class="variable">$1</span>) != <span class="number">0</span>) &#123;</span><br><span class="line">	name = <span class="variable">$2</span>;</span><br><span class="line">	email = <span class="variable">$3</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>具体匹配操作运用了<code>shell</code>与<code>awk</code>的结合，个人感觉<code>awk</code>在匹配以及字符串处理上更胜一筹，主要逻辑利用<code>awk</code>编写完成。</p>
+<p>为了能够动态更改提交信息，需要在<code>~</code>目录下增加一个配置文件<code>~/.git_repo_user_info.conf</code>，这一配置文件的格式为：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">url关键字 用户名 邮箱</span><br></pre></td></tr></table></figure>
+<p>三者通过空格分隔。</p>
+<p>主要逻辑如下：</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">push_url=$(git remote -v | awk <span class="string">'/push/ &#123;print $2&#125;'</span> | head -<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">my_username=`whoami`</span><br><span class="line">repo_user_info_config=`eval echo ~<span class="variable">$my</span>_username`<span class="string">"/.git_repo_user_info.conf"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ ! -f <span class="variable">$repo</span>_user_info_config ]; <span class="keyword">then</span></span><br><span class="line">	repo_user_info_config=<span class="string">"/dev/null"</span></span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -n <span class="string">"$push_url"</span> ]; <span class="keyword">then</span></span><br><span class="line">	ret=<span class="string">""</span></span><br><span class="line">	sort -dk <span class="number">1</span> <span class="variable">$repo</span>_user_info_config | awk -v push_url=<span class="variable">$push</span>_url -v global_name=<span class="variable">$global</span>_name -v global_email=<span class="variable">$global</span>_email -v repository_name=<span class="variable">$repository</span>_name -v repository_email=<span class="variable">$repository</span>_email <span class="string">'BEGIN &#123;</span><br><span class="line">		default_name = global_name;</span><br><span class="line">		default_email = global_email;</span><br><span class="line">		if (length(default_name) == 0) &#123;</span><br><span class="line">			print "Info : Please use git config --global user.name ur_default_name to set default name";</span><br><span class="line">			exit 1;</span><br><span class="line">		&#125;</span><br><span class="line">		if (length(default_email) == 0) &#123;</span><br><span class="line">			print "Info : Please use git config --global user.email ur_name@ur_company to set default name";</span><br><span class="line">			exit 1;</span><br><span class="line">		&#125;</span><br><span class="line">		name = default_name;</span><br><span class="line">		email = default_email;</span><br><span class="line">	&#125;</span><br><span class="line">	&#123;</span><br><span class="line">		if (index(push_url, $1) != 0) &#123;</span><br><span class="line">			name = $2;</span><br><span class="line">			email = $3;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	END &#123;</span><br><span class="line">		if (repository_name == name &amp;&amp; repository_email == email) &#123;</span><br><span class="line">			exit 0;</span><br><span class="line">		&#125;</span><br><span class="line">		if (length(repository_name) == 0 || repository_name != name) &#123;</span><br><span class="line">			name = (length(name) &gt; 0 ? name : default_name);</span><br><span class="line">		&#125;</span><br><span class="line">		if (length(repository_email) == 0 || repository_email != email ) &#123;</span><br><span class="line">			email = (length(email) &gt; 0 ? email : default_email);</span><br><span class="line">		&#125;</span><br><span class="line">		if (length(name) &gt; 0 &amp;&amp; length(email) &gt; 0) &#123;</span><br><span class="line">			cmd = "git config user.name "name";git config user.email "email";";</span><br><span class="line">			print "Info : "cmd;</span><br><span class="line">			system(cmd);</span><br><span class="line">			exit 1;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;'</span> || ret=<span class="string">"1"</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> [ ! -z <span class="variable">$ret</span> ]; <span class="keyword">then</span></span><br><span class="line">		echo <span class="string">"Pls retry commit"</span></span><br><span class="line">		exit <span class="number">1</span></span><br><span class="line">	fi</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+<p>其中通过awk的exit值向shell传递信息，通知当前状态，若修改完成，提示用户重新进行commit操作。</p>
+<p>通过字典序排序，如果有多种匹配情况，则命中字典序靠后的规则。</p>
+<p>（以上逻辑2017年08月18日更新）</p>
+<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><p>在<a href="https://github.com/liaoaoyang/work-anywhere/blob/master/sample/git-template/hooks/pre-commit" target="_blank" rel="external"><code>GitHub</code></a>上获取代码后，根据实际情况配置好匹配规则以及用户信息，将hook文件置入git安装目录下的 <code>/share/git-core/templates/hooks/</code>之下，并<code>chmod +x</code>赋予执行权限，如在mac上通过homebrew安装的git，则会在类似：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">/usr/</span>local<span class="regexp">/Cellar/gi</span>t<span class="regexp">/1.9.0/</span>share<span class="regexp">/git-core/</span>templates<span class="regexp">/hooks/</span></span><br></pre></td></tr></table></figure>
+<p>目录下。</p>
+<p>同时配置常用的各个repo相关的提交信息配置文件<code>~/.git_repo_user_info.conf</code>，形如：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">github<span class="class">.com</span> foo bar@gmail<span class="class">.com</span></span><br><span class="line">coding<span class="class">.net</span> bar foo@gmail<span class="class">.com</span></span><br><span class="line">mycompany<span class="class">.com</span> work work@mycompany.com</span><br></pre></td></tr></table></figure>
+<p>最后还需要指定项目的默认init模板目录，例如：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config init.templatedir <span class="regexp">/usr/</span>local<span class="regexp">/Cellar/gi</span>t<span class="regexp">/1.9.0/</span>share<span class="regexp">/git-core/</span>templates<span class="regexp">/</span></span><br></pre></td></tr></table></figure>
+<p>后续clone的项目都能起到效果了。</p>
+<p>如果想要对已有项目也起到对应的效果，可以考虑替换项目根目录中<code>.git/hooks</code>目录下的对应文件。</p>
+<h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1><p>参考了 <a href="http://www.liaohuqiu.net/about/about-me.html" target="_blank" rel="external"><code>@liaohuqiu</code></a> 大大的博客文章<a href="http://www.liaohuqiu.net/cn/posts/using-diffrent-user-config-for-different-repository" target="_blank" rel="external"><code>git: 提交前强制检查各个项目用户名邮箱设置</code></a>，同时修改了<a href="https://github.com/liaohuqiu/work-anywhere/blob/master/sample/git-template/hooks/pre-commit" target="_blank" rel="external"><code>相关项目</code></a>的代码，感谢！</p>
+<h1 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h1><p>在脚本中尝试帮助用户完成提交操作。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Git/" rel="tag">#Git</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2015/11/27/monitor-redis-by-nagios/" rel="next" title="使用Nagios监控Redis">
+                <i class="fa fa-chevron-left"></i> 使用Nagios监控Redis
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2015/12/06/problems-when-transform-blog-from-pelican-to-hexo/" rel="prev" title="从Pelican到Hexo">
+                从Pelican到Hexo <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#起因"><span class="nav-number">1.</span> <span class="nav-text">起因</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方案"><span class="nav-number">2.</span> <span class="nav-text">方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用"><span class="nav-number">3.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考文档"><span class="nav-number">4.</span> <span class="nav-text">参考文档</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TODO"><span class="nav-number">5.</span> <span class="nav-text">TODO</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

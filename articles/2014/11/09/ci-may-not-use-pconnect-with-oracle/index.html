@@ -1,0 +1,762 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="CI,Oracle," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="img {
+    max-width:600px;
+}
+
+
+问题背景看过CI框架用法应该会看到，在配置CI框架连接数据库时，默认会开启持久连接，即类似这样的配置$db[&amp;#39;test&amp;#39;][&amp;#39;pconnect&amp;#39;] = TRUE;，使用MySQL时会调用mysql_pconnect方法实现这一个功能，而oci8扩展恰巧也有类似的方法oci_pconnect:
+
+方法的用处">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CI可能不应该使用持久连接Oracle数据库">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2014/11/09/ci-may-not-use-pconnect-with-oracle/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="img {
+    max-width:600px;
+}
+
+
+问题背景看过CI框架用法应该会看到，在配置CI框架连接数据库时，默认会开启持久连接，即类似这样的配置$db[&amp;#39;test&amp;#39;][&amp;#39;pconnect&amp;#39;] = TRUE;，使用MySQL时会调用mysql_pconnect方法实现这一个功能，而oci8扩展恰巧也有类似的方法oci_pconnect:
+
+方法的用处">
+<meta property="og:image" content="https://blog.wislay.com/wp-content/uploads/2014/11/oci_pconnect.jpg">
+<meta property="og:image" content="https://blog.wislay.com/wp-content/uploads/2014/11/max-proc-exceeded.png">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.471Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CI可能不应该使用持久连接Oracle数据库">
+<meta name="twitter:description" content="img {
+    max-width:600px;
+}
+
+
+问题背景看过CI框架用法应该会看到，在配置CI框架连接数据库时，默认会开启持久连接，即类似这样的配置$db[&amp;#39;test&amp;#39;][&amp;#39;pconnect&amp;#39;] = TRUE;，使用MySQL时会调用mysql_pconnect方法实现这一个功能，而oci8扩展恰巧也有类似的方法oci_pconnect:
+
+方法的用处">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> CI可能不应该使用持久连接Oracle数据库 | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                CI可能不应该使用持久连接Oracle数据库
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2014-11-09T00:00:00+08:00" content="2014-11-09">
+              2014-11-09
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><style>
+img {
+    max-width:600px;
+}
+</style>
+
+<h1 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h1><p>看过CI框架用法应该会看到，在配置CI框架连接数据库时，默认会开启<a href="http://codeigniter.org.cn/user_guide/database/configuration.html" target="_blank" rel="external"><code>持久连接</code></a>，即类似这样的配置<code>$db[&#39;test&#39;][&#39;pconnect&#39;] = TRUE;</code>，使用MySQL时会调用<code>mysql_pconnect</code>方法实现这一个功能，而<code>oci8</code>扩展恰巧也有类似的方法<a href="http://php.net/manual/zh/function.oci-pconnect.php" target="_blank" rel="external"><code>oci_pconnect</code></a>:</p>
+<p><img src="https://blog.wislay.com/wp-content/uploads/2014/11/oci_pconnect.jpg" alt="oci_pconnect"></p>
+<p>方法的用处文档上说的很清楚：</p>
+<blockquote>
+<p>oci_pconnect() 创建一个到 Oracle 服务器的持久连接并登录。持久连接会被缓冲并在请求之间重复使用，可以降低每个页面加载的消耗。</p>
+</blockquote>
+<p>那么按道理来说这样的功能应该是会提升处理能力的，但是问题在于，持久连接会增加Oracle的进程数，一旦进程数耗尽，那么新的连接请求可能会被拒绝，反而会使得处理能力下降。</p>
+<p>今天遇到了这样的一个问题，当双机各自开启1024个php-fpm进程时，使用sqlplus连接数据库被拒绝，同时各种操作都被拒绝执行。</p>
+<a id="more"></a>
+<p>所用的机器是两台阿里云的8核心16GB ECS服务器，Oracle数据库为<code>11G R2</code>，PHP版本为<code>5.4</code>，CI版本为<code>2.2</code>。</p>
+<h1 id="表现"><a href="#表现" class="headerlink" title="表现"></a>表现</h1><p>首先是一次压测结束后，发现通过sqlplus连接不上Oracle数据库，即首先<code>sqlplus /nolog</code>之后使用<code>conn</code>命令无法连接成功，发现报错信息为：</p>
+<p><img src="https://blog.wislay.com/wp-content/uploads/2014/11/max-proc-exceeded.png" alt="max-proc-exceeded"></p>
+<p>居然没有可用的进程了！</p>
+<p>那么目前需要做的就是释放这些进程，直接<code>SHUTDOWN IMMEDIATE</code>也该是最简单粗暴也能达到目的的方法，但是目前根本不能按照原先的<code>sqlplus /nolog</code>之后使用<code>conn /as sysdba</code>登录，解决的方式可以直接在shell中使用<code>sqlplus / as sysdba</code>即可完成登录。</p>
+<h1 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h1><h2 id="增加进程数"><a href="#增加进程数" class="headerlink" title="增加进程数"></a>增加进程数</h2><p>登录完成之后进行<code>SHUTDOWN IMMEDIATE</code>以及<code>STARTUP</code>操作，重启之后修改可用进程数：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator"><span class="keyword">alter</span> <span class="keyword">system</span> <span class="keyword">set</span> processes=<span class="number">1000</span> <span class="keyword">scope</span>=<span class="keyword">spfile</span>;</span></span><br><span class="line"><span class="operator"><span class="keyword">alter</span> <span class="keyword">system</span> <span class="keyword">set</span> sessions=<span class="number">1105</span> <span class="keyword">scope</span>=<span class="keyword">spfile</span>;</span></span><br><span class="line"><span class="operator"><span class="keyword">alter</span> <span class="keyword">system</span> <span class="keyword">set</span> transactions=<span class="number">1206</span> <span class="keyword">scope</span>=<span class="keyword">spfile</span>;</span></span><br></pre></td></tr></table></figure>
+<p>关于这几个数值的关系，参考了这篇<a href="http://nimishgarg.blogspot.com/2012/05/ora-00020-maximum-number-of-processes.html" target="_blank" rel="external"><code>博文</code></a>，博文中作者提到这三者可以按照如下关系配置：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">processes=x</span><br><span class="line">sessions=x*<span class="number">1.1</span>+<span class="number">5</span></span><br><span class="line">transactions=sessions*<span class="number">1.1</span></span><br></pre></td></tr></table></figure>
+<p>使用spfile作为scope的参数原因是这几个参数并不能修改后立即生效，需要重启数据库之后才能生效。</p>
+<p>修改完成后重启数据库，重新进行压测，<code>ps -ef | grep oracle | wc -l</code>发现进程数果然上来了，但是在压测结束后，发现再次出现了这一问题。那么这一问题并不单纯是进程不足的问题。</p>
+<h2 id="测试环境检查"><a href="#测试环境检查" class="headerlink" title="测试环境检查"></a>测试环境检查</h2><p>Oracle进程数增加却被完全消耗，这个情况确实让人觉得奇怪。</p>
+<p>检查CI的配置时，发现数据库配置文件中使用了pconnect属性，查阅oci_pconnect的文档，注意到如下一句话：</p>
+<blockquote>
+<p>一个典型的 PHP 应用程序对于每个 Apache 子进程（或者 PHP FastCGI/CGI 进程）会有一个打开的持久连接到 Oracle 服务器</p>
+</blockquote>
+<p>那么，目前一共有两台机器，每台机器开启了1024个php-fpm的进程，总计2048个，那么Oracle的进程数仅仅为1000个，自然是不够用的。</p>
+<p>持久连接虽然减少了连接的成本，然后却使得没有进程可用，显然问题出在CI的持久连接上。</p>
+<h1 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h1><p>解决的方式自然是关闭CI的持久连接配置，在设定<code>$db[&#39;test&#39;][&#39;pconnect&#39;] = FALSE;</code>之后，通过<code>ab</code>进行压力测试，在<code>10000</code>并发的情况下，所用的Oracle进程数长期维持在<code>30</code>个左右，基本上解决了这一问题。</p>
+<h1 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h1><p>CI在使用持久连接时，可能需要考虑Oracle的可用进程数（设为<code>X</code>）以及php-fpm的个数（设为<code>Y</code>）之间的关系，当<code>X&gt;Y</code>时，个人认为是可以考虑使用持久连接的。</p>
+<p>否则，个人认为可以牺牲一部分性能来建立连接，使得Oracle维持有足够的可用进程数。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/CI/" rel="tag">#CI</a>
+          
+            <a href="/tags/Oracle/" rel="tag">#Oracle</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2014/10/25/mysql-errno-28-solution/" rel="next" title="MySQL Errno 28解决方案">
+                <i class="fa fa-chevron-left"></i> MySQL Errno 28解决方案
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2014/11/09/oracle-ora27102/" rel="prev" title="Oracle ORA27102 问题">
+                Oracle ORA27102 问题 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#问题背景"><span class="nav-number">1.</span> <span class="nav-text">问题背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#表现"><span class="nav-number">2.</span> <span class="nav-text">表现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分析"><span class="nav-number">3.</span> <span class="nav-text">分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#增加进程数"><span class="nav-number">3.1.</span> <span class="nav-text">增加进程数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试环境检查"><span class="nav-number">3.2.</span> <span class="nav-text">测试环境检查</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解决"><span class="nav-number">4.</span> <span class="nav-text">解决</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#结论"><span class="nav-number">5.</span> <span class="nav-text">结论</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

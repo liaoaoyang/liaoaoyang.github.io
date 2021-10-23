@@ -1,0 +1,746 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="PHP,pcntl," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="TL;DR在 PHP-FPM 中使用 pcntl 扩展在一定情况下是可行的，但是并不是合理的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在PHP-FPM中使用pcntl扩展">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2018/03/31/can-we-use-pcntl-in-fpm-fcgi-sapi/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="TL;DR在 PHP-FPM 中使用 pcntl 扩展在一定情况下是可行的，但是并不是合理的。">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.470Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="在PHP-FPM中使用pcntl扩展">
+<meta name="twitter:description" content="TL;DR在 PHP-FPM 中使用 pcntl 扩展在一定情况下是可行的，但是并不是合理的。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 在PHP-FPM中使用pcntl扩展 | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                在PHP-FPM中使用pcntl扩展
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2018-03-31T22:09:25+08:00" content="2018-03-31">
+              2018-03-31
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>在 PHP-FPM 中使用 pcntl 扩展在一定情况下是可行的，但是并不是合理的。</p>
+<a id="more"></a>
+<h1 id="pcntl-扩展"><a href="#pcntl-扩展" class="headerlink" title="pcntl 扩展"></a>pcntl 扩展</h1><p><a href="http://php.net/manual/zh/intro.pcntl.php" target="_blank" rel="external">pcntl</a> 扩展主要用于Unix方式的进程创建, 程序执行, 信号处理以及进程的中断。</p>
+<p>手册上告知：</p>
+<blockquote>
+<p>Process Control should not be enabled within a web server environment and unexpected results may happen if any Process Control functions are used within a web server environment.</p>
+</blockquote>
+<p>但是，这个扩展真的不能在 LNMP 环境中使用吗？让我们来验证一下。</p>
+<h1 id="多进程-fork-验证"><a href="#多进程-fork-验证" class="headerlink" title="多进程 fork 验证"></a>多进程 fork 验证</h1><p>pcntl 最常用的功能之一应该就是 fork 新进程了。通过 <code>pcntl_fork()</code> 函数可以使用 PHP 进行<a href="https://www.liaoaoyang.cn/articles/2017/08/22/php-daemon/" target="_blank" rel="external">多进程</a>应用程序的开发工作。</p>
+<h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>还是使用 Docker 进行环境的准备工作。使用 OpenResty + PHP 5.6.35。</p>
+<p>默认的 <code>php:5.6.35-fpm-alpine3.4</code> 镜像并没有开启 <code>pcntl</code> 扩展，所以需要自行修改镜像，Dockerfile 如下：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">FROM <span class="attribute">php</span>:<span class="number">5.6</span>.<span class="number">35</span>-fpm-alpine3.<span class="number">4</span></span><br><span class="line">RUN apk add --<span class="literal">no</span>-cache --virtual .build-deps g++ make autoconf <span class="string">\</span></span><br><span class="line">	&amp;&amp; docker-php-source extract <span class="string">\</span></span><br><span class="line">	&amp;&amp; cd /usr/src/php <span class="string">\</span></span><br><span class="line">	&amp;&amp; docker-php-ext-configure pcntl <span class="string">\</span></span><br><span class="line">	&amp;&amp; docker-php-ext-install pcntl <span class="string">\</span></span><br><span class="line">	&amp;&amp; docker-php-ext-enable pcntl <span class="string">\</span></span><br><span class="line">	&amp;&amp; apk del --purge .build-deps</span><br></pre></td></tr></table></figure>
+<p>构建镜像 <code>php:5.6.35-fpm-pcntl-alpine3.4</code>。</p>
+<p>使用 docker-compose 编排 OpenResty 和 PHP-FPM，<code>docker-compose.yml</code>如下：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">version:</span> <span class="string">'3'</span></span><br><span class="line"><span class="string">networks:</span></span><br><span class="line"><span class="label">    pcntl_test:</span></span><br><span class="line"><span class="string">services:</span></span><br><span class="line"><span class="label">    pcntl_test_phpfpm:</span></span><br><span class="line"><span class="label">        image:</span> <span class="string">php:</span><span class="number">5.6</span><span class="number">.35</span>-fpm-pcntl-alpine3<span class="number">.4</span></span><br><span class="line"><span class="label">        networks:</span></span><br><span class="line">            - pcntl_test</span><br><span class="line"><span class="label">        volumes:</span></span><br><span class="line">            - <span class="regexp">/data/</span>www<span class="regexp">/htdocs/</span><span class="string">pcntl_test:</span><span class="regexp">/var/</span>www/html</span><br><span class="line">            - <span class="regexp">/data/</span>www<span class="regexp">/logs:/</span>var<span class="regexp">/www/</span>logs</span><br><span class="line"><span class="label">        expose:</span></span><br><span class="line">          - <span class="string">"9000"</span></span><br><span class="line"><span class="label"></span><br><span class="line">    pcntl_test_openresty:</span></span><br><span class="line"><span class="label">        image:</span> openresty/<span class="string">openresty:</span>alpine</span><br><span class="line"><span class="label">        networks:</span></span><br><span class="line">            - pcntl_test</span><br><span class="line"><span class="label">        depends_on:</span></span><br><span class="line">            - pcntl_test_phpfpm</span><br><span class="line"><span class="label">        links:</span></span><br><span class="line">            - pcntl_test_phpfpm</span><br><span class="line"><span class="label">        ports:</span></span><br><span class="line">            - <span class="string">"9527:80"</span></span><br><span class="line"><span class="label">        volumes:</span></span><br><span class="line">            - <span class="regexp">/data/</span>www<span class="regexp">/etc/</span>pcntl_test<span class="regexp">/conf/</span><span class="string">nginx:</span><span class="regexp">/etc/</span>nginx<span class="regexp">/conf.d/</span>:ro</span><br><span class="line">            - <span class="regexp">/data/</span>www<span class="regexp">/logs:/</span>usr<span class="regexp">/local/</span>openresty<span class="regexp">/nginx/</span>logs</span><br><span class="line">            - <span class="regexp">/data/</span>www<span class="regexp">/htdocs/</span><span class="string">pcntl_test:</span><span class="regexp">/var/</span>www/html</span><br></pre></td></tr></table></figure>
+<h2 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h2><p>编写一个最简单的 fork 样例：</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">	<span class="keyword">if</span> (extension_loaded(<span class="string">'pcntl'</span>)) &#123;</span><br><span class="line">		echo <span class="string">"true\n"</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (<span class="variable">$i</span> = <span class="number">0</span>; <span class="variable">$i</span> &lt; <span class="number">5</span>; ++<span class="variable">$i</span>) &#123;</span><br><span class="line">		<span class="variable">$pid</span> = pcntl_fork();</span><br><span class="line"></span><br><span class="line">		if (<span class="number">0</span> == <span class="variable">$pid</span>) &#123;</span><br><span class="line">			echo <span class="string">"child:"</span> . posix_getpid() . <span class="string">"\n"</span>;</span><br><span class="line">			exit();</span><br><span class="line">		&#125; else if (<span class="variable">$pid</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">			echo <span class="string">"parent:"</span> . posix_getpid() . <span class="string">" &#123;$pid&#125;\n"</span>;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			echo posix_getpid() . <span class="string">" error\n"</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="表现"><a href="#表现" class="headerlink" title="表现"></a>表现</h2><p>测试开始。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl <span class="string">http:</span><span class="comment">//127.0.0.1:9527/index.php</span></span><br></pre></td></tr></table></figure>
+<p>预期的结果是首先会输出 true，毕竟已经加载了 pcntl 扩展，之后会输出各 5 行带有 <code>parent</code> 和 <code>child</code> 的字符串。形如：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="literal">true</span></span><br><span class="line">parent:<span class="number">6</span> <span class="number">17</span></span><br><span class="line">parent:<span class="number">6</span> <span class="number">18</span></span><br><span class="line">parent:<span class="number">6</span> <span class="number">19</span></span><br><span class="line">parent:<span class="number">6</span> <span class="number">20</span></span><br><span class="line">parent:<span class="number">6</span> <span class="number">21</span></span><br><span class="line">child:<span class="number">21</span></span><br><span class="line">child:<span class="number">20</span></span><br><span class="line">child:<span class="number">18</span></span><br><span class="line">child:<span class="number">19</span></span><br><span class="line">child:<span class="number">17</span></span><br></pre></td></tr></table></figure>
+<p>实际情况是：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="literal">true</span></span><br><span class="line">parent:<span class="number">6</span> <span class="number">17</span></span><br><span class="line">parent:<span class="number">6</span> <span class="number">18</span></span><br><span class="line">parent:<span class="number">6</span> <span class="number">19</span></span><br><span class="line">parent:<span class="number">6</span> <span class="number">20</span></span><br><span class="line">parent:<span class="number">6</span> <span class="number">21</span></span><br></pre></td></tr></table></figure>
+<p>推测和现实产生了差异，乍一看似乎真的不能 fork 子进程，然而真实的执行情况是什么呢？</p>
+<h3 id="echo-更换为写入文件"><a href="#echo-更换为写入文件" class="headerlink" title="echo 更换为写入文件"></a>echo 更换为写入文件</h3><p>我们将 echo 操作换成写入文件:</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">	<span class="variable">$logFn</span> = dirname(__FILE_<span class="number">_</span>) . <span class="string">'/log'</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (<span class="variable">$i</span> = <span class="number">0</span>; <span class="variable">$i</span> &lt; <span class="number">5</span>; ++<span class="variable">$i</span>) &#123;</span><br><span class="line">		<span class="variable">$pid</span> = pcntl_fork();</span><br><span class="line"></span><br><span class="line">		if (<span class="number">0</span> == <span class="variable">$pid</span>) &#123;</span><br><span class="line">			file_put_contents(<span class="variable">$logFn</span>, <span class="string">"child:"</span> . posix_getpid() . <span class="string">"\n"</span>, FILE_APPEND);</span><br><span class="line">			exit();</span><br><span class="line">		&#125; else if (<span class="variable">$pid</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">			file_put_contents(<span class="variable">$logFn</span>, <span class="string">"parent:"</span> . posix_getpid() . <span class="string">" &#123;$pid&#125;\n"</span>, FILE_APPEND);</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			file_put_contents(<span class="variable">$logFn</span>, posix_getpid() . <span class="string">" error\n"</span>, FILE_APPEND);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>在结果文件中，出现了预期的结果。</p>
+<p>那么，可以得出第一个结论：<code>pcntl</code> 在一定情况下是可以在 PHP-FPM 中使用的。</p>
+<h3 id="子进程-echo-“未能执行”原因"><a href="#子进程-echo-“未能执行”原因" class="headerlink" title="子进程 echo “未能执行”原因"></a>子进程 echo “未能执行”原因</h3><p>PHP 使用的是缓冲 IO，存在输入输出缓冲区，很有可能在 PHP-FPM 被 WebServer 断开连接时，还没能刷新各自进程的输入输出缓冲区，导致结果无法输出。</p>
+<p>我们在最初代码的基础之上再作一些改动，增加缓冲区刷新操作:</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">	<span class="keyword">for</span> (<span class="variable">$i</span> = <span class="number">0</span>; <span class="variable">$i</span> &lt; <span class="number">5</span>; ++<span class="variable">$i</span>) &#123;</span><br><span class="line">		<span class="variable">$pid</span> = pcntl_fork();</span><br><span class="line"></span><br><span class="line">		if (<span class="number">0</span> == <span class="variable">$pid</span>) &#123;</span><br><span class="line">			echo <span class="string">"child:"</span> . posix_getpid() . <span class="string">"\n"</span>;</span><br><span class="line">			ob_flush();</span><br><span class="line">			flush();</span><br><span class="line">			exit();</span><br><span class="line">		&#125; else if (<span class="variable">$pid</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">			echo <span class="string">"parent:"</span> . posix_getpid() . <span class="string">" &#123;$pid&#125;\n"</span>;</span><br><span class="line">			ob_flush();</span><br><span class="line">			flush();</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			echo posix_getpid() . <span class="string">" error\n"</span>;</span><br><span class="line">			ob_flush();</span><br><span class="line">			flush();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>如此之后在操作系统上才有可能输出子进程的文本。</p>
+<h1 id="为什么在-PHP-FPM-中使用-pcntl-是不合理的"><a href="#为什么在-PHP-FPM-中使用-pcntl-是不合理的" class="headerlink" title="为什么在 PHP-FPM 中使用 pcntl 是不合理的"></a>为什么在 PHP-FPM 中使用 pcntl 是不合理的</h1><h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><p>同样是刚才的第一段代码，场景可能是有人期望在 HTTP 请求中使用多进程提升处理能力，编写出类似这样的代码。</p>
+<p>我们看看执行前后容器的进程数有何变化:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜ docker top pcntltest_pcntl_<span class="built_in">test</span>_phpfpm_1 | grep php-fpm | wc <span class="operator">-l</span></span><br><span class="line"><span class="number">3</span></span><br><span class="line">➜ curl <span class="operator">-s</span> http://<span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">9527</span>/index.php &gt; /dev/null</span><br><span class="line">➜ docker top pcntltest_pcntl_<span class="built_in">test</span>_phpfpm_1 | grep php-fpm | wc <span class="operator">-l</span></span><br><span class="line"><span class="number">8</span></span><br></pre></td></tr></table></figure>
+<p>可以看到进程数增加了5个。这里有人可能会问，不是都已经 exit() 了吗？为什么进程数还增加了呢？</p>
+<h2 id="PHP-生命周期与-PHP-FPM"><a href="#PHP-生命周期与-PHP-FPM" class="headerlink" title="PHP 生命周期与 PHP-FPM"></a>PHP 生命周期与 PHP-FPM</h2><p>PHP 的<a href="http://www.php-internals.com/book/?p=chapt02/02-01-php-life-cycle-and-zend-engine" target="_blank" rel="external">生命周期</a> TIPI 上已经说明得很清楚了，可以看到调用 <code>exit()</code> 后会发生的情况：</p>
+<blockquote>
+<p>请求处理完后就进入了结束阶段，一般脚本执行到末尾或者通过调用exit()或die()函数， PHP都将进入结束阶段。和开始阶段对应，结束阶段也分为两个环节，一个在请求结束后停用模块(RSHUTDOWN，对应RINIT)， 一个在SAPI生命周期结束（Web服务器退出或者命令行脚本执行完毕退出）时关闭模块(MSHUTDOWN，对应MINIT)。</p>
+</blockquote>
+<p>也就是说，<code>exit()</code> 只是到达了执行的结束阶段，并不是退出进程，退出进程的时机由 Zend 引擎决定。</p>
+<p>PHP-FPM 为了提高处理能力，fork 出进程执行 PHP 代码后并不会立刻退出，进程仍会运行一定时间才会退出。</p>
+<p>综上，在 PHP-FPM 中使用 pcntl_fork() 期望完成并行操作不是一个合理的行为。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag">#PHP</a>
+          
+            <a href="/tags/pcntl/" rel="tag">#pcntl</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2018/02/28/host-nginx-php-based-app-in-docker/" rel="next" title="使用Docker运行基于Nginx+PHP的应用程序">
+                <i class="fa fa-chevron-left"></i> 使用Docker运行基于Nginx+PHP的应用程序
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2018/04/30/persistent-connections-of-redis-and-pdo-extension-in-php/" rel="prev" title="PHP中Redis/MySQL的长连接">
+                PHP中Redis/MySQL的长连接 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TL-DR"><span class="nav-number">1.</span> <span class="nav-text">TL;DR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#pcntl-扩展"><span class="nav-number">2.</span> <span class="nav-text">pcntl 扩展</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#多进程-fork-验证"><span class="nav-number">3.</span> <span class="nav-text">多进程 fork 验证</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#环境"><span class="nav-number">3.1.</span> <span class="nav-text">环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试代码"><span class="nav-number">3.2.</span> <span class="nav-text">测试代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#表现"><span class="nav-number">3.3.</span> <span class="nav-text">表现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#echo-更换为写入文件"><span class="nav-number">3.3.1.</span> <span class="nav-text">echo 更换为写入文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#子进程-echo-“未能执行”原因"><span class="nav-number">3.3.2.</span> <span class="nav-text">子进程 echo “未能执行”原因</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么在-PHP-FPM-中使用-pcntl-是不合理的"><span class="nav-number">4.</span> <span class="nav-text">为什么在 PHP-FPM 中使用 pcntl 是不合理的</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#案例"><span class="nav-number">4.1.</span> <span class="nav-text">案例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP-生命周期与-PHP-FPM"><span class="nav-number">4.2.</span> <span class="nav-text">PHP 生命周期与 PHP-FPM</span></a></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

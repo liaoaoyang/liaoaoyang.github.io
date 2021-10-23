@@ -1,0 +1,815 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Architect,Reading," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="变化是无法避免的，所以，拥抱它吧！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《微服务设计》">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2016/12/14/note-of-building-microservices/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="变化是无法避免的，所以，拥抱它吧！">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.482Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《微服务设计》">
+<meta name="twitter:description" content="变化是无法避免的，所以，拥抱它吧！">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 《微服务设计》 | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                《微服务设计》
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-12-14T00:33:30+08:00" content="2016-12-14">
+              2016-12-14
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Reading/" itemprop="url" rel="index">
+                    <span itemprop="name">Reading</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>变化是无法避免的，所以，拥抱它吧！</p>
+<a id="more"></a>
+<h1 id="第1章-微服务"><a href="#第1章-微服务" class="headerlink" title="第1章 微服务"></a>第1章 微服务</h1><p>微服务就是一些协同工作的小而自治的服务。</p>
+<p>大多数系统强调高内聚，低耦合，即通过抽象或者模块保证代码的内聚性。</p>
+<p>一个基本的特征就是微服务是一个独立的实体。无论是在容器还是在进程中存在。</p>
+<p>微服务通过API进行解耦合。</p>
+<p>微服务的优点集中在：</p>
+<ul>
+<li>技术可以异构</li>
+<li>更大的弹性（可操作的粒度更大）</li>
+<li>易于扩展（精细到功能级别）</li>
+<li>简化部署（API接口不变，改动一个模块影响不大）</li>
+</ul>
+<h1 id="第2章-演化式架构师"><a href="#第2章-演化式架构师" class="headerlink" title="第2章 演化式架构师"></a>第2章 演化式架构师</h1><p>架构师的一个重要职责是，确保团队有着共同的技术愿景，以帮助我们向客户交付他们想要的系统。</p>
+<p>架构师要改变那种从一开始就要设计出完美产品的想法，而选择设计出一个合理的框架，在这个框架下可以慢慢的演化出正确的系统，一旦学到了跟过的的还是，可以加以使用。</p>
+<p>架构师的职责之一是保证该系统适合开发人员在其之上工作。</p>
+<p>架构师专注大方向，在优先的情况下参与到非常细节的具体实现上。</p>
+<p>架构师关注服务边界之间的问题，而不应当过多关注边界内部的问题。</p>
+<p>一个好服务至少要做到如下三个方面的优势：</p>
+<ul>
+<li>监控</li>
+<li>接口</li>
+<li>架构安全性</li>
+</ul>
+<p>COBIT（Control Objectives for Information and Related Technology）给出的的治理的定义是：</p>
+<blockquote>
+<p>治理通过评估干系人的需求、当前情况及下一步的可能性来确保企业目标的达成,<br>通过排优先级和做决策来设定方向。对于已经达成一致的方向和目标进行监督。</p>
+</blockquote>
+<h1 id="第3章-如何建模服务"><a href="#第3章-如何建模服务" class="headerlink" title="第3章 如何建模服务"></a>第3章 如何建模服务</h1><p>服务要高内聚，低耦合，划分微服务的一个方式可以是找到各自功能的限界上下文（Bounded Context）。</p>
+<h1 id="第4章-集成"><a href="#第4章-集成" class="headerlink" title="第4章 集成"></a>第4章 集成</h1><p>集成的几个原则：</p>
+<ul>
+<li>技术的选择需要有收益</li>
+<li>避免破坏性修改，对服务的修改不影响已有消费方</li>
+<li>保证API的技术无关性，应该是需求驱动实现，而不是实现驱动需求</li>
+<li>消费方易于使用，尽量不引入其他会引起耦合的使用方式（如client）</li>
+<li>隐藏内部实现细节</li>
+</ul>
+<p>共享数据库会带来的问题：</p>
+<ul>
+<li>所有使用者需要了解schema之间的细节</li>
+<li>消费方被绑定了技术</li>
+</ul>
+<p>基于<code>请求/响应</code>模式的同步请求易于实现，而基于<code>事件</code>的异步请求模式则能应对长时操作以及降低耦合度。</p>
+<p>编排（Orchestration）与协同（Choreography）的区别在于是否有有中心。编排会通过中心驱动流程。编排优点是状态和流程明确，问题在于中心负担过重，导致其他协作方过于单薄；协同的优点在于解耦合，问题在于需要额外的监控流程。<code>异步</code>是便于实现<code>协同</code>模式的通讯方式。</p>
+<p>对于基于事件的异步协作方式，需要关注的地方在于事件的发布机制和接收机制。发布机制中需要注意的有：</p>
+<ul>
+<li>消息中间件要尽量简单，不要混杂业务逻辑</li>
+</ul>
+<p>服务即状态机。</p>
+<p>权衡DRY与微服务过程耦合的冲突，原则上是微服务内部DRY，跨服务可以适当违反DRY。</p>
+<p>服务客户端的开发的要点是：</p>
+<ul>
+<li>DRY</li>
+<li>处理与服务本身职责没有关系，但是又影响服务大规模运行部署的一些基础功能的部分（服务发现，故障模式，日志），只包含处理底层传输协议的代码</li>
+<li>由客户端决定升级时机</li>
+</ul>
+<p>RPC与REST相比，客户端和服务端的部署无法分离。</p>
+<h1 id="第5章-分解单块系统"><a href="#第5章-分解单块系统" class="headerlink" title="第5章 分解单块系统"></a>第5章 分解单块系统</h1><p>“接缝”的定义是，系统中可以抽取相对独立的一部分代码，这部分代码进行修改不会影响系统其他部分，是划分服务边界的依据。</p>
+<p>分块的一些实例：</p>
+<ul>
+<li>外键约束通过业务逻辑实现</li>
+<li>对于共享的数据，通过单一服务单元进行操作</li>
+<li>共享的数据库表，拆分字段单元</li>
+<li>报表的导出，要么通过异步逻辑（提交请求异步导出），要么用一些软件（如列数据库），或者独立程序定期生成报表数据到其他数据库（类似InfluxDB中INTO的表现）</li>
+</ul>
+<h1 id="第6章-部署"><a href="#第6章-部署" class="headerlink" title="第6章 部署"></a>第6章 部署</h1><p>每个微服务都建议有自己的CI流程。</p>
+<p>如果可能，应该将每个服务都放到单独的主机或者容器之中，</p>
+<p>部署的关键在于各个步骤的自动化。</p>
+<h1 id="第7章-测试"><a href="#第7章-测试" class="headerlink" title="第7章 测试"></a>第7章 测试</h1><p>测试时主要关注对场景的测试，而非面面俱到。</p>
+<p>想要频繁的发布版本，需要尽可能频繁的发布小范围的改变。</p>
+<p>蓝/绿部署和金丝雀发布的区别在于，蓝绿是切全部流量，金丝雀发布是引导部分流量。并且Canary版本验证的内容会包括功能与非功能的，两个版本共存时间更长。Canary版本的好处在于可以对效果做更多的干预，通过实际运行效果评估开发的效果。</p>
+<p>微服务中MTTR表现良好胜于MTBF。</p>
+<h1 id="第8章-监控"><a href="#第8章-监控" class="headerlink" title="第8章 监控"></a>第8章 监控</h1><p>Web提供给监控系统的指标数据，最低要求就是提供<code>响应时间</code>和<code>错误率</code>。</p>
+<p>为了便于监控系统追踪请求，可以使用全局ID的方式，贯穿整个请求的流程。</p>
+<p>对于系统来说，对于数据的聚合，可以：</p>
+<ul>
+<li>聚合􏲖CPU一类的􏱦􏴾的主机层级􏱆􏲔􏶛的指􏲛标及应用程序程􏶲􏶛􏲛标（帮助找到程序性能瓶颈）</li>
+<li>要能回溯存储数据（Nagios的瓶颈，存储时间太短，可以加入第三方的存储组件）</li>
+</ul>
+<h1 id="第9章-安全"><a href="#第9章-安全" class="headerlink" title="第9章 安全"></a>第9章 安全</h1><p>交给单点登录网关的应该是粗粒度的身份认证，而系统级别/业务级别的认证控制，应该在微服务内部实现。</p>
+<p>权衡服务间的信任问题，可以根据操作的敏感程度，从低到高选择<code>边界内隐式信任</code>，<code>验证调用方身份</code>（验证access_token?），<code>要求调用方提供原始主体凭证</code>（如支付宝支付密码？）。</p>
+<p>不要自己实现加密解密！不要发明自己的安全协议！要用行业的通用方式。</p>
+<p>Datensparsamkeit：只存储完成业务运营或者满足当地法律所需的信息。没有存储，就没有丢失。</p>
+<h1 id="第10章-康威定律和系统设计"><a href="#第10章-康威定律和系统设计" class="headerlink" title="第10章 康威定律和系统设计"></a>第10章 康威定律和系统设计</h1><p>康威定律：任何组织在设计一套系统(广义概念上的系统)时,所交付的设计方案在结构上都与该组织的沟通结构保持一致。</p>
+<p>团队结构影响开发成果（反康威定律也是有可能的）。</p>
+<h1 id="第11章-规模化微服务"><a href="#第11章-规模化微服务" class="headerlink" title="第11章 规模化微服务"></a>第11章 规模化微服务</h1><p>设计微服务时的态度，就是假设一切都会失败。</p>
+<p>权衡实现的复杂度，可以通过可接受的损失程度确定。</p>
+<p>考虑跨功能服务发生故障时的场景，能明确定位和错误处理的实现。</p>
+<p>级联的架构，必须要有保护机制，防止全站不可用。</p>
+<p>主动制造故障驱动系统强壮性的增强（因人而异，无需极端追求）。</p>
+<p>尽力追求操作幂等。</p>
+<p>作业与执行逻辑分离，即通过worker实际执行任务，虽然可能中断或者执行缓慢，但是不至于造成任务丢失。</p>
+<p>CAP中只能存在AP系统和CP系统。AP系统要实现最终一致，而CP系统通过拒绝服务保证C。CA系统因为牺牲了分区容忍性，根本不能跨网络运行，在分布式系统中，这完全与分布式不符合。</p>
+<p>服务发现是规模化的一个重要组成部分。常规方案有：</p>
+<ul>
+<li>DNS，通过名字引导流量到服务，缺点在于灵活性以及时效性不足</li>
+<li>动态服务注册，通过ZK等软件</li>
+</ul>
+<h1 id="第12章-总结"><a href="#第12章-总结" class="headerlink" title="第12章 总结"></a>第12章 总结</h1><p>一切去中心化是微服务一个重要原则。</p>
+<p>不了解系统承载的业务和特点之前，不要微服务化！不能自动化，不要微服务化！</p>
+<blockquote>
+<p>变化是无法避免的，所以，拥抱它吧！</p>
+</blockquote>
+<h1 id="作者推荐书单："><a href="#作者推荐书单：" class="headerlink" title="作者推荐书单："></a>作者推荐书单：</h1><ul>
+<li><a href="https://book.douban.com/subject/26771109/" target="_blank" rel="external">《实现领域驱动》</a></li>
+<li><a href="https://book.douban.com/subject/1438029/" target="_blank" rel="external">《企业集成模式》</a></li>
+<li><a href="https://book.douban.com/subject/26707629/" target="_blank" rel="external">《持续交付》</a></li>
+<li><a href="https://book.douban.com/subject/3307177/" target="_blank" rel="external">《敏捷软件测试》</a></li>
+</ul>
+<h1 id="其他关键词"><a href="#其他关键词" class="headerlink" title="其他关键词"></a>其他关键词</h1><ul>
+<li>CQRS（Command-Query Responsibility Segregation）􏵀􏲫􏲦</li>
+</ul>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Architect/" rel="tag">#Architect</a>
+          
+            <a href="/tags/Reading/" rel="tag">#Reading</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2016/11/30/note-of-principles-of-transaction-processing/" rel="next" title="《事务处理原理》">
+                <i class="fa fa-chevron-left"></i> 《事务处理原理》
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2016/12/31/my-2016/" rel="prev" title="2016">
+                2016 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#第1章-微服务"><span class="nav-number">1.</span> <span class="nav-text">第1章 微服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第2章-演化式架构师"><span class="nav-number">2.</span> <span class="nav-text">第2章 演化式架构师</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第3章-如何建模服务"><span class="nav-number">3.</span> <span class="nav-text">第3章 如何建模服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第4章-集成"><span class="nav-number">4.</span> <span class="nav-text">第4章 集成</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第5章-分解单块系统"><span class="nav-number">5.</span> <span class="nav-text">第5章 分解单块系统</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第6章-部署"><span class="nav-number">6.</span> <span class="nav-text">第6章 部署</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第7章-测试"><span class="nav-number">7.</span> <span class="nav-text">第7章 测试</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第8章-监控"><span class="nav-number">8.</span> <span class="nav-text">第8章 监控</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第9章-安全"><span class="nav-number">9.</span> <span class="nav-text">第9章 安全</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第10章-康威定律和系统设计"><span class="nav-number">10.</span> <span class="nav-text">第10章 康威定律和系统设计</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第11章-规模化微服务"><span class="nav-number">11.</span> <span class="nav-text">第11章 规模化微服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第12章-总结"><span class="nav-number">12.</span> <span class="nav-text">第12章 总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#作者推荐书单："><span class="nav-number">13.</span> <span class="nav-text">作者推荐书单：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他关键词"><span class="nav-number">14.</span> <span class="nav-text">其他关键词</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

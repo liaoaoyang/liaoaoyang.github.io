@@ -1,0 +1,728 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="PHP," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="概述使用PHP作为API开发语言时，可以将状态码定义为类的常量。
+如果同时存在 Android 与 iOS 客户端，相信状态码的维护、沟通多少会带来一些成本，同步状态码也比较费事，且不说存在概念不一致，拼写错误（譬如当年的 Referer）等问题。
+考虑到这个问题，为什么不试着直接通过服务端的状态码生成各自语言所需的状态码定义文件呢？
+在编写生成脚本过程中，PHP的状态码全部是类的常量，如何一次性">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用PHP反射类导出类的所有常量">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2016/05/07/a-simple-note-of-php-reflection-class/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="概述使用PHP作为API开发语言时，可以将状态码定义为类的常量。
+如果同时存在 Android 与 iOS 客户端，相信状态码的维护、沟通多少会带来一些成本，同步状态码也比较费事，且不说存在概念不一致，拼写错误（譬如当年的 Referer）等问题。
+考虑到这个问题，为什么不试着直接通过服务端的状态码生成各自语言所需的状态码定义文件呢？
+在编写生成脚本过程中，PHP的状态码全部是类的常量，如何一次性">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.467Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="用PHP反射类导出类的所有常量">
+<meta name="twitter:description" content="概述使用PHP作为API开发语言时，可以将状态码定义为类的常量。
+如果同时存在 Android 与 iOS 客户端，相信状态码的维护、沟通多少会带来一些成本，同步状态码也比较费事，且不说存在概念不一致，拼写错误（譬如当年的 Referer）等问题。
+考虑到这个问题，为什么不试着直接通过服务端的状态码生成各自语言所需的状态码定义文件呢？
+在编写生成脚本过程中，PHP的状态码全部是类的常量，如何一次性">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 用PHP反射类导出类的所有常量 | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                用PHP反射类导出类的所有常量
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-05-07T16:56:41+08:00" content="2016-05-07">
+              2016-05-07
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>使用PHP作为API开发语言时，可以将状态码定义为类的常量。</p>
+<p>如果同时存在 Android 与 iOS 客户端，相信状态码的维护、沟通多少会带来一些成本，同步状态码也比较费事，且不说存在概念不一致，拼写错误（譬如当年的 <code>Referer</code>）等问题。</p>
+<p>考虑到这个问题，为什么不试着直接通过服务端的状态码生成各自语言所需的状态码定义文件呢？</p>
+<p>在编写生成脚本过程中，PHP的状态码全部是类的常量，如何一次性导出这些常量成为了一个问题。不过PHP也提供了<a href="http://php.net/manual/en/class.reflectionclass.php" target="_blank" rel="external"><code>反射类</code></a>，可以一次性获取所有的常量。</p>
+<a id="more"></a>
+<h1 id="反射类"><a href="#反射类" class="headerlink" title="反射类"></a>反射类</h1><p>PHP 的<a href="http://php.net/manual/en/class.reflectionclass.php" target="_blank" rel="external"><code>反射类</code></a> 接受字符串类名以及类作为构造方法的参数，通过生成的对象探明传入的类中包含的常量，方法等(private 也能探明)。</p>
+<p>反射除了可以获取常量，也可以获取方法和变量，只需要针对反射类获取对应的反射对象之后，绑定当前的对象，即可改变方法和成员的可见性，进行修改和操作。</p>
+<p>这里使用的正是它的 <code>getConstants</code> 方法。</p>
+<p>其他方法参见<a href="(http://php.net/manual/en/class.reflectionclass.php">手册</a>)。</p>
+<h1 id="转换脚本"><a href="#转换脚本" class="headerlink" title="转换脚本"></a>转换脚本</h1><p>这里稍微提及一下转换脚本。</p>
+<p>本身这个工作相当简单，仅仅是一个文本替换工作，其实完全通过 sed 等 Linux 工具即可完成。</p>
+<p>但是，通过 PHP 完成的话，利用反射类这一机制，结合 PHP 的各类字符串操作方法，能让文件有更多的变化，甚至完成替换版本库文件等操作，当然作为 PHP 开发者使用熟悉的语言自然是极好的。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">&lt;?php</span></span><br><span class="line"></span><br><span class="line">define(<span class="string">'OUTPUT_PATH'</span>, <span class="string">'/tmp'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">require</span> dirname(<span class="keyword">__DIR__</span>) . <span class="string">'/path/to/your/class/defination/StatusCode.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$objcTpl</span> =<span class="string">&lt;&lt;&lt;TPL</span><br><span class="line">//</span><br><span class="line">//  StatusCode.h</span><br><span class="line">//</span><br><span class="line">//  Created by ng on %s.</span><br><span class="line">//</span><br><span class="line"></span><br><span class="line">#ifndef StatusCode_h</span><br><span class="line">#define StatusCode_h</span><br><span class="line"></span><br><span class="line">%s</span><br><span class="line"></span><br><span class="line">#endif /* StatusCode_h */</span><br><span class="line">TPL;</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$androidTpl</span> =<span class="string">&lt;&lt;&lt;TPL</span><br><span class="line">package your.package;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * Created by ng on %s.</span><br><span class="line"> */</span><br><span class="line">public class StatusCode &#123;</span><br><span class="line">%s</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">TPL;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="variable">$s</span> = <span class="keyword">new</span> ReflectionClass(\<span class="keyword">NameSpace</span>\<span class="title">Of</span>\<span class="title">Your</span>\<span class="title">StatusCode</span>::<span class="title">class</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$constants</span> = <span class="variable">$s</span>-&gt;getConstants();</span><br><span class="line"><span class="variable">$longestWordLength</span> = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$constants</span> <span class="keyword">as</span> <span class="variable">$k</span> =&gt; <span class="variable">$v</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (strlen(<span class="variable">$k</span>) &gt; <span class="variable">$longestWordLength</span>) &#123;</span><br><span class="line">        <span class="variable">$longestWordLength</span> = strlen(<span class="variable">$k</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span><br><span class="line"> * ObjC</span><br><span class="line"> * Android</span><br><span class="line"> */</span></span><br><span class="line"><span class="variable">$objCDefineContent</span> = <span class="string">''</span>;</span><br><span class="line"><span class="variable">$androidClassContent</span> = <span class="string">''</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$constants</span> <span class="keyword">as</span> <span class="variable">$k</span> =&gt; <span class="variable">$v</span>) &#123;</span><br><span class="line">    <span class="variable">$spaceLength</span> = <span class="variable">$longestWordLength</span> - strlen(<span class="variable">$k</span>);</span><br><span class="line">    <span class="variable">$spaceLength</span> = <span class="variable">$spaceLength</span> &lt;= <span class="number">0</span> ? <span class="number">1</span> : <span class="variable">$spaceLength</span> + <span class="number">1</span>;</span><br><span class="line">    <span class="variable">$objCOneLineTpl</span> = <span class="string">"#define StatusCode_%s%&#123;$spaceLength&#125;s@\"%s\"\n"</span>;</span><br><span class="line">    <span class="variable">$objCDefineContent</span> .= sprintf(<span class="variable">$objCOneLineTpl</span>, <span class="variable">$k</span>, <span class="string">' '</span>, <span class="variable">$v</span>);</span><br><span class="line">    <span class="variable">$androidOneLineTpl</span> = <span class="string">"\tpublic static final String %s%&#123;$spaceLength&#125;s= \"%s\";\n"</span>;</span><br><span class="line">    <span class="variable">$androidClassContent</span> .= sprintf(<span class="variable">$androidOneLineTpl</span>, <span class="variable">$k</span>, <span class="string">' '</span>, <span class="variable">$v</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">file_put_contents(OUTPUT_PATH . <span class="string">'/StatusCode.h'</span>, sprintf(<span class="variable">$objcTpl</span>, date(<span class="string">'Y/m/d'</span>), trim(<span class="variable">$objCDefineContent</span>, <span class="string">"\n"</span>)));</span><br><span class="line">file_put_contents(OUTPUT_PATH . <span class="string">'/StatusCode.java'</span>, sprintf(<span class="variable">$androidTpl</span>, date(<span class="string">'Y/m/d'</span>), trim(<span class="variable">$androidClassContent</span>, <span class="string">"\n"</span>)));</span><br></pre></td></tr></table></figure>
+<p>转换后可以获得 <code>StatusCode.h</code> 与 <code>StatusCode.java</code> 两个文件。</p>
+<h1 id="通过反射调用构造方法"><a href="#通过反射调用构造方法" class="headerlink" title="通过反射调用构造方法"></a>通过反射调用构造方法</h1><p>一般的，我们可以通过call_user_func之类的内置方法调用一个对象的方法，然而，如果有相同基类的一系列类，并且构造方法参数列表不相同，需要根据特定情况调用构造方法构造对象并执行方法可以怎么办？是可以写成多个if/else的。</p>
+<p>也可以使用反射机制，通过反射类的newInstanceArgs方法，传入构造参数数组。</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$subTasks</span> = [</span><br><span class="line">    <span class="string">'ClassA'</span> =&gt; [<span class="string">'foo'</span>, <span class="string">'bar'</span>],</span><br><span class="line">    <span class="string">'ClassB'</span> =&gt; [<span class="string">'foo'</span>, <span class="string">'bar'</span>, <span class="number">1</span>],</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">foreach (<span class="variable">$subTasks</span> <span class="keyword">as</span> <span class="variable">$className</span> =&gt; <span class="variable">$params</span>) &#123;</span><br><span class="line">	<span class="variable">$ref</span> = new ReflectionClass(<span class="variable">$className</span>);</span><br><span class="line">	<span class="variable">$model</span> = <span class="variable">$ref-</span>&gt;newInstanceArgs(<span class="variable">$params</span>);</span><br><span class="line">	<span class="variable">$model-</span>&gt;run(); // run是一个公共方法</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag">#PHP</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2016/05/02/leetcode-24-26-27/" rel="next" title="LeetCode-24-26-27">
+                <i class="fa fa-chevron-left"></i> LeetCode-24-26-27
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2016/05/11/leetcode-58-263-326-345/" rel="prev" title="LeetCode-58-263-326-345">
+                LeetCode-58-263-326-345 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#反射类"><span class="nav-number">2.</span> <span class="nav-text">反射类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#转换脚本"><span class="nav-number">3.</span> <span class="nav-text">转换脚本</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#通过反射调用构造方法"><span class="nav-number">4.</span> <span class="nav-text">通过反射调用构造方法</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

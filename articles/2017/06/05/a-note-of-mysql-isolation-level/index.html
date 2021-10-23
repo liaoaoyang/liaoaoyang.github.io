@@ -1,0 +1,750 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="MySQL," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="TL;DRMySQL InnoDB可以设定ANSI SQL-92中规定的四个事务隔离级别，事务并发度和事务隔离级别成反比，事务隔离级别越高，并发度越低。
+是否有锁操作，取决于当前的读取是快照读，还是当前读，快照读读取的是可见的历史版本，无需上锁，简单的读操作是快照读（SELECT无附加语句），其他都是当前读，需要加锁。
+对无索引的数据，InnoDB会锁定全表的记录，但是会在扫描过程中释放不符合筛选">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL InnoDB事务隔离级别笔记">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2017/06/05/a-note-of-mysql-isolation-level/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="TL;DRMySQL InnoDB可以设定ANSI SQL-92中规定的四个事务隔离级别，事务并发度和事务隔离级别成反比，事务隔离级别越高，并发度越低。
+是否有锁操作，取决于当前的读取是快照读，还是当前读，快照读读取的是可见的历史版本，无需上锁，简单的读操作是快照读（SELECT无附加语句），其他都是当前读，需要加锁。
+对无索引的数据，InnoDB会锁定全表的记录，但是会在扫描过程中释放不符合筛选">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.467Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL InnoDB事务隔离级别笔记">
+<meta name="twitter:description" content="TL;DRMySQL InnoDB可以设定ANSI SQL-92中规定的四个事务隔离级别，事务并发度和事务隔离级别成反比，事务隔离级别越高，并发度越低。
+是否有锁操作，取决于当前的读取是快照读，还是当前读，快照读读取的是可见的历史版本，无需上锁，简单的读操作是快照读（SELECT无附加语句），其他都是当前读，需要加锁。
+对无索引的数据，InnoDB会锁定全表的记录，但是会在扫描过程中释放不符合筛选">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> MySQL InnoDB事务隔离级别笔记 | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                MySQL InnoDB事务隔离级别笔记
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2017-06-05T08:14:30+08:00" content="2017-06-05">
+              2017-06-05
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/LAMP-LNMP/" itemprop="url" rel="index">
+                    <span itemprop="name">LAMP/LNMP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>MySQL InnoDB可以设定ANSI SQL-92中规定的四个事务隔离级别，事务并发度和事务隔离级别成反比，事务隔离级别越高，并发度越低。</p>
+<p>是否有锁操作，取决于当前的读取是快照读，还是当前读，快照读读取的是可见的历史版本，无需上锁，简单的读操作是快照读（SELECT无附加语句），其他都是当前读，需要加锁。</p>
+<p>对无索引的数据，InnoDB会锁定全表的记录，但是会在扫描过程中释放不符合筛选规则的记录的锁定。</p>
+<p>对于有索引的数据，需要具体分析，在RR这一级别，InnoDB通过GAP锁机制避免了幻读问题。</p>
+<a id="more"></a>
+<h1 id="ANSI-SQL-92标准"><a href="#ANSI-SQL-92标准" class="headerlink" title="ANSI SQL-92标准"></a>ANSI SQL-92标准</h1><p>事务隔离级别在<a href="http://www.contrib.andrew.cmu.edu/~shadow/sql/sql1992.txt" target="_blank" rel="external">ANSI SQL-92</a>标准中有了明确的定义，即我们熟知的<code>READ UNCOMMITTED</code>/<code>READ COMMITTED</code>/<code>REPEATABLE READ</code>/<code>SERIALIZABLE</code>，级别由低到高。</p>
+<p>在大量博文中经常提到的比如<code>脏读（Dirty read）</code>，<code>不可重复读（Non-repeatable read）</code>，<code>幻读（Phantom）</code>，标准也有提及。</p>
+<p><strong>脏读（Dirty read）</strong></p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>) P1 (<span class="string">"Dirty read"</span>): SQL-<span class="keyword">transaction</span> T1 modifies a row. SQL-</span><br><span class="line">   <span class="keyword">transaction</span> T2 <span class="keyword">then</span> reads <span class="keyword">that</span> row <span class="keyword">before</span> T1 performs a COMMIT.</span><br><span class="line">   If T1 <span class="keyword">then</span> performs a ROLLBACK, T2 will have <span class="command">read</span> a row <span class="keyword">that</span> was</span><br><span class="line">   never committed <span class="keyword">and</span> <span class="keyword">that</span> may thus be considered <span class="keyword">to</span> have never</span><br><span class="line">   existed.</span><br></pre></td></tr></table></figure>
+<p>简而言之，即两个或多个事务中有一个事务更改了数据，无论提交与否，都会读取到数据的改动。</p>
+<p>在ANSI SQL-92标准中，<code>READ UNCOMMITTED</code>会可能出现脏读。</p>
+<p><strong>不可重复读（Non-repeatable read）</strong></p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2</span>) P2 (<span class="string">"Non-repeatable read"</span>): SQL-transaction T1 reads <span class="operator">a</span> row. SQL-</span><br><span class="line">   transaction T2 <span class="keyword">then</span> modifies <span class="operator">or</span> deletes that row <span class="operator">and</span> performs</span><br><span class="line">   <span class="operator">a</span> COMMIT. If T1 <span class="keyword">then</span> attempts <span class="built_in">to</span> reread <span class="operator">the</span> row, <span class="keyword">it</span> may receive</span><br><span class="line">   <span class="operator">the</span> modified <span class="built_in">value</span> <span class="operator">or</span> discover that <span class="operator">the</span> row has been deleted.</span><br></pre></td></tr></table></figure>
+<p>两个或多个事务中有一个事务更改了数据，只有提交之后，才会读取到数据的改动。</p>
+<p>在ANSI SQL-92标准中，<code>READ COMMITTED</code>不会出现脏读，但是会可能出现不可重复读。</p>
+<p><strong>幻读（Phantom）</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">3)  P3 ("Phantom"): SQL-transaction T1 reads the <span class="operator"><span class="keyword">set</span> <span class="keyword">of</span> <span class="keyword">rows</span> <span class="keyword">N</span></span><br><span class="line">    that satisfy <span class="keyword">some</span> &lt;<span class="keyword">search</span> condition&gt;. <span class="keyword">SQL</span>-<span class="keyword">transaction</span> T2 <span class="keyword">then</span></span><br><span class="line">    executes <span class="keyword">SQL</span>-statements that generate one <span class="keyword">or</span> more <span class="keyword">rows</span> that</span><br><span class="line">    satisfy the &lt;<span class="keyword">search</span> condition&gt; used <span class="keyword">by</span> <span class="keyword">SQL</span>-<span class="keyword">transaction</span> T1. <span class="keyword">If</span></span><br><span class="line">    <span class="keyword">SQL</span>-<span class="keyword">transaction</span> T1 <span class="keyword">then</span> repeats the <span class="keyword">initial</span> <span class="keyword">read</span> <span class="keyword">with</span> the same</span><br><span class="line">    &lt;<span class="keyword">search</span> condition&gt;, it obtains a different collection <span class="keyword">of</span> <span class="keyword">rows</span>.</span></span><br></pre></td></tr></table></figure>
+<p>幻读发生的前提是一个事务改动（新增）并提交处于其他某一事务查询条件范围内，并且其他事务重复使用<code>同一条件</code>进行查询。</p>
+<p>在ANSI SQL-92标准中，<code>REPEATABLE READ</code>不会出现脏读，不会出现不可重复读，但是会可能出现幻读。</p>
+<p>在最高的事务隔离级别<code>SERIALIZABLE</code>中，以上问题都不会出现。</p>
+<h1 id="MySQL-InnoDB的RR事务隔离级别"><a href="#MySQL-InnoDB的RR事务隔离级别" class="headerlink" title="MySQL InnoDB的RR事务隔离级别"></a>MySQL InnoDB的RR事务隔离级别</h1><p>InnoDB已经是MySQL首选存储引擎，内容会针对默认的隔离级别展开。</p>
+<p>MySQL InnoDB实现了标准中的4个事务隔离级别，默认的事务隔离级别是<code>REPEATABLE READ</code>：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="header">mysql&gt;  SELECT @@tx_isolation;</span><br><span class="line">+-----------------+</span></span><br><span class="line"><span class="header">| @@tx_isolation  |</span><br><span class="line">+-----------------+</span></span><br><span class="line"><span class="header">| REPEATABLE-READ |</span><br><span class="line">+-----------------+</span></span><br></pre></td></tr></table></figure>
+<p>和标准不同的是，MySQL在这一级别通过GAP锁消除了幻读问题。</p>
+<p>MySQL的并发度和事务隔离级别成反比，事务隔离级别越高，并发度越低。</p>
+<h2 id="幻读的解决方案：GAP锁"><a href="#幻读的解决方案：GAP锁" class="headerlink" title="幻读的解决方案：GAP锁"></a>幻读的解决方案：GAP锁</h2><p>GAP锁用于锁定记录的间隙，防止事务并发时同一搜索条件下，出现事务中前后两次读取结果不同的情况。</p>
+<p>来看测试表<code>test</code>:</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; desc test;</span><br><span class="line">+-------+------------------+------+-----+---------+----------------+</span><br><span class="line">|<span class="string"> Field </span>|<span class="string"> Type             </span>|<span class="string"> Null </span>|<span class="string"> Key </span>|<span class="string"> Default </span>|<span class="string"> Extra          </span>|</span><br><span class="line">+-------+------------------+------+-----+---------+----------------+</span><br><span class="line">|<span class="string"> id    </span>|<span class="string"> int(11) unsigned </span>|<span class="string"> NO   </span>|<span class="string"> PRI </span>|<span class="string"> NULL    </span>|<span class="string"> auto_increment </span>|</span><br><span class="line">|<span class="string"> v1    </span>|<span class="string"> int(11)          </span>|<span class="string"> NO   </span>|<span class="string"> UNI </span>|<span class="string"> 0       </span>|<span class="string">                </span>|</span><br><span class="line">|<span class="string"> v2    </span>|<span class="string"> int(11)          </span>|<span class="string"> NO   </span>|<span class="string"> MUL </span>|<span class="string"> 0       </span>|<span class="string">                </span>|</span><br><span class="line">|<span class="string"> v3    </span>|<span class="string"> int(11)          </span>|<span class="string"> NO   </span>|<span class="string">     </span>|<span class="string"> 0       </span>|<span class="string">                </span>|</span><br><span class="line">+-------+------------------+------+-----+---------+----------------+</span><br></pre></td></tr></table></figure>
+<p>现有数据：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SELECT <span class="keyword">*</span> FROM test;</span><br><span class="line">+----+-----+-----+-----+</span><br><span class="line">|<span class="string"> id </span>|<span class="string"> v1  </span>|<span class="string"> v2  </span>|<span class="string"> v3  </span>|</span><br><span class="line">+----+-----+-----+-----+</span><br><span class="line">|<span class="string">  1 </span>|<span class="string">   1 </span>|<span class="string">   1 </span>|<span class="string">   1 </span>|</span><br><span class="line">|<span class="string">  3 </span>|<span class="string">   2 </span>|<span class="string">   2 </span>|<span class="string">   2 </span>|</span><br><span class="line">|<span class="string">  4 </span>|<span class="string">   3 </span>|<span class="string">   3 </span>|<span class="string">   4 </span>|</span><br><span class="line">|<span class="string">  5 </span>|<span class="string">   4 </span>|<span class="string">   4 </span>|<span class="string">   5 </span>|</span><br><span class="line">|<span class="string">  8 </span>|<span class="string"> 100 </span>|<span class="string"> 100 </span>|<span class="string"> 101 </span>|</span><br><span class="line">|<span class="string"> 12 </span>|<span class="string"> 200 </span>|<span class="string"> 200 </span>|<span class="string"> 200 </span>|</span><br><span class="line">+----+-----+-----+-----+</span><br></pre></td></tr></table></figure>
+<p>事务A（ID 381797）尝试读取v1=10的记录：</p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> test <span class="keyword">WHERE</span> v1=<span class="number">10</span> <span class="keyword">FOR</span> UPDATE;</span><br><span class="line"><span class="keyword">Empty</span> <span class="keyword">set</span> (<span class="number">0.01</span> sec)</span><br></pre></td></tr></table></figure>
+<p>这是一个当前读，由于<code>v1</code>是一个唯一索引，v1=10这一个条件处于id=5,v1=4与id=8,v1=100的记录之间的间隙，所以为了防止两次读取数据不一样，需要在这之间增加GAP锁。</p>
+<p>同时事务B（ID 381798）尝试写入一条记录：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; <span class="function">INSERT INTO <span class="title">test</span><span class="params">(v1,v2,v3)</span> <span class="title">VALUES</span><span class="params">(<span class="number">6</span>,<span class="number">6</span>,<span class="number">6</span>)</span></span>;</span><br><span class="line">ERROR <span class="number">1205</span> (HY000): Lock wait timeout exceeded; <span class="keyword">try</span> restarting transaction</span><br></pre></td></tr></table></figure>
+<p>v1=6处于间隙之中，通过查询当前锁情况：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SELECT <span class="keyword">*</span> FROM information_schema.INNODB_LOCKS\G</span><br><span class="line"><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span> 1. row <span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span></span><br><span class="line">    lock_id: 381798:1437:4:6</span><br><span class="line">lock_trx_id: 381798</span><br><span class="line">  lock_mode: X,GAP</span><br><span class="line">  lock_type: RECORD</span><br><span class="line"> lock_table: `learn`.`test`</span><br><span class="line"> lock_index: v1</span><br><span class="line"> lock_space: 1437</span><br><span class="line">  lock_page: 4</span><br><span class="line">   lock_rec: 6</span><br><span class="line">  lock_data: 100</span><br><span class="line"><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span> 2. row <span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span></span><br><span class="line">    lock_id: 381797:1437:4:6</span><br><span class="line">lock_trx_id: 381797</span><br><span class="line">  lock_mode: X,GAP</span><br><span class="line">  lock_type: RECORD</span><br><span class="line"> lock_table: `learn`.`test`</span><br><span class="line"> lock_index: v1</span><br><span class="line"> lock_space: 1437</span><br><span class="line">  lock_page: 4</span><br><span class="line">   lock_rec: 6</span><br><span class="line">  lock_data: 100</span><br></pre></td></tr></table></figure>
+<p>后来事务B需要等待先来事务A释放这一区间上的GAP锁，最终锁等待超时。</p>
+<h2 id="快照读"><a href="#快照读" class="headerlink" title="快照读"></a>快照读</h2><p>通过锁定，是可以实现RR事务隔离级别的。关键在于，对于需要改动的数据或者数据范围，不要过早的释放锁，在<code>事务完成之后</code>才进行释放。</p>
+<p>简单读取操作是S锁，其他操作可以是X锁，S锁和X锁不能同时存在。</p>
+<p><a href="https://book.douban.com/subject/5412835/" target="_blank" rel="external">《事务处理原理》</a>一书中提到<code>两阶段锁定</code>（2PL，two-phase locking），即一个事务必须在释放它的任何锁之前获得它所有的锁。如果用锁定的方式实现RR，在整个事务中，其他事务的简单读操作也会被阻塞。</p>
+<p>InnoDB实现了MVCC的方式，可以实现事务中简单读不需锁定的效果，即实现了快照读。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.contrib.andrew.cmu.edu/~shadow/sql/sql1992.txt" target="_blank" rel="external">ANSI SQL-92</a><br><a href="http://tech.meituan.com/innodb-lock.html" target="_blank" rel="external">Innodb中的事务隔离级别和锁的关系</a><br><a href="http://hedengcheng.com/?p=771" target="_blank" rel="external">MySQL 加锁处理分析</a><br><a href="https://www.percona.com/blog/2012/03/27/innodbs-gap-locks/" target="_blank" rel="external">InnoDB’s gap locks</a><br><a href="http://www.hollischuang.com/archives/943" target="_blank" rel="external">深入分析事务的隔离级别</a><br><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locking.html" target="_blank" rel="external">MySQL 5.7 Reference Manual / 14.5.1 InnoDB Locking</a></p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/MySQL/" rel="tag">#MySQL</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2017/05/24/a-tour-to-yamazaki-whisky-museum/" rel="next" title="山崎威士忌博物馆">
+                <i class="fa fa-chevron-left"></i> 山崎威士忌博物馆
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2017/06/16/ms-timeout-in-php-curl/" rel="prev" title="PHP中curl设置毫秒级超时的问题">
+                PHP中curl设置毫秒级超时的问题 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TL-DR"><span class="nav-number">1.</span> <span class="nav-text">TL;DR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ANSI-SQL-92标准"><span class="nav-number">2.</span> <span class="nav-text">ANSI SQL-92标准</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL-InnoDB的RR事务隔离级别"><span class="nav-number">3.</span> <span class="nav-text">MySQL InnoDB的RR事务隔离级别</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#幻读的解决方案：GAP锁"><span class="nav-number">3.1.</span> <span class="nav-text">幻读的解决方案：GAP锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#快照读"><span class="nav-number">3.2.</span> <span class="nav-text">快照读</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

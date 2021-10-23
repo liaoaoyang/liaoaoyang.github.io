@@ -1,0 +1,762 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="PHP," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="TL;DRLinux下，PHP多进程使用 file_put_contents() 方法记录日志时，使用追加模式（FILE_APPEND），简短的日志内容不会重叠，即能安全的记录日志内容。
+file_put_contents() 使用 write() 系统调用实现数据的写入，write() 系统调用对普通文件保证写入数据的完整性，O_APPEND 打开模式保证数据写入到文件末尾。
+如果愿意的话，也可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP多进程中使用file_put_contents安全吗？">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2017/11/13/is-php-file-put-contents-safe-when-used-by-multi-processes/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="TL;DRLinux下，PHP多进程使用 file_put_contents() 方法记录日志时，使用追加模式（FILE_APPEND），简短的日志内容不会重叠，即能安全的记录日志内容。
+file_put_contents() 使用 write() 系统调用实现数据的写入，write() 系统调用对普通文件保证写入数据的完整性，O_APPEND 打开模式保证数据写入到文件末尾。
+如果愿意的话，也可">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.475Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP多进程中使用file_put_contents安全吗？">
+<meta name="twitter:description" content="TL;DRLinux下，PHP多进程使用 file_put_contents() 方法记录日志时，使用追加模式（FILE_APPEND），简短的日志内容不会重叠，即能安全的记录日志内容。
+file_put_contents() 使用 write() 系统调用实现数据的写入，write() 系统调用对普通文件保证写入数据的完整性，O_APPEND 打开模式保证数据写入到文件末尾。
+如果愿意的话，也可">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> PHP多进程中使用file_put_contents安全吗？ | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                PHP多进程中使用file_put_contents安全吗？
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2017-11-13T23:07:11+08:00" content="2017-11-13">
+              2017-11-13
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>Linux下，PHP多进程使用 <code>file_put_contents()</code> 方法记录日志时，使用追加模式（<code>FILE_APPEND</code>），简短的日志内容不会重叠，即能安全的记录日志内容。</p>
+<p><code>file_put_contents()</code> 使用 <code>write()</code> 系统调用实现数据的写入，<code>write()</code> 系统调用对普通文件保证写入数据的完整性，<code>O_APPEND</code> 打开模式保证数据写入到文件末尾。</p>
+<p>如果愿意的话，也可以考虑在标记位中使用 <code>LOCK_EX</code>。</p>
+<a id="more"></a>
+<h1 id="从monolog说起"><a href="#从monolog说起" class="headerlink" title="从monolog说起"></a>从monolog说起</h1><p>提起 PHP 日志记录，不得不说到 <a href="https://github.com/Seldaek/monolog/" target="_blank" rel="external">monolog</a> 这个项目，这几乎是现有大多数项目首选的日志库。</p>
+<p>对于日志记录这一场景，无论是 HTTP API 还是 daemon 进程，在应用中总会遇到多个进程的情况。</p>
+<p>PHP-FPM 下会存在多个 worker，而 daemon 常选择使用多进程的方式充分利用资源。多个进程之间的竞争是必然存在的，而 monolog 是如何解决的呢？</p>
+<p>答案是文件锁。</p>
+<p>翻看源码 <a href="https://github.com/Seldaek/monolog/blob/master/src/Monolog/Handler/StreamHandler.php" target="_blank" rel="external">StreamHandler.php</a>：</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">protected <span class="keyword">function</span> write(<span class="keyword">array</span> <span class="variable">$record</span>)</span><br><span class="line">&#123;</span><br><span class="line">    if (!is_resource(<span class="variable">$this-</span>&gt;stream)) &#123;</span><br><span class="line">        if (null === <span class="variable">$this-</span>&gt;url || <span class="string">''</span> === <span class="variable">$this-</span>&gt;url) &#123;</span><br><span class="line">            throw new \LogicException(<span class="string">'Missing stream url, the stream can not be opened. This may be caused by a premature call to close().'</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="variable">$this-</span>&gt;createDir();</span><br><span class="line">        <span class="variable">$this-</span>&gt;errorMessage = null;</span><br><span class="line">        set_error_handler([<span class="variable">$this</span>, <span class="string">'customErrorHandler'</span>]);</span><br><span class="line">        <span class="variable">$this-</span>&gt;stream = fopen(<span class="variable">$this-</span>&gt;url, <span class="string">'a'</span>);</span><br><span class="line">        if (<span class="variable">$this-</span>&gt;filePermission !== null) &#123;</span><br><span class="line">            @chmod(<span class="variable">$this-</span>&gt;url, <span class="variable">$this-</span>&gt;filePermission);</span><br><span class="line">        &#125;</span><br><span class="line">        restore_error_handler();</span><br><span class="line">        if (!is_resource(<span class="variable">$this-</span>&gt;stream)) &#123;</span><br><span class="line">            <span class="variable">$this-</span>&gt;stream = null;</span><br><span class="line">            throw new \UnexpectedValueException(sprintf(<span class="string">'The stream or file "%s" could not be opened: '</span>.<span class="variable">$this-</span>&gt;errorMessage, <span class="variable">$this-</span>&gt;url));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    if (<span class="variable">$this-</span>&gt;useLocking) &#123;</span><br><span class="line">        // ignoring errors here, there is not much we can do about them</span><br><span class="line">        // 注意，此处使用了阻塞的排他文件锁，多进程时等待</span><br><span class="line">        flock(<span class="variable">$this-</span>&gt;stream, LOCK_EX);</span><br><span class="line">    &#125;</span><br><span class="line">    // 常规的文件写入操作</span><br><span class="line">    <span class="variable">$this-</span>&gt;streamWrite(<span class="variable">$this-</span>&gt;stream, <span class="variable">$record</span>);</span><br><span class="line">    if (<span class="variable">$this-</span>&gt;useLocking) &#123;</span><br><span class="line">        // 写入完成后解锁</span><br><span class="line">        flock(<span class="variable">$this-</span>&gt;stream, LOCK_UN);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">protected <span class="keyword">function</span> streamWrite(<span class="variable">$stream</span>, <span class="keyword">array</span> <span class="variable">$record</span>)</span><br><span class="line">&#123;</span><br><span class="line">    fwrite(<span class="variable">$stream</span>, (string) <span class="variable">$record</span>[<span class="string">'formatted'</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>文件通过 <code>a</code> 模式，即追加模式打开，写入操作使用的是常规的 fwrite 操作。</p>
+<p>让人困惑的是，已经使用 <code>a</code> 模式打开为何还需要上锁？这一个上锁操作来源于 GitHub 上的这一个 <a href="https://github.com/Seldaek/monolog/issues/379" target="_blank" rel="external">issue #379</a>。</p>
+<p><code>#379</code> 这个 issue 简而言之即用户在使用过程中发现写入一定长度的日志时出现了重叠的情况，于是提交了一个需要上锁的 PR。但是个人认为此处需要上锁的理由并不充分，因为 issue 中提到的问题，个人理解并不能确定是否是因为未上锁引起的。</p>
+<p>有人说如果进程写日志过程中挂了没有解锁怎么办？没关系，文件锁在进程退出之后就会被释放。</p>
+<h1 id="file-put-contents-的实现"><a href="#file-put-contents-的实现" class="headerlink" title="file_put_contents()的实现"></a>file_put_contents()的实现</h1><h2 id="file-put-contents-完成的是open-write-close"><a href="#file-put-contents-完成的是open-write-close" class="headerlink" title="file_put_contents()完成的是open/write/close"></a>file_put_contents()完成的是open/write/close</h2><p>翻阅 PHP <code>5.4.41</code> 源码中的 <code>ext/standard/file.c</code> 文件，可以看到 file_put_contents() 的实现(源码稍长，只做部分摘录)：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">PHP_FUNCTION(file_put_contents)</span><br><span class="line">&#123;</span><br><span class="line">	php_stream *stream; <span class="comment">// 流的结构体，告知了流的读写操作参数</span></span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">	<span class="keyword">char</span> mode[<span class="number">3</span>] = <span class="string">"wb"</span>; <span class="comment">// 打开流的标记，默认是写二进制文件格式</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">	context = php_stream_context_from_zval(zcontext, flags &amp; PHP_FILE_NO_DEFAULT_CONTEXT);</span><br><span class="line">   <span class="comment">// 如果提供了 FILE_APPEND 标记为则以追加模式打开流</span></span><br><span class="line">	<span class="keyword">if</span> (flags &amp; PHP_FILE_APPEND) &#123;</span><br><span class="line">		mode[<span class="number">0</span>] = <span class="string">'a'</span>;</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (flags &amp; LOCK_EX) &#123; <span class="comment">// 如果有 LOCK_EX标志则尝试对流上锁</span></span><br><span class="line">		<span class="comment">/* check to make sure we are dealing with a regular file */</span></span><br><span class="line">		<span class="comment">// ...</span></span><br><span class="line">		mode[<span class="number">0</span>] = <span class="string">'c'</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	mode[<span class="number">2</span>] = <span class="string">'\0'</span>;</span><br><span class="line"></span><br><span class="line">	stream = php_stream_open_wrapper_ex(filename, mode, ((flags &amp; PHP_FILE_USE_INCLUDE_PATH) ? USE_PATH : <span class="number">0</span>) | REPORT_ERRORS, <span class="literal">NULL</span>, context);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">	<span class="keyword">switch</span> (Z_TYPE_P(data)) &#123;</span><br><span class="line">		<span class="keyword">case</span> IS_RESOURCE: &#123;</span><br><span class="line">			<span class="comment">// ...</span></span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">case</span> IS_NULL:</span><br><span class="line">		<span class="keyword">case</span> IS_LONG:</span><br><span class="line">		<span class="keyword">case</span> IS_DOUBLE:</span><br><span class="line">		<span class="keyword">case</span> IS_BOOL:</span><br><span class="line">		<span class="keyword">case</span> IS_CONSTANT:</span><br><span class="line">			convert_to_string_ex(&amp;data);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">case</span> IS_STRING:</span><br><span class="line">			<span class="keyword">if</span> (Z_STRLEN_P(data)) &#123;</span><br><span class="line">				<span class="comment">// 关键逻辑，实际写入操作</span></span><br><span class="line">				numbytes = php_stream_write(stream, Z_STRVAL_P(data), Z_STRLEN_P(data));</span><br><span class="line">				<span class="keyword">if</span> (numbytes != Z_STRLEN_P(data)) &#123;</span><br><span class="line">					php_error_docref(<span class="literal">NULL</span> TSRMLS_CC, E_WARNING, <span class="string">"Only %ld of %d bytes written, possibly out of free disk space"</span>, numbytes, Z_STRLEN_P(data));</span><br><span class="line">					numbytes = -<span class="number">1</span>;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">case</span> IS_ARRAY:</span><br><span class="line">			<span class="comment">// ...</span></span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">case</span> IS_OBJECT:</span><br><span class="line">			<span class="comment">// ...</span></span><br><span class="line">		<span class="keyword">default</span>:</span><br><span class="line">			numbytes = -<span class="number">1</span>;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	php_stream_close(stream);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (numbytes &lt; <span class="number">0</span>) &#123;</span><br><span class="line">		RETURN_FALSE;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	RETURN_LONG(numbytes);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看出，<code>file_put_contents()</code> 实际上是完成了 open -&gt; write -&gt; close 三大操作。</p>
+<h2 id="写入操作的实现"><a href="#写入操作的实现" class="headerlink" title="写入操作的实现"></a>写入操作的实现</h2><p>我们最为关心的 write 操作，跟踪源码可以发现，实际上是流结构体中的 write 函数指针指向的函数完成的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">size_t</span> _php_stream_write_buffer(php_stream *stream, <span class="keyword">const</span> <span class="keyword">char</span> *buf, <span class="keyword">size_t</span> count TSRMLS_DC)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">size_t</span> didwrite = <span class="number">0</span>, towrite, justwrote;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span> (count &gt; <span class="number">0</span>) &#123;</span><br><span class="line">		towrite = count;</span><br><span class="line">		<span class="keyword">if</span> (towrite &gt; stream-&gt;chunk_size)</span><br><span class="line">			towrite = stream-&gt;chunk_size;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 请注意此处</span></span><br><span class="line">		justwrote = stream-&gt;ops-&gt;write(stream, buf, towrite TSRMLS_CC);</span><br><span class="line">		<span class="comment">// ...</span></span><br></pre></td></tr></table></figure>
+<p>那么问题来了，write 指向的函数到底是什么呢？</p>
+<p>继续跟踪源码，在函数 <code>_php_stream_open_wrapper_ex()</code> 中找到了一些线索：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">PHPAPI php_stream *_php_stream_open_wrapper_ex(<span class="keyword">char</span> *path, <span class="keyword">char</span> *mode, <span class="keyword">int</span> <span class="keyword">options</span>,</span><br><span class="line">		<span class="keyword">char</span> **opened_path, php_stream_context *context STREAMS_DC TSRMLS_DC)</span><br><span class="line">&#123;</span><br><span class="line">	php_stream *stream = <span class="keyword">NULL</span>;</span><br><span class="line">	php_stream_wrapper *wrapper = <span class="keyword">NULL</span>;</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">	<span class="comment">// 生成 wrapper 结构体</span></span><br><span class="line">	wrapper = php_stream_locate_url_wrapper(path, &amp;path_to_open, <span class="keyword">options</span> TSRMLS_CC);</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (wrapper) &#123;</span><br><span class="line">		<span class="keyword">if</span> (!wrapper-&gt;wops-&gt;stream_opener) &#123;</span><br><span class="line">			php_stream_wrapper_log_error(wrapper, <span class="keyword">options</span> ^ REPORT_ERRORS TSRMLS_CC,</span><br><span class="line">					<span class="string">"wrapper does not support stream open"</span>);</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="comment">// 通过结构体中的 wops 中的 stream_opener 指向的函数完成流结构体的生成工作</span></span><br><span class="line">			stream = wrapper-&gt;wops-&gt;stream_opener(wrapper,</span><br><span class="line">				path_to_open, mode, <span class="keyword">options</span> ^ REPORT_ERRORS,</span><br><span class="line">				opened_path, context STREAMS_REL_CC TSRMLS_CC);</span><br><span class="line">		&#125;</span><br><span class="line">	<span class="comment">// ...</span></span><br></pre></td></tr></table></figure>
+<p>在 <code>main/stream/stream.c</code> 文件中的 <code>php_stream_locate_url_wrapper()</code> 函数中可以看到，对于文件，实际上返回的的是 <code>php_plain_files_wrapper</code> 的全局变量的指针：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">PHPAPI php_stream_wrapper *<span class="title">php_stream_locate_url_wrapper</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *path, <span class="keyword">char</span> **path_for_open, <span class="keyword">int</span> options TSRMLS_DC)</span></span><br><span class="line"></span>&#123;</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">	<span class="keyword">if</span> (!protocol || !strncasecmp(protocol, <span class="string">"file"</span>, n))	&#123;</span><br><span class="line">		<span class="comment">/* fall back on regular file access */</span></span><br><span class="line">		php_stream_wrapper *plain_files_wrapper = &amp;php_plain_files_wrapper;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">		<span class="keyword">return</span> plain_files_wrapper;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>而这个变量的结构实际上包含了一个静态变量 <code>php_plain_files_wrapper_ops</code>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> php_stream_wrapper_ops php_plain_files_wrapper_ops = &#123;</span><br><span class="line">	php_plain_files_stream_opener,</span><br><span class="line">	<span class="literal">NULL</span>,</span><br><span class="line">	<span class="literal">NULL</span>,</span><br><span class="line">	php_plain_files_url_stater,</span><br><span class="line">	php_plain_files_dir_opener,</span><br><span class="line">	<span class="string">"plainfile"</span>,</span><br><span class="line">	php_plain_files_unlink,</span><br><span class="line">	php_plain_files_rename,</span><br><span class="line">	php_plain_files_mkdir,</span><br><span class="line">	php_plain_files_rmdir,</span><br><span class="line">	php_plain_files_metadata</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">php_stream_wrapper php_plain_files_wrapper = &#123;</span><br><span class="line">	&amp;php_plain_files_wrapper_ops,</span><br><span class="line">	<span class="literal">NULL</span>,</span><br><span class="line">	<span class="number">0</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>当中的 <code>php_plain_files_stream_opener</code> 函数指针指向的函数则明确的告知了如何生成流对象的实现：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> php_stream *php_plain_files_stream_opener(php_stream_wrapper *wrapper, <span class="keyword">char</span> *path, <span class="keyword">char</span> *mode,</span><br><span class="line">		<span class="keyword">int</span> <span class="keyword">options</span>, <span class="keyword">char</span> **opened_path, php_stream_context *context STREAMS_DC TSRMLS_DC)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span> (((<span class="keyword">options</span> &amp; STREAM_DISABLE_OPEN_BASEDIR) == <span class="number">0</span>) &amp;&amp; php_check_open_basedir(path TSRMLS_CC)) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">NULL</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> php_stream_fopen_rel(path, mode, opened_path, <span class="keyword">options</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在流打开的函数 <code>_php_stream_fopen()</code> 中（位于文件 <code>main/stream/plain_wrapper.c</code>中），我们终于找到了生成流结构的逻辑：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">PHPAPI php_stream *_php_stream_fopen(<span class="keyword">const</span> <span class="keyword">char</span> *filename, <span class="keyword">const</span> <span class="keyword">char</span> *mode, <span class="keyword">char</span> **opened_path, int options STREAMS_DC TSRMLS_DC)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">	fd = <span class="keyword">open</span>(realpath, open_flags, 0666);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (fd != -1)	&#123;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (options &amp; STREAM_OPEN_FOR_INCLUDE) &#123;</span><br><span class="line">			<span class="comment">// 最终都会调用这一函数</span></span><br><span class="line">			<span class="keyword">ret</span> = php_stream_fopen_from_fd_int_rel(fd, mode, persistent_id);</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="comment">// 注意此处，ret即生成的流结构，即最初实现方法中的stream变量的值</span></span><br><span class="line">			<span class="keyword">ret</span> = php_stream_fopen_from_fd_rel(fd, mode, persistent_id);</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">if</span> (<span class="keyword">ret</span>)	&#123;</span><br><span class="line">			<span class="comment">// ...</span></span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">ret</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">close</span>(fd);</span><br><span class="line">	&#125;</span><br><span class="line">	efree(realpath);</span><br><span class="line">	<span class="keyword">if</span> (persistent_id) &#123;</span><br><span class="line">		efree(persistent_id);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> NULL;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再深入一步，看看 <code>_php_stream_fopen_from_fd_int()</code> (最终都会调用这一函数)这些函数是如何生成流结构中的 ops 结构体的：</p>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml">static php_stream *_php_stream_fopen_from_fd_int(int fd, const char *mode, const char *persistent_id STREAMS_DC TSRMLS_DC)</span><br><span class="line">&#123;</span><br><span class="line">	php_stdio_stream_data *self;</span><br><span class="line"></span><br><span class="line">	self = pemalloc_rel_orig(sizeof(*self), persistent_id);</span><br><span class="line">	memset(self, 0, sizeof(*self));</span><br><span class="line">	self-&gt;file = NULL;</span><br><span class="line">	self-&gt;is_pipe = 0;</span><br><span class="line">	self-&gt;lock_flag = LOCK_UN;</span><br><span class="line">	self-&gt;is_process_pipe = 0;</span><br><span class="line">	self-&gt;temp_file_name = NULL;</span><br><span class="line">	self-&gt;fd = fd;</span><br><span class="line"></span><br><span class="line">   // php_stream_stdio_ops 就是我们想要找到ops操作体</span><br><span class="line">	return php_stream_alloc_rel(&amp;php_stream_stdio_ops, self, persistent_id, mode);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">PHPAPI php_stream *_php_stream_alloc(php_stream_ops *ops, void *abstract, const char *persistent_id, const char *mode STREAMS_DC TSRMLS_DC) /* </span><span class="expression">&#123;&#123;&#123; */</span><br><span class="line">&#123;</span><br><span class="line">	<span class="variable">php</span>_<span class="variable">stream</span> *<span class="variable">ret</span>;</span><br><span class="line"></span><br><span class="line">	<span class="variable">ret</span> = (<span class="variable">php</span>_<span class="variable">stream</span>*) <span class="variable">pemalloc</span>_<span class="variable">rel</span>_<span class="variable">orig</span>(<span class="variable">sizeof</span>(<span class="variable">php</span>_<span class="variable">stream</span>), <span class="variable">persistent</span>_<span class="variable">id</span> ? 1 : 0);</span><br><span class="line"></span><br><span class="line">	<span class="variable">memset</span>(<span class="variable">ret</span>, 0, <span class="variable">sizeof</span>(<span class="variable">php</span>_<span class="variable">stream</span>));</span><br><span class="line"></span><br><span class="line">	<span class="variable">ret-</span>&gt;<span class="variable">readfilters.stream</span> = <span class="variable">ret</span>;</span><br><span class="line">	<span class="variable">ret-</span>&gt;<span class="variable">writefilters.stream</span> = <span class="variable">ret</span>;</span><br><span class="line"></span><br><span class="line">	/<span class="end-block">/ ...</span></span><br><span class="line"></span><br><span class="line">	/<span class="end-block">/ ops</span>即 _<span class="variable">php</span>_<span class="variable">stream</span>_<span class="variable">fopen</span>_<span class="variable">from</span>_<span class="variable">fd</span>_<span class="variable">int</span> 传入的 <span class="variable">php</span>_<span class="variable">stream</span>_<span class="variable">stdio</span>_<span class="variable">ops</span></span><br><span class="line">	<span class="variable">ret-</span>&gt;<span class="variable">ops</span> = <span class="variable">ops</span>;</span><br><span class="line">	/<span class="end-block">/ ...</span></span><br><span class="line">	<span class="variable">return</span> <span class="variable">ret</span>;</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>write 操作的实现的答案就在 <code>php_stream_stdio_ops</code> 这一变量中:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">PHPAPI php_stream_ops	php_stream_stdio_ops = &#123;</span><br><span class="line">	php_stdiop_write, php_stdiop_<span class="built_in">read</span>,</span><br><span class="line">	php_stdiop_close, php_stdiop_flush,</span><br><span class="line">	<span class="string">"STDIO"</span>,</span><br><span class="line">	php_stdiop_seek,</span><br><span class="line">	php_stdiop_cast,</span><br><span class="line">	php_stdiop_<span class="built_in">stat</span>,</span><br><span class="line">	php_stdiop_<span class="built_in">set</span>_option</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><code>php_stdiop_write</code> 函数指针指向的函数就是我们要的答案：</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">static size_t php_stdiop_write(php_stream *stream, const char *buf, size_t count TSRMLS_DC)</span><br><span class="line">&#123;</span><br><span class="line">	php_stdio_stream_data *<span class="built_in">data</span> = (php_stdio_stream_data*)stream<span class="subst">-&gt;</span>abstract;</span><br><span class="line"></span><br><span class="line">	assert(<span class="built_in">data</span> != <span class="built_in">NULL</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">data</span><span class="subst">-&gt;</span>fd &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">		<span class="comment">// 最终调用 write 系统调用</span></span><br><span class="line">		int bytes_written = write(<span class="built_in">data</span><span class="subst">-&gt;</span>fd, buf, count);</span><br><span class="line">		<span class="keyword">if</span> (bytes_written &lt; <span class="number">0</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">return</span> (size_t) bytes_written;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line"><span class="variable">#if</span> HAVE_FLUSHIO</span><br><span class="line">		<span class="keyword">if</span> (<span class="subst">!</span><span class="built_in">data</span><span class="subst">-&gt;</span>is_pipe <span class="subst">&amp;&amp;</span> <span class="built_in">data</span><span class="subst">-&gt;</span>last_op == <span class="string">'r'</span>) &#123;</span><br><span class="line">			fseek(<span class="built_in">data</span><span class="subst">-&gt;</span>file, <span class="number">0</span>, SEEK_CUR);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="built_in">data</span><span class="subst">-&gt;</span>last_op = <span class="string">'w'</span>;</span><br><span class="line"><span class="variable">#endif</span></span><br><span class="line"></span><br><span class="line">		<span class="keyword">return</span> fwrite(buf, <span class="number">1</span>, count, <span class="built_in">data</span><span class="subst">-&gt;</span>file);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>跟踪到这里，得到了最终的结论:</p>
+<p><strong>file_put_contents() 使用 write() 系统调用实现了数据的写入。</strong></p>
+<h2 id="写入安全的保证"><a href="#写入安全的保证" class="headerlink" title="写入安全的保证"></a>写入安全的保证</h2><p>造成多进程写入文件内容错误乱的原因很大程度上是因为每个进程打开文件描述符对应的文件位置指针都是独立的，如果没有同步机制，可能后来的写入的位置就会覆盖之前写入的数据，那么 <code>write()</code> 和 <code>O_APPEND</code> 能不能解决这个问题呢？</p>
+<p>《Linux系统编程》第二章提到：</p>
+<blockquote>
+<p>对于普通文件，除非发生一个错误，否则write()将保证写入所有的请求。<br>…<br>当fd在追加模式下打开时（通过指定O_APPEND参数），写操作就不从文件描述符的当前位置开始，而是从当前文件末尾开始。<br>…<br>它保证文件位置总是指向文件末尾，这样所有的写操作总是追加的，即便有多个写者。你可以认为每个写请求之前的文件位置更新操作是原子操作。</p>
+</blockquote>
+<p>以上说明了：</p>
+<ul>
+<li>每个写操作由操作系统保证完成性，即进程 A 写入 aa，进程 B 写入 bb，文件中不可能出现类似的 <code>abab</code> 这样的数据交叉情况。</li>
+<li>O_APPEND在多个写入者的情况下已然能保证数据写入文件末尾。</li>
+</ul>
+<h1 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h1><p>综上，可以放心的使用 PHP 的 <code>file_put_contents()</code> 结合 <code>FILE_APPEND</code> 记录日志。</p>
+<p>当然这是对于写入普通文件，如果写入的是管道则要关注是否数据大小超过 <code>PIPE_BUF</code> 的值了，这里有一篇有趣的博文 <a href="http://www.notthewizard.com/2014/06/17/are-files-appends-really-atomic/" target="_blank" rel="external">Are Files Appends Really Atomic?</a> 可以读读。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.cunmou.com/phpbook/15.md" target="_blank" rel="external">《PHP扩展开发与内核应用》：15 流的实现</a></p>
+<p><a href="https://book.douban.com/subject/25828773/" target="_blank" rel="external">《Linux 系统编程》（第二版）</a></p>
+<p><a href="https://www.jstorimer.com/blogs/workingwithcode/7982047-is-lock-free-logging-safe" target="_blank" rel="external">Is lock-free logging safe?</a></p>
+<p><a href="https://stackoverflow.com/questions/1154446/is-file-append-atomic-in-unix" target="_blank" rel="external">StackOverflow: Is file append atomic in UNIX?</a></p>
+<p><a href="http://nullprogram.com/blog/2016/08/03/" target="_blank" rel="external">Appending to a File from Multiple Processes</a></p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag">#PHP</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2017/11/01/a-quick-reading-of-effective-tcpip/" rel="next" title="泛读《Effective TCP/IP》">
+                <i class="fa fa-chevron-left"></i> 泛读《Effective TCP/IP》
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2017/12/28/365-days-of-github/" rel="prev" title="在GitHub上记录了一年">
+                在GitHub上记录了一年 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TL-DR"><span class="nav-number">1.</span> <span class="nav-text">TL;DR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#从monolog说起"><span class="nav-number">2.</span> <span class="nav-text">从monolog说起</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#file-put-contents-的实现"><span class="nav-number">3.</span> <span class="nav-text">file_put_contents()的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#file-put-contents-完成的是open-write-close"><span class="nav-number">3.1.</span> <span class="nav-text">file_put_contents()完成的是open/write/close</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写入操作的实现"><span class="nav-number">3.2.</span> <span class="nav-text">写入操作的实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写入安全的保证"><span class="nav-number">3.3.</span> <span class="nav-text">写入安全的保证</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#结论"><span class="nav-number">4.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

@@ -1,0 +1,814 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="CodeIgniter,PHP," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="TL;DRCodeIgniter3是一个相当轻量、简便的并且上手难度低的PHP应用开发框架。在CodeIgnitor2时代曾经接触并开发了一些项目。目前最新版本是3.1.5。优点个人认为有：
+
+轻量
+对MySQL查询有较为友好的代码编写方式
+功能扩展较为简便
+可以支持较低版本的PHP（5.4.8+）
+可以不使用模板引擎
+
+同时，个人也认为以下功能还可以有所变化：
+
+内置日志功能不够强大
+内置读写分">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CodeIgniter3">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2017/07/22/codeigniter3/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="TL;DRCodeIgniter3是一个相当轻量、简便的并且上手难度低的PHP应用开发框架。在CodeIgnitor2时代曾经接触并开发了一些项目。目前最新版本是3.1.5。优点个人认为有：
+
+轻量
+对MySQL查询有较为友好的代码编写方式
+功能扩展较为简便
+可以支持较低版本的PHP（5.4.8+）
+可以不使用模板引擎
+
+同时，个人也认为以下功能还可以有所变化：
+
+内置日志功能不够强大
+内置读写分">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.472Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CodeIgniter3">
+<meta name="twitter:description" content="TL;DRCodeIgniter3是一个相当轻量、简便的并且上手难度低的PHP应用开发框架。在CodeIgnitor2时代曾经接触并开发了一些项目。目前最新版本是3.1.5。优点个人认为有：
+
+轻量
+对MySQL查询有较为友好的代码编写方式
+功能扩展较为简便
+可以支持较低版本的PHP（5.4.8+）
+可以不使用模板引擎
+
+同时，个人也认为以下功能还可以有所变化：
+
+内置日志功能不够强大
+内置读写分">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> CodeIgniter3 | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                CodeIgniter3
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2017-07-22T22:31:01+08:00" content="2017-07-22">
+              2017-07-22
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>CodeIgniter3是一个相当轻量、简便的并且上手难度低的PHP应用开发框架。在CodeIgnitor2时代曾经接触并开发了一些项目。目前最新版本是<code>3.1.5</code>。优点个人认为有：</p>
+<ul>
+<li>轻量</li>
+<li>对MySQL查询有较为友好的代码编写方式</li>
+<li>功能扩展较为简便</li>
+<li>可以支持较低版本的PHP（5.4.8+）</li>
+<li>可以不使用模板引擎</li>
+</ul>
+<p>同时，个人也认为以下功能还可以有所变化：</p>
+<ul>
+<li>内置日志功能不够强大</li>
+<li>内置读写分离</li>
+<li>RESTful API开发支持</li>
+</ul>
+<p>文章的剩余内容将会针对以上的各个方面详细说明。</p>
+<a id="more"></a>
+<h1 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h1><h2 id="轻量"><a href="#轻量" class="headerlink" title="轻量"></a>轻量</h2><h3 id="文件数量"><a href="#文件数量" class="headerlink" title="文件数量"></a>文件数量</h3><p>首先通过cloc统计以下代码数量：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">→ cloc .</span><br><span class="line"><span class="code">     441 text files.</span></span><br><span class="line"><span class="code">     395 unique files.</span></span><br><span class="line"><span class="code">      57 files ignored.</span></span><br><span class="line"></span><br><span class="line"><span class="header">github.com/AlDanial/cloc v 1.72 T=4.33 s (88.9 files/s, 45382.0 lines/s)</span><br><span class="line">---------------------------------------------------------------------</span></span><br><span class="line"><span class="header">Language           files          blank        comment           code</span><br><span class="line">---------------------------------------------------------------------</span></span><br><span class="line">HTML                 168          16847            167         107992</span><br><span class="line">PHP                  198           8363          29905          29982</span><br><span class="line">JavaScript             8            154            306           1420</span><br><span class="line">XML                    4              0              0            552</span><br><span class="line">CSS                    5            128             31            536</span><br><span class="line">Markdown               1             38              0             57</span><br><span class="line"><span class="header">JSON                   1              0              0             23</span><br><span class="line">---------------------------------------------------------------------</span></span><br><span class="line"><span class="header">SUM:                 385          25530          30409         140562</span><br><span class="line">---------------------------------------------------------------------</span></span><br></pre></td></tr></table></figure>
+<p>仅仅198个php文件，对于一个拥有完整的数据库查询支持，表单验证，Session支持，XSS/CSRF防护的框架来说，并不算臃肿。</p>
+<p>文件数量一定程度上反映了层次划分的粒度，如果文件数量过多，带来的首先是源码阅读的难度和改造的难度。</p>
+<h3 id="基本业务功能实现"><a href="#基本业务功能实现" class="headerlink" title="基本业务功能实现"></a>基本业务功能实现</h3><p>对于一个号称轻量的框架来说，实现一个数据库的CRUD操作的Hello World的代码量应该最能反映问题。</p>
+<p>CI3实现这样的一个Controller，需要多少代码量呢？答案因人而异。但是步骤上却是相当简单的。考虑如下数据表：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`ci3_test1`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="string">`name`</span> <span class="built_in">varchar</span>(<span class="number">100</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8;</span></span><br></pre></td></tr></table></figure>
+<p>解压缩CI3之后，在<code>application</code>中的<code>config</code>目录下的<code>database.php</code>中配置好数据库配置：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$db</span>[<span class="string">'default'</span>] = <span class="keyword">array</span>(</span><br><span class="line">	<span class="string">'dsn'</span>	=&gt; <span class="string">''</span>,</span><br><span class="line">	<span class="string">'hostname'</span> =&gt; <span class="string">'127.0.0.1'</span>,</span><br><span class="line">	<span class="string">'username'</span> =&gt; <span class="string">'test'</span>,</span><br><span class="line">	<span class="string">'password'</span> =&gt; <span class="string">'passwd'</span>,</span><br><span class="line">	<span class="string">'database'</span> =&gt; <span class="string">'ci3'</span>,</span><br><span class="line">	<span class="string">'dbdriver'</span> =&gt; <span class="string">'mysqli'</span>,</span><br><span class="line">	<span class="string">'dbprefix'</span> =&gt; <span class="string">''</span>,</span><br><span class="line">	<span class="string">'pconnect'</span> =&gt; <span class="keyword">FALSE</span>,</span><br><span class="line">	<span class="string">'db_debug'</span> =&gt; (ENVIRONMENT !== <span class="string">'production'</span>),</span><br><span class="line">	<span class="string">'cache_on'</span> =&gt; <span class="keyword">FALSE</span>,</span><br><span class="line">	<span class="string">'cachedir'</span> =&gt; <span class="string">''</span>,</span><br><span class="line">	<span class="string">'char_set'</span> =&gt; <span class="string">'utf8'</span>,</span><br><span class="line">	<span class="string">'dbcollat'</span> =&gt; <span class="string">'utf8_general_ci'</span>,</span><br><span class="line">	<span class="string">'swap_pre'</span> =&gt; <span class="string">''</span>,</span><br><span class="line">	<span class="string">'encrypt'</span> =&gt; <span class="keyword">FALSE</span>,</span><br><span class="line">	<span class="string">'compress'</span> =&gt; <span class="keyword">FALSE</span>,</span><br><span class="line">	<span class="string">'stricton'</span> =&gt; <span class="keyword">FALSE</span>,</span><br><span class="line">	<span class="string">'failover'</span> =&gt; <span class="keyword">array</span>(),</span><br><span class="line">	<span class="string">'save_queries'</span> =&gt; <span class="keyword">TRUE</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>在<code>application</code>中的<code>config</code>目录下的<code>routes.php</code>中配置好路由规则：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$route[<span class="link_label">'test1/(\S+)'</span>][<span class="link_reference">'POST'</span>]      = '/test1/create/$1';</span><br><span class="line">$route[<span class="link_label">'test1/(\d+)'</span>][<span class="link_reference">'GET'</span>]       = '/test1/retrieve/$1';</span><br><span class="line">$route[<span class="link_label">'test1/(\d+)/(\S+)'</span>][<span class="link_reference">'PUT'</span>] = '/test1/update/$1/$2';</span><br><span class="line">$route[<span class="link_label">'test1/(\d+)'</span>][<span class="link_reference">'DELETE'</span>]    = '/test1/delete/$1';</span><br></pre></td></tr></table></figure>
+<p>只需要编写少许几行代码即可完成上述操作。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test1</span> <span class="keyword">extends</span> <span class="title">CI_Controller</span> </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> TABLE = <span class="string">'ci3_test1'</span>;</span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * PHPStorm IDE hint</span><br><span class="line">     * <span class="doctag">@var</span> CI_DB_mysqli_driver $db</span><br><span class="line">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$db</span> = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span><br><span class="line">    </span>&#123;</span><br><span class="line">        <span class="keyword">parent</span>::__construct();</span><br><span class="line">        <span class="variable">$this</span>-&gt;load-&gt;database();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">create</span><span class="params">(<span class="variable">$name</span>)</span></span><br><span class="line">    </span>&#123;</span><br><span class="line">        <span class="variable">$this</span>-&gt;db-&gt;insert(<span class="keyword">self</span>::TABLE, [<span class="string">'name'</span> =&gt; <span class="variable">$name</span>]);</span><br><span class="line">        <span class="variable">$insertedId</span> = <span class="variable">$this</span>-&gt;db-&gt;insert_id();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="variable">$insertedId</span>) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">"Inserted &#123;$insertedId&#125; with &#123;$name&#125;"</span>; <span class="keyword">exit</span>();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"Failed to insert with &#123;$name&#125;"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">retrieve</span><span class="params">(<span class="variable">$id</span>)</span></span><br><span class="line">    </span>&#123;</span><br><span class="line">        <span class="variable">$result</span> = <span class="variable">$this</span>-&gt;db-&gt;get_where(<span class="keyword">self</span>::TABLE, [<span class="string">'id'</span> =&gt; <span class="variable">$id</span>])-&gt;result_array();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (count(<span class="variable">$result</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">"No such record"</span>; <span class="keyword">exit</span>();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"Retrieved id=&#123;$result[0]['id']&#125; name=&#123;$result[0]['name']&#125;"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">update</span><span class="params">(<span class="variable">$id</span>, <span class="variable">$name</span>)</span></span><br><span class="line">    </span>&#123;</span><br><span class="line">        <span class="variable">$this</span>-&gt;db-&gt;update(<span class="keyword">self</span>::TABLE, [<span class="string">'name'</span> =&gt; <span class="variable">$name</span>], [<span class="string">'id'</span> =&gt; <span class="variable">$id</span>]);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="variable">$this</span>-&gt;db-&gt;affected_rows() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">"Updated record[&#123;$id&#125;] with name=&#123;$name&#125;"</span>; <span class="keyword">exit</span>();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"Failed to update record[&#123;$id&#125;]"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">delete</span><span class="params">(<span class="variable">$id</span>)</span></span><br><span class="line">    </span>&#123;</span><br><span class="line">        <span class="variable">$this</span>-&gt;db-&gt;delete(<span class="keyword">self</span>::TABLE, [<span class="string">'id'</span> =&gt; <span class="variable">$id</span>]);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="variable">$this</span>-&gt;db-&gt;affected_rows() == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">"Failed to delete record[$id]"</span>; <span class="keyword">exit</span>();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"Deleted record[$id]"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果在Model层做一些封装，相信对于这类基本的CRUD操作的编写会更加的便捷。</p>
+<h2 id="友好的MySQL查询代码编写方式"><a href="#友好的MySQL查询代码编写方式" class="headerlink" title="友好的MySQL查询代码编写方式"></a>友好的MySQL查询代码编写方式</h2><p>日常开发中，个人更倾向于使用纯SQL进行数据库的查询工作，但是纯SQL的可读性不一定比精心设计的查询工具类更好，同时实用查询记录构造工具，可以规避一些错误的SQL编写方式（如不转义用户输入，直接拼接参数到SQL语句之中）。</p>
+<p>如手册中的例子：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$<span class="keyword">this</span>-&gt;db-&gt;select<span class="function"><span class="params">(<span class="string">'*'</span>)</span>-&gt;</span><span class="keyword">from</span><span class="function"><span class="params">(<span class="string">'my_table'</span>)</span></span><br><span class="line">    -&gt;</span>group_start<span class="function"><span class="params">()</span></span><br><span class="line">        -&gt;</span>where<span class="function"><span class="params">(<span class="string">'a'</span>, <span class="string">'a'</span>)</span></span><br><span class="line">        -&gt;</span>or_group_start<span class="function"><span class="params">()</span></span><br><span class="line">            -&gt;</span>where<span class="function"><span class="params">(<span class="string">'b'</span>, <span class="string">'b'</span>)</span></span><br><span class="line">            -&gt;</span>where<span class="function"><span class="params">(<span class="string">'c'</span>, <span class="string">'c'</span>)</span></span><br><span class="line">        -&gt;</span>group_end<span class="function"><span class="params">()</span></span><br><span class="line">    -&gt;</span>group_end<span class="function"><span class="params">()</span></span><br><span class="line">    -&gt;</span>where<span class="function"><span class="params">(<span class="string">'d'</span>, <span class="string">'d'</span>)</span></span><br><span class="line">-&gt;</span>get();</span><br><span class="line"></span><br><span class="line"><span class="pi">// Generates:</span><br><span class="line">//</span> SELECT * FROM (`my_table`) WHERE ( `a` = <span class="string">'a'</span> OR ( `b` = <span class="string">'b'</span> AND `c` = <span class="string">'c'</span> ) ) AND `d` = <span class="string">'d'</span></span><br></pre></td></tr></table></figure>
+<p>CI3的查询构造器在调用<code>get()</code>方法前可以声明各个查询条件的组合。通过链式方法，让代码拥有的了一定的可读性。</p>
+<h3 id="CI3数据库查询过程简述（PDO）"><a href="#CI3数据库查询过程简述（PDO）" class="headerlink" title="CI3数据库查询过程简述（PDO）"></a>CI3数据库查询过程简述（PDO）</h3><p>虽然在上述例子中使用的是<code>mysqli</code>作为示例，但是PDO在工作中更为常用，简要的描述一下CI3使用PDO作为driver进行一次查询过程的流程。</p>
+<ol>
+<li>CI3中，在<code>database.php</code>中配置了数据库之后，通过<code>load</code>对象中的<code>database()</code>方法加载数据库对象。</li>
+<li><code>database()</code>方法实际上会将数据库配置传入<code>DB()</code>这一方法，如果传入参数为空，则会查找应用目录下的<code>database.php</code>配置文件并引入。如果配置了DSN或者配置组的名字，则会解析或者查找配置文件中是否存在对应的配置组。所以，假设要编写一个新的DB Driver，需要一些特殊的配置，可以在项目的<code>database.php</code>配置中增加一个特定的配置组，增加自己独有的字段。</li>
+<li>根据配置的<code>dbdriver</code>字段，到框架目录下查找是否存在对应的Driver，之后实例化并连接。由于PDO可以支持多种数据库，所以对于PDO来说，还会根据DSN查找对应的数据库的Driver类型（即在<code>subdrivers</code>目录下找到对应的类，mysql则是<code>CI_DB_pdo_mysql_driver</code>）完成实例化。</li>
+<li>通过<code>CI_DB_query_builder</code>的各个方法（<code>select()</code>/<code>where()</code>）构造出SQL语句之后，通过类中的<code>get()/insert()/update()/replace()/delete()</code>等方法对数据库进行操作，实际上都是交由<code>query()</code>方法对对应的SQL语句进行执行。</li>
+<li><code>query()</code>方法会通过<code>simple_query()</code>这一个方法执行SQL语句，<code>simple_query()</code>这一方法首先会检测是否已经初始化数据库连接对象，即成员变量<code>conn_id</code>，如果没有则通过<code>initialize()</code>方法进行连接。初始化完成后，执行上就需要各个DB Driver实现一个<code>_execute</code>方法了。</li>
+<li>PDO的driver实现的<code>_execute</code>方法则是直接调用内部成员属性<code>conn_id</code>的<code>query()</code>方法，即我们熟知的PHP MySQL PDO的<code>query()</code>方法，这一方法会返回一个 <a href="http://php.net/manual/zh/class.pdostatement.php" target="_blank" rel="external">PDOStatement</a> 对象。SQL语句的执行结果会存储到<code>result_id</code>成员变量之中。</li>
+<li>针对不同的数据库，会对加载不同的结果集Driver，即我们调用<code>get()/get_where()</code>等等操作之后返回的对象，我们通过这一个Driver对象，调用<code>result()/result_array()/row()/unbufferred_row()</code>等方法得到期望查询的结果。</li>
+</ol>
+<p>多说一点，<code>result()/result_array()/result_object()/custom_result_object()</code>等方法会把所有匹配的记录都读出，存储到当前结果对象的一个成员变量数组之中，在大结果集的情况下，可能会带来内存的大量使用，这里也是手册中提及过的，同样的使用<code>row()/row_array()/row_object()/first_row()/last_row()/next_row()/previous_row()</code>等方法也会调用上述方法之一，所以调用了这些方法，实际上也会触发大量的内存使用的情况。而<code>unbufferred_row()</code>这个方法实际上是通过逐个获取<code>PDOStatement</code>对象的每一个结果数据，在内存占用上会有较好的表现。编写实例测试：</p>
+<p>数据库中存在2条记录。</p>
+<p><strong><em>Controller:</em></strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test1</span> <span class="keyword">extends</span> <span class="title">CI_Controller</span> </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> TABLE = <span class="string">'ci3_test1'</span>;</span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * PHPStorm IDE hint</span><br><span class="line">     * <span class="doctag">@var</span> CI_DB_mysqli_driver $db</span><br><span class="line">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$db</span> = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span><br><span class="line">    </span>&#123;</span><br><span class="line">        <span class="keyword">parent</span>::__construct();</span><br><span class="line">        <span class="variable">$this</span>-&gt;load-&gt;database();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">fetch_one</span><span class="params">()</span></span><br><span class="line">    </span>&#123;</span><br><span class="line">        <span class="variable">$result</span> = <span class="variable">$this</span>-&gt;db-&gt;get(<span class="keyword">self</span>::TABLE);</span><br><span class="line">        <span class="keyword">while</span> (<span class="variable">$result</span>-&gt;unbuffered_row()) &#123;</span><br><span class="line">            printf(<span class="string">"%s\n"</span>, <span class="keyword">__FUNCTION__</span> . <span class="string">':'</span> . memory_get_usage());</span><br><span class="line">        &#125;</span><br><span class="line">        printf(<span class="string">"%s\n"</span>, <span class="keyword">__FUNCTION__</span> . <span class="string">':'</span> . memory_get_usage());</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">fetch_all</span><span class="params">()</span></span><br><span class="line">    </span>&#123;</span><br><span class="line">        <span class="variable">$result</span> = <span class="variable">$this</span>-&gt;db-&gt;get(<span class="keyword">self</span>::TABLE);</span><br><span class="line">        <span class="variable">$result</span>-&gt;result();</span><br><span class="line">        printf(<span class="string">"%s\n"</span>, <span class="keyword">__FUNCTION__</span> . <span class="string">':'</span> . memory_get_usage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong><em>routes.php</em></strong></p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$route[<span class="link_label">'test1/fetch_one'</span>][<span class="link_reference">'GET'</span>]   = '/test1/fetch_one';</span><br><span class="line">$route[<span class="link_label">'test1/fetch_all'</span>][<span class="link_reference">'GET'</span>]   = '/test1/fetch_all';</span><br></pre></td></tr></table></figure>
+<p><strong><em>/test1/fetch_one</em></strong></p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="label">fetch_one:</span><span class="number">2104664</span></span><br><span class="line"><span class="label">fetch_one:</span><span class="number">2104920</span></span><br><span class="line"><span class="label">fetch_one:</span><span class="number">2104920</span></span><br></pre></td></tr></table></figure>
+<p><strong><em>/test1/fetch_all</em></strong></p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="label">fetch_all:</span><span class="number">2106256</span></span><br></pre></td></tr></table></figure>
+<p>显然<code>fetch_all</code>操作占用的内存<strong><em>2106256 &gt; 2104920</em></strong>。</p>
+<h2 id="便捷的扩展功能的方式"><a href="#便捷的扩展功能的方式" class="headerlink" title="便捷的扩展功能的方式"></a>便捷的扩展功能的方式</h2><p><code>application/libraries</code>目录中编写一个同名类即可替换掉系统提供的非数据库类库。通过<code>get_instance()</code>方法获得CI超级对象之后可以在扩展的类库中获得原有类库的支持。</p>
+<p>同样的，对内置的部分类库进行扩展也不一定需要在system目录下修改。</p>
+<p>譬如希望对<code>Session</code>的Driver类进行扩展，Session在加载Driver类时会先在<code>APPPATH</code>目录的<code>libraries/Session/drivers/</code>下寻找声明的Driver文件。</p>
+<p>Hook机制的提供，可以在一个请求的几个阶段上对请求进行干预。比如身份验证可以在自定义的Controller基类中完成，也可以通过钩子在<code>pre_controller</code>阶段进行。</p>
+<h2 id="可以支持低版本的PHP"><a href="#可以支持低版本的PHP" class="headerlink" title="可以支持低版本的PHP"></a>可以支持低版本的PHP</h2><p>现在PHP已进入7时代，但是如果要在老环境上做开发，CI3是个好选择，可以支持<code>5.4.8+</code>的版本。从代码上看，数组仍然使用了传统的<code>array()</code>方法进行声明，显然是PHP 5.4之前的编写方法。</p>
+<h2 id="不强制使用模板引擎"><a href="#不强制使用模板引擎" class="headerlink" title="不强制使用模板引擎"></a>不强制使用模板引擎</h2><p>没看错，这个也是我个人认为的优点。模板引擎的使用对于PHPer来说并没有太大意义，徒增了转换回PHP代码的成本，如果说会引起页面可读性降低，这个方面保留意见，对于PHPer来说，有什么会比PHP代码更容易读懂和控制呢？</p>
+<p>当然Twig之类的新兴模板引擎自然有可取之处，但是作为PHPer，首选当然是直接编写模板。</p>
+<h1 id="可以有所变化的方面"><a href="#可以有所变化的方面" class="headerlink" title="可以有所变化的方面"></a>可以有所变化的方面</h1><h2 id="日志功能"><a href="#日志功能" class="headerlink" title="日志功能"></a>日志功能</h2><p>CI3的日志功能比较简单，简单带来的好处是易用，然而在定制化和输出丰富程度方面，就稍微欠缺一些。</p>
+<p>CI3的日志只能设定保存位置（<code>$config[&#39;log_path&#39;]</code>）、扩展名（<code>$config[&#39;log_file_extension&#39;]</code>）、时间戳格式（<code>$config[&#39;log_date_format&#39;]</code>）、日志级别等配置。存储形式是文件。这里多提一句，CI3写入文件的方式很有意思，先上锁（<code>flock($fp, LOCK_EX)</code>）再写入，最后解锁。由于使用了<code>LOCK_EX</code>标记位，多个进程同时写文件时会阻塞住。</p>
+<p>这个应该与CI轻量级的设计思想有关，好在CI设计成可以支持Composer autoload，可以考虑引入强大的 <a href="https://github.com/Seldaek/monolog" target="_blank" rel="external">monolog</a> 扩展日志功能。</p>
+<h2 id="内置数据库读写分离"><a href="#内置数据库读写分离" class="headerlink" title="内置数据库读写分离"></a>内置数据库读写分离</h2><p>小项目读写分离可能并没有显得那么重要，但是对于访问量级千万级别甚至更高，或者是有访问峰值的项目来说，单库读写意味着可能处在服务挂掉的边缘。项目一般读写比10比1的经验值也告诉我们，可以利用数据库（主要指MySQL）多从库的方式，对服务进行一定程度的性能扩展。</p>
+<p>然而CI3并没有看到内置的读写分离功能，在<code>query()</code>方法中倒是对操作通过<code>is_write_type()</code>方法进行了判断，但是这里只是为检查是否返回查询结果缓存而服务的（写操作通过缓存返回结果不合理）。</p>
+<p>可以考虑改造CI3框架实现这一部分功能，这样可以做到对业务透明。</p>
+<p>如果不改造，也可以在Model的基类中实现一些方法，如基类中有获取DB对象的共用方法，可以在这里进行一些处理。</p>
+<h2 id="RESTful-API开发支持"><a href="#RESTful-API开发支持" class="headerlink" title="RESTful API开发支持"></a>RESTful API开发支持</h2><p>Laravel中的<code>artisan</code>工具提供了很多实用的工具入口。其中一个我认为很实用的是<a href="https://laravel.com/docs/5.4/controllers#resource-controllers" target="_blank" rel="external">RESTful api单指令生成</a>。</p>
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">php</span> <span class="comment">artisan</span> <span class="comment">make:controller</span> <span class="comment">PhotoController</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">resource</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">model=Photo</span></span><br></pre></td></tr></table></figure>
+<p>这一指令执行之后可以帮助生成从Controller到Model的大部分代码，对于简单对象的CRUD操作来说，这样的代码编写方式很是方便。</p>
+<p>相比之下CI3的这类开发工具支持稍微逊色，但是考虑到两个框架出现时间的差别，也是可以接受的。</p>
+<p>附上一个可以参考的CI3 RESTful API解决方案<a href="https://github.com/chriskacerguis/codeigniter-restserver" target="_blank" rel="external">chriskacerguis/codeigniter-restserver
+</a></p>
+<h1 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h1><p><a href="https://github.com/bcit-ci/CodeIgniter4" target="_blank" rel="external">CodeIgniter4</a>目前已经放出alpha版本，通过命名空间组织代码，日志的种类也有所丰富，并且较为激进的只支持PHP7及以上版本。不过遗憾的是现在还是没有看到数据库读写分离，代码量也有所涨幅：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">→ cloc .</span><br><span class="line">     <span class="number">604</span> text files.</span><br><span class="line">     <span class="number">595</span> unique files.</span><br><span class="line">     <span class="number">155</span> files ignored.</span><br><span class="line"></span><br><span class="line">github.com/AlDanial/cloc v <span class="number">1.72</span>  T=<span class="number">5.09</span> s (<span class="number">90.0</span> files/s, <span class="number">32201.6</span> lines/s)</span><br><span class="line">---------------------------------------------------------------------</span><br><span class="line">Language           files          blank        comment           code</span><br><span class="line">---------------------------------------------------------------------</span><br><span class="line">PHP                  <span class="number">409</span>          <span class="number">42471</span>          <span class="number">31616</span>          <span class="number">83193</span></span><br><span class="line">CSS                    <span class="number">9</span>           <span class="number">1045</span>              <span class="number">9</span>           <span class="number">1911</span></span><br><span class="line">JavaScript             <span class="number">6</span>            <span class="number">134</span>             <span class="number">84</span>            <span class="number">706</span></span><br><span class="line">XML                    <span class="number">6</span>              <span class="number">2</span>              <span class="number">0</span>            <span class="number">584</span></span><br><span class="line">HTML                  <span class="number">10</span>             <span class="number">54</span>              <span class="number">2</span>            <span class="number">509</span></span><br><span class="line">LESS                   <span class="number">5</span>            <span class="number">134</span>             <span class="number">39</span>            <span class="number">505</span></span><br><span class="line">Markdown               <span class="number">4</span>            <span class="number">116</span>              <span class="number">0</span>            <span class="number">226</span></span><br><span class="line">make                   <span class="number">1</span>             <span class="number">23</span>              <span class="number">4</span>            <span class="number">110</span></span><br><span class="line">Python                 <span class="number">5</span>             <span class="number">88</span>            <span class="number">205</span>             <span class="number">67</span></span><br><span class="line">JSON                   <span class="number">2</span>              <span class="number">0</span>              <span class="number">0</span>             <span class="number">62</span></span><br><span class="line">YAML                   <span class="number">1</span>              <span class="number">9</span>              <span class="number">1</span>             <span class="number">29</span></span><br><span class="line">---------------------------------------------------------------------</span><br><span class="line">SUM:                 <span class="number">458</span>          <span class="number">44076</span>          <span class="number">31960</span>          <span class="number">87902</span></span><br><span class="line">---------------------------------------------------------------------</span><br></pre></td></tr></table></figure>
+<p>数据库Driver目前只有mysqli和postgre，只能期待后续的版本中能够有更强大的CodeIgniter了。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/CodeIgniter/" rel="tag">#CodeIgniter</a>
+          
+            <a href="/tags/PHP/" rel="tag">#PHP</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2017/06/16/ms-timeout-in-php-curl/" rel="next" title="PHP中curl设置毫秒级超时的问题">
+                <i class="fa fa-chevron-left"></i> PHP中curl设置毫秒级超时的问题
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2017/07/25/modern-php/" rel="prev" title="《Modern PHP》">
+                《Modern PHP》 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TL-DR"><span class="nav-number">1.</span> <span class="nav-text">TL;DR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#优点"><span class="nav-number">2.</span> <span class="nav-text">优点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#轻量"><span class="nav-number">2.1.</span> <span class="nav-text">轻量</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#文件数量"><span class="nav-number">2.1.1.</span> <span class="nav-text">文件数量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基本业务功能实现"><span class="nav-number">2.1.2.</span> <span class="nav-text">基本业务功能实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#友好的MySQL查询代码编写方式"><span class="nav-number">2.2.</span> <span class="nav-text">友好的MySQL查询代码编写方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CI3数据库查询过程简述（PDO）"><span class="nav-number">2.2.1.</span> <span class="nav-text">CI3数据库查询过程简述（PDO）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#便捷的扩展功能的方式"><span class="nav-number">2.3.</span> <span class="nav-text">便捷的扩展功能的方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可以支持低版本的PHP"><span class="nav-number">2.4.</span> <span class="nav-text">可以支持低版本的PHP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不强制使用模板引擎"><span class="nav-number">2.5.</span> <span class="nav-text">不强制使用模板引擎</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#可以有所变化的方面"><span class="nav-number">3.</span> <span class="nav-text">可以有所变化的方面</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#日志功能"><span class="nav-number">3.1.</span> <span class="nav-text">日志功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内置数据库读写分离"><span class="nav-number">3.2.</span> <span class="nav-text">内置数据库读写分离</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RESTful-API开发支持"><span class="nav-number">3.3.</span> <span class="nav-text">RESTful API开发支持</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#最后"><span class="nav-number">4.</span> <span class="nav-text">最后</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

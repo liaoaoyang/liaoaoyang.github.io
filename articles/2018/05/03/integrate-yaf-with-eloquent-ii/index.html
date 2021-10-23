@@ -1,0 +1,758 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Eloquent,Laravel,PHP,Yaf," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="TL;DR集成方法参见 Yaf集成Eloquent 。
+集成基类的多个 Model 如果要正确的运行事务，需要保证各个 Model 的实例使用的是同一个数据库连接，在代码上可以通过共用同一个  Illuminate\Database\Capsule\Manager 对象实现。
+使用 DB Facade 需要为 Facade 提供已经关联了 db 作为键，以 Illuminate\Database\">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Yaf集成Eloquent——使用事务以及DB Facade">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2018/05/03/integrate-yaf-with-eloquent-ii/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="TL;DR集成方法参见 Yaf集成Eloquent 。
+集成基类的多个 Model 如果要正确的运行事务，需要保证各个 Model 的实例使用的是同一个数据库连接，在代码上可以通过共用同一个  Illuminate\Database\Capsule\Manager 对象实现。
+使用 DB Facade 需要为 Facade 提供已经关联了 db 作为键，以 Illuminate\Database\">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.474Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Yaf集成Eloquent——使用事务以及DB Facade">
+<meta name="twitter:description" content="TL;DR集成方法参见 Yaf集成Eloquent 。
+集成基类的多个 Model 如果要正确的运行事务，需要保证各个 Model 的实例使用的是同一个数据库连接，在代码上可以通过共用同一个  Illuminate\Database\Capsule\Manager 对象实现。
+使用 DB Facade 需要为 Facade 提供已经关联了 db 作为键，以 Illuminate\Database\">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> Yaf集成Eloquent——使用事务以及DB Facade | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Yaf集成Eloquent——使用事务以及DB Facade
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2018-05-03T00:41:50+08:00" content="2018-05-03">
+              2018-05-03
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>集成方法参见 <a href="/articles/2017/08/01/integrate-yaf-with-eloquent/">Yaf集成Eloquent</a> 。</p>
+<p>集成基类的多个 Model 如果要正确的运行事务，需要保证各个 Model 的实例使用的是同一个数据库连接，在代码上可以通过共用同一个  <code>Illuminate\Database\Capsule\Manager</code> 对象实现。</p>
+<p>使用 DB Facade 需要为 Facade 提供已经关联了 <code>db</code> 作为键，以 <code>Illuminate\Database\Capsule\Manager</code> 的实例为值的容器。</p>
+<!-- integrate-yaf-with-eloquent-ii -->
+<a id="more"></a>
+<h1 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h1><ul>
+<li>MySQL 5.6</li>
+<li>PHP 5.6.31</li>
+<li>Yaf 2.3.3</li>
+<li>Eloquent 4.2.17（5.0亦可）</li>
+</ul>
+<h1 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h1><h2 id="Laravel-中的数据库事务"><a href="#Laravel-中的数据库事务" class="headerlink" title="Laravel 中的数据库事务"></a>Laravel 中的数据库事务</h2><p>Laravel 中的数据库事务可以通过 <a href="https://laravel.com/docs/5.0/database#database-transactions" target="_blank" rel="external">DB Facade</a> 开启：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">DB</span><span class="pseudo">::transaction(function()</span></span><br><span class="line"><span class="rules">&#123;</span><br><span class="line">    <span class="rule"><span class="attribute">DB</span>:<span class="value">:<span class="function">table</span>(<span class="string">'users'</span>)-&gt;<span class="function">update</span>([<span class="string">'votes'</span> =&gt; <span class="number">1</span>])</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="rule"><span class="attribute">DB</span>:<span class="value">:<span class="function">table</span>(<span class="string">'posts'</span>)-&gt;<span class="function">delete</span>()</span></span>;</span><br><span class="line">&#125;</span>);</span><br></pre></td></tr></table></figure>
+<p>即通过通过 DB Facade 访问了服务容器内的各个 Model 发起了事务。</p>
+<h2 id="MySQL-事务"><a href="#MySQL-事务" class="headerlink" title="MySQL 事务"></a>MySQL 事务</h2><p>MySQL 中执行事务有两大前提条件：</p>
+<ul>
+<li>同一个数据库</li>
+<li>同一个数据库连接</li>
+</ul>
+<p>如果使用 PDO 连接 MySQL 发起事务，那么 PDO 对象应该只有一个。</p>
+<h2 id="原有样例存在的问题"><a href="#原有样例存在的问题" class="headerlink" title="原有样例存在的问题"></a>原有样例存在的问题</h2><p>部分单独使用 Eloquent 的样例，包括自己早期的尝试在内，都存在一个类似的情况：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="preprocessor">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Database</span>\<span class="title">Capsule</span>\<span class="title">Manager</span> <span class="title">as</span> <span class="title">IlluminateCapsule</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Database</span>\<span class="title">Eloquent</span>\<span class="title">Model</span> <span class="title">as</span> <span class="title">IlluminateModel</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Yaf</span>\<span class="title">Registry</span> <span class="title">as</span> <span class="title">YRegistry</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BaseModel</span> <span class="keyword">extends</span> <span class="title">IlluminateModel</span></span><br><span class="line"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$config</span> = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$capsule</span> = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(array <span class="variable">$attributes</span> = array<span class="params">()</span>)</span></span><br><span class="line">    </span>&#123;</span><br><span class="line">        <span class="keyword">parent</span>::__construct(<span class="variable">$attributes</span>);</span><br><span class="line">        <span class="variable">$dbConfigKey</span> = DATABASE_CONFIG_KEY;</span><br><span class="line">        <span class="variable">$this</span>-&gt;config = YRegistry::get(<span class="string">'config'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!<span class="variable">$this</span>-&gt;config-&gt;<span class="variable">$dbConfigKey</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="keyword">Exception</span>(<span class="string">"Must configure database in .ini first"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="variable">$this</span>-&gt;config = <span class="variable">$this</span>-&gt;config-&gt;<span class="variable">$dbConfigKey</span>-&gt;toArray();</span><br><span class="line">        <span class="variable">$this</span>-&gt;capsule = <span class="keyword">new</span> IlluminateCapsule();</span><br><span class="line">        <span class="variable">$this</span>-&gt;capsule-&gt;addConnection(<span class="variable">$this</span>-&gt;config);</span><br><span class="line">        <span class="variable">$this</span>-&gt;capsule-&gt;bootEloquent();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>这里在构造函数中会构建一个 <code>Illuminate\Database\Capsule\Manager $capsue</code> 对象，这一对象是 Eloquent 的关键部分之一，实现了连接管理等功能：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="preprocessor">&lt;?php</span> <span class="keyword">namespace</span> <span class="title">Illuminate</span>\<span class="title">Database</span>\<span class="title">Capsule</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">PDO</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Events</span>\<span class="title">Dispatcher</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Cache</span>\<span class="title">CacheManager</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Container</span>\<span class="title">Container</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Database</span>\<span class="title">DatabaseManager</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Database</span>\<span class="title">Eloquent</span>\<span class="title">Model</span> <span class="title">as</span> <span class="title">Eloquent</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Database</span>\<span class="title">Connectors</span>\<span class="title">ConnectionFactory</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Support</span>\<span class="title">Traits</span>\<span class="title">CapsuleManagerTrait</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Manager</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">use</span> <span class="title">CapsuleManagerTrait</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span><br><span class="line">	 * The database manager instance.</span><br><span class="line">	 *</span><br><span class="line">	 * <span class="doctag">@var</span> \Illuminate\Database\DatabaseManager</span><br><span class="line">	 */</span></span><br><span class="line">	<span class="keyword">protected</span> <span class="variable">$manager</span>;</span></span><br></pre></td></tr></table></figure>
+<p>通过内置的 <code>protected \Illuminate\Database\DatabaseManager $manager</code> 对象，建立真正的连接。</p>
+<p>Manager 会根据声明的连接配置名称创建对应的连接，通过连接配置名称可以直接获取对应的连接对象，注入到实际执行查询操作的 <code>Illuminate\Database\Query\Builder</code> 中完成查询。</p>
+<p>连接是按序连接，在需要进行查询时，<code>\Illuminate\Database\DatabaseManager</code> 会调用 <code>\Illuminate\Database\Connectors\ConnectionFactory</code> 成员的 <code>make()</code> 方法创建连接，在这一方法中完成连接对象的创建和连接操作。</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php <span class="keyword">namespace</span> Illuminate\Database\Connectors;</span><br><span class="line"></span><br><span class="line">use PDO;</span><br><span class="line">use Illuminate\Container\Container;</span><br><span class="line">use Illuminate\Database\MySqlConnection;</span><br><span class="line">use Illuminate\Database\SQLiteConnection;</span><br><span class="line">use Illuminate\Database\PostgresConnection;</span><br><span class="line">use Illuminate\Database\SqlServerConnection;</span><br><span class="line"></span><br><span class="line">class ConnectionFactory &#123;</span><br><span class="line"></span><br><span class="line">	/**</span><br><span class="line">	 * The IoC container instance.</span><br><span class="line">	 *</span><br><span class="line">	 * @var \Illuminate\Container\Container</span><br><span class="line">	 */</span><br><span class="line">	protected <span class="variable">$container</span>;</span><br><span class="line"></span><br><span class="line">	/**</span><br><span class="line">	 * Create a new connection factory instance.</span><br><span class="line">	 *</span><br><span class="line">	 * @param  \Illuminate\Container\Container  <span class="variable">$container</span></span><br><span class="line">	 * @return void</span><br><span class="line">	 */</span><br><span class="line">	public function __construct(Container <span class="variable">$container</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="variable">$this-</span>&gt;container = <span class="variable">$container</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	/**</span><br><span class="line">	 * Establish a PDO connection based on the configuration.</span><br><span class="line">	 *</span><br><span class="line">	 * @param  array   <span class="variable">$config</span></span><br><span class="line">	 * @param  string  <span class="variable">$name</span></span><br><span class="line">	 * @return \Illuminate\Database\Connection</span><br><span class="line">	 */</span><br><span class="line">	public function make(array <span class="variable">$config</span>, <span class="variable">$name</span> = null)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="variable">$config</span> = <span class="variable">$this-</span>&gt;parseConfig(<span class="variable">$config</span>, <span class="variable">$name</span>);</span><br><span class="line"></span><br><span class="line">		if (isset(<span class="variable">$config</span>[<span class="string">'read'</span>]))</span><br><span class="line">		&#123;</span><br><span class="line">			return <span class="variable">$this-</span>&gt;createReadWriteConnection(<span class="variable">$config</span>);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		return <span class="variable">$this-</span>&gt;createSingleConnection(<span class="variable">$config</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	/**</span><br><span class="line">	 * Create a single database connection instance.</span><br><span class="line">	 *</span><br><span class="line">	 * @param  array  <span class="variable">$config</span></span><br><span class="line">	 * @return \Illuminate\Database\Connection</span><br><span class="line">	 */</span><br><span class="line">	protected function createSingleConnection(array <span class="variable">$config</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="variable">$pdo</span> = <span class="variable">$this-</span>&gt;createConnector(<span class="variable">$config</span>)-&gt;connect(<span class="variable">$config</span>);</span><br><span class="line"></span><br><span class="line">		return <span class="variable">$this-</span>&gt;createConnection(<span class="variable">$config</span>[<span class="string">'driver'</span>], <span class="variable">$pdo</span>, <span class="variable">$config</span>[<span class="string">'database'</span>], <span class="variable">$config</span>[<span class="string">'prefix'</span>], <span class="variable">$config</span>);</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>那么问题来了，在多个 Model 实现类进行事务操作时，对于每一个子类来说，基类 <code>BaseModel</code> 中都会建立一个全新的 <code>DatabaseManager</code> 对象，实际上对于每个 Model 来说都建立了不同的数据库连接，不同连接下执行事务是不可能保证 ACID 的。</p>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><h3 id="Laravel-中的处理"><a href="#Laravel-中的处理" class="headerlink" title="Laravel 中的处理"></a>Laravel 中的处理</h3><p>来看原生支持 Eloquent 的 Laravel 是如何处理的。</p>
+<p>阅读 <code>Illuminate\Database\DatabaseServiceProvider</code> 的源码：</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Register the primary database bindings.</span><br><span class="line"> *</span><br><span class="line"> * @<span class="keyword">return</span> void</span><br><span class="line"> */</span><br><span class="line">protected <span class="keyword">function</span> registerConnectionServices()</span><br><span class="line">&#123;</span><br><span class="line">    // The connection factory is used to create the actual connection instances on</span><br><span class="line">    // the database. We will inject the factory into the manager so that it may</span><br><span class="line">    // make the connections while they are actually needed and not of before.</span><br><span class="line">    <span class="variable">$this-</span>&gt;app-&gt;singleton(<span class="string">'db.factory'</span>, function (<span class="variable">$app</span>) &#123;</span><br><span class="line">        return new ConnectionFactory(<span class="variable">$app</span>);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    // The database manager is used to resolve various connections, since multiple</span><br><span class="line">    // connections might be managed. It also implements the connection resolver</span><br><span class="line">    // interface which may be used by other components requiring connections.</span><br><span class="line">    <span class="variable">$this-</span>&gt;app-&gt;singleton(<span class="string">'db'</span>, function (<span class="variable">$app</span>) &#123;</span><br><span class="line">        return new DatabaseManager(<span class="variable">$app</span>, <span class="variable">$app</span>[<span class="string">'db.factory'</span>]);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="variable">$this-</span>&gt;app-&gt;bind(<span class="string">'db.connection'</span>, function (<span class="variable">$app</span>) &#123;</span><br><span class="line">        return <span class="variable">$app</span>[<span class="string">'db'</span>]-&gt;connection();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Laravel的处理很简单，将 <code>\Illuminate\Database\DatabaseManager</code> 处理成单例。</p>
+<h3 id="本文解决方案"><a href="#本文解决方案" class="headerlink" title="本文解决方案"></a>本文解决方案</h3><p><a href="https://github.com/liaoaoyang/YafWithEloquentSample/blob/master/application/models/Base.php" target="_blank" rel="external">样例</a> 中使用了同样的方式，即将此对象实现为单例模式。</p>
+<h1 id="DB-Facade"><a href="#DB-Facade" class="headerlink" title="DB Facade"></a>DB Facade</h1><p>通过 Facade 可以方便的访问数据库相关功能。</p>
+<p>Eloquent 中 <code>Illuminate\Support\Facades\DB</code> 即是入口。</p>
+<h2 id="Laravel-中的-DB-Facade"><a href="#Laravel-中的-DB-Facade" class="headerlink" title="Laravel 中的 DB Facade"></a>Laravel 中的 DB Facade</h2><p>Laravel 中的 Facade 实际上是通过访问已关联的应用程序对象中已关联的对象，通过对象实现的 <strong>call 以及 </strong>callStatic 魔术方法，实现功能。</p>
+<p>摘录部分 DB Facade 代码：</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">protected static <span class="keyword">function</span> getFacadeAccessor()</span><br><span class="line">&#123;</span><br><span class="line">    return <span class="string">'db'</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * Resolve the facade root <span class="keyword">instance</span> from the container.</span><br><span class="line"> *</span><br><span class="line"> * @param  string|object  <span class="variable">$name</span></span><br><span class="line"> * @<span class="keyword">return</span> mixed</span><br><span class="line"> */</span><br><span class="line">protected static <span class="keyword">function</span> resolveFacadeInstance(<span class="variable">$name</span>)</span><br><span class="line">&#123;</span><br><span class="line">    if (is_object(<span class="variable">$name</span>)) &#123;</span><br><span class="line">        return <span class="variable">$name</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (isset(static::<span class="variable">$resolvedInstance</span>[<span class="variable">$name</span>])) &#123;</span><br><span class="line">        return static::<span class="variable">$resolvedInstance</span>[<span class="variable">$name</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return static::<span class="variable">$resolvedInstance</span>[<span class="variable">$name</span>] = static::<span class="variable">$app</span>[<span class="variable">$name</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * Get the root object behind the facade.</span><br><span class="line"> *</span><br><span class="line"> * @<span class="keyword">return</span> mixed</span><br><span class="line"> */</span><br><span class="line">public static <span class="keyword">function</span> getFacadeRoot()</span><br><span class="line">&#123;</span><br><span class="line">    return static::resolveFacadeInstance(static::getFacadeAccessor());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * Handle dynamic, static calls <span class="keyword">to</span> the object.</span><br><span class="line"> *</span><br><span class="line"> * @param  string  <span class="variable">$method</span></span><br><span class="line"> * @param  <span class="keyword">array</span>   <span class="variable">$args</span></span><br><span class="line"> * @<span class="keyword">return</span> mixed</span><br><span class="line"> *</span><br><span class="line"> * @throws \RuntimeException</span><br><span class="line"> */</span><br><span class="line">public static <span class="keyword">function</span> __callStatic(<span class="variable">$method</span>, <span class="variable">$args</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="variable">$instance</span> = static::getFacadeRoot();</span><br><span class="line"></span><br><span class="line">    if (! <span class="variable">$instance</span>) &#123;</span><br><span class="line">        throw new RuntimeException(<span class="string">'A facade root has not been set.'</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return <span class="variable">$instance-</span>&gt;<span class="variable">$method</span>(...<span class="variable">$args</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，DB Facade 访问的是 <code>$app[&#39;db&#39;]</code> 对应的对象。</p>
+<p>回到之前 <code>Illuminate\Database\DatabaseServiceProvider</code> 的 <code>registerConnectionServices</code> 方法：</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$this-</span>&gt;app-&gt;singleton(<span class="string">'db'</span>, <span class="keyword">function</span> (<span class="variable">$app</span>) &#123;</span><br><span class="line">    return new DatabaseManager(<span class="variable">$app</span>, <span class="variable">$app</span>[<span class="string">'db.factory'</span>]);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>实际上 <code>$app[&#39;db&#39;]</code> 关联的是一个 <code>DatabaseManager</code> 对象。</p>
+<h2 id="文中的-DB-Facade"><a href="#文中的-DB-Facade" class="headerlink" title="文中的 DB Facade"></a>文中的 DB Facade</h2><p>按照这一思路，将 <code>Illuminate\Support\Facades\DB</code> 的 $app 对象增加一个 key db，并关联上当前存在的 <code>DatabaseManager</code> 对象即可：</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">self::<span class="variable">$capsule</span> = new IlluminateCapsule();</span><br><span class="line">self::<span class="variable">$capsule-</span>&gt;bootEloquent();</span><br><span class="line">Illuminate\Support\Facades\DB::setFacadeApplication([</span><br><span class="line">    <span class="string">'db'</span> =&gt; self::<span class="variable">$capsule-</span>&gt;getDatabaseManager(),</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Eloquent/" rel="tag">#Eloquent</a>
+          
+            <a href="/tags/Laravel/" rel="tag">#Laravel</a>
+          
+            <a href="/tags/PHP/" rel="tag">#PHP</a>
+          
+            <a href="/tags/Yaf/" rel="tag">#Yaf</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2018/04/30/persistent-connections-of-redis-and-pdo-extension-in-php/" rel="next" title="PHP中Redis/MySQL的长连接">
+                <i class="fa fa-chevron-left"></i> PHP中Redis/MySQL的长连接
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2018/05/12/notes-of-php-design-patterns/" rel="prev" title="PHP设计模式学习笔记">
+                PHP设计模式学习笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TL-DR"><span class="nav-number">1.</span> <span class="nav-text">TL;DR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实验环境"><span class="nav-number">2.</span> <span class="nav-text">实验环境</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#事务"><span class="nav-number">3.</span> <span class="nav-text">事务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Laravel-中的数据库事务"><span class="nav-number">3.1.</span> <span class="nav-text">Laravel 中的数据库事务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL-事务"><span class="nav-number">3.2.</span> <span class="nav-text">MySQL 事务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原有样例存在的问题"><span class="nav-number">3.3.</span> <span class="nav-text">原有样例存在的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决"><span class="nav-number">3.4.</span> <span class="nav-text">解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Laravel-中的处理"><span class="nav-number">3.4.1.</span> <span class="nav-text">Laravel 中的处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#本文解决方案"><span class="nav-number">3.4.2.</span> <span class="nav-text">本文解决方案</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DB-Facade"><span class="nav-number">4.</span> <span class="nav-text">DB Facade</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Laravel-中的-DB-Facade"><span class="nav-number">4.1.</span> <span class="nav-text">Laravel 中的 DB Facade</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文中的-DB-Facade"><span class="nav-number">4.2.</span> <span class="nav-text">文中的 DB Facade</span></a></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

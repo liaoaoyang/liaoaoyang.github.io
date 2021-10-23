@@ -1,0 +1,793 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Nagios," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="概述Nagios可以使用邮件报警，但是如果使用IM软件提供的API进行报警的话，时效性上来说必然是会更好的。
+另外如果使用自定义的报警脚本，可以针对报警做更多的事情，譬如限频，异步发送，记录入库等操作。
+总而言之就是可以拥有更为灵活的工具。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自定义Nagios报警脚本">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2016/02/17/write-a-nagios-alert-script/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="概述Nagios可以使用邮件报警，但是如果使用IM软件提供的API进行报警的话，时效性上来说必然是会更好的。
+另外如果使用自定义的报警脚本，可以针对报警做更多的事情，譬如限频，异步发送，记录入库等操作。
+总而言之就是可以拥有更为灵活的工具。">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.488Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="自定义Nagios报警脚本">
+<meta name="twitter:description" content="概述Nagios可以使用邮件报警，但是如果使用IM软件提供的API进行报警的话，时效性上来说必然是会更好的。
+另外如果使用自定义的报警脚本，可以针对报警做更多的事情，譬如限频，异步发送，记录入库等操作。
+总而言之就是可以拥有更为灵活的工具。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 自定义Nagios报警脚本 | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                自定义Nagios报警脚本
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-02-17T21:53:48+08:00" content="2016-02-17">
+              2016-02-17
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Nagios可以使用邮件报警，但是如果使用IM软件提供的API进行报警的话，时效性上来说必然是会更好的。</p>
+<p>另外如果使用自定义的报警脚本，可以针对报警做更多的事情，譬如限频，异步发送，记录入库等操作。</p>
+<p>总而言之就是可以拥有更为灵活的工具。</p>
+<a id="more"></a>
+<h1 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h1><h2 id="开发语言"><a href="#开发语言" class="headerlink" title="开发语言"></a>开发语言</h2><p>众多的Nagios插件均使用Perl编写，如 <a href="http://www.liaoaoyang.com/articles/2016/01/05/monitor-redis-by-nagios-part-2/">监控Redis</a> 中使用到的工具。</p>
+<p>选用Perl语言对于我来说并不是一个好的选择，如果选用了Perl，那么在主要使用PHP的环境下，不能方便的重复利用已有框架的各种工具，同时从语言的熟悉程度上来说，自然是PHP胜过Perl。</p>
+<p>综上，选用PHP作为插件开发语言。</p>
+<p>选用PHP作为Nagios报警插件的开发语言，需要在脚本的首行指定 <a href="https://zh.wikipedia.org/zh/Shebang" target="_blank" rel="external">Shebang</a> ，即指定PHP可执行程序的绝对路径，形如：</p>
+<figure class="highlight d"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="shebang">#!/usr/local/server/bin/php</span></span><br></pre></td></tr></table></figure>
+<p>Shebang之下仍然需要使用 <code>&lt;?php</code> 标签。</p>
+<p>同时，为了能让Nagios能直接执行报警插件，需要赋予可执行权限：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod a+x <span class="regexp">/path/</span>to<span class="regexp">/your/</span>nagios<span class="regexp">/plugin</span></span><br></pre></td></tr></table></figure>
+<h2 id="脚本输入输出"><a href="#脚本输入输出" class="headerlink" title="脚本输入输出"></a>脚本输入输出</h2><h3 id="输入"><a href="#输入" class="headerlink" title="输入"></a>输入</h3><p>脚本的输入方式与普通的命令行工具并无太多区别，可以使用 <code>getopt</code> 来获取输入的参数。</p>
+<p>由于需要实现限频，以及针对主机和服务做一些处理，定义了如下的参数：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>u</code></td>
+<td>通知用户</td>
+</tr>
+<tr>
+<td><code>m</code></td>
+<td>报警消息体</td>
+</tr>
+<tr>
+<td><code>r</code></td>
+<td>频率限制值，秒为单位</td>
+</tr>
+<tr>
+<td><code>h</code></td>
+<td>主机</td>
+</tr>
+<tr>
+<td><code>p</code></td>
+<td>端口</td>
+</tr>
+<tr>
+<td><code>l</code></td>
+<td>通知等级，即OK/CRITICAL/WARNING/UNKNOW等</td>
+</tr>
+<tr>
+<td><code>n</code></td>
+<td>通知类型，即PROBLEM/CUSTOM等</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$options</span> = getopt(<span class="string">'u:m:r:h:s:l:n:'</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$warning_users</span> = <span class="keyword">isset</span>(<span class="variable">$options</span>[<span class="string">'u'</span>]) ? <span class="variable">$options</span>[<span class="string">'u'</span>] : <span class="string">''</span>;</span><br><span class="line"><span class="variable">$message</span> = <span class="keyword">isset</span>(<span class="variable">$options</span>[<span class="string">'m'</span>]) ? <span class="variable">$options</span>[<span class="string">'m'</span>] : <span class="string">''</span>;</span><br><span class="line"><span class="variable">$rate</span> = <span class="keyword">isset</span>(<span class="variable">$options</span>[<span class="string">'r'</span>]) ? <span class="variable">$options</span>[<span class="string">'r'</span>] : <span class="number">0</span>;</span><br><span class="line"><span class="variable">$host</span> = <span class="keyword">isset</span>(<span class="variable">$options</span>[<span class="string">'h'</span>]) ? <span class="variable">$options</span>[<span class="string">'h'</span>] : <span class="string">''</span>;</span><br><span class="line"><span class="variable">$service</span> = <span class="keyword">isset</span>(<span class="variable">$options</span>[<span class="string">'s'</span>]) ? <span class="variable">$options</span>[<span class="string">'s'</span>] : <span class="string">''</span>;</span><br><span class="line"><span class="variable">$level</span> = <span class="keyword">isset</span>(<span class="variable">$options</span>[<span class="string">'l'</span>]) ? <span class="variable">$options</span>[<span class="string">'l'</span>] : NOTIFICATION_LEVEL_NOTICE;</span><br><span class="line"><span class="variable">$notification_type</span> = <span class="keyword">isset</span>(<span class="variable">$options</span>[<span class="string">'n'</span>]) ? <span class="variable">$options</span>[<span class="string">'n'</span>] : NOTIFICATION_TYPE_PROBLEM;</span><br></pre></td></tr></table></figure>
+<p>限频的目的在于防止接收过多信息，避免必须处理的信息无法及时被发现。</p>
+<p>而针对服务恢复正常的信息，不需要限频。</p>
+<h3 id="输出"><a href="#输出" class="headerlink" title="输出"></a>输出</h3><p>Nagios的插件通过返回值确定这次检验的状态，即：</p>
+<table>
+<thead>
+<tr>
+<th>Exit code</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>1</td>
+<td>WARNING</td>
+</tr>
+<tr>
+<td>2</td>
+<td>CRITICAL</td>
+</tr>
+<tr>
+<td>3</td>
+<td>UNKNOWN</td>
+</tr>
+</tbody>
+</table>
+<p>不过由于是报警脚本，不妨直接让脚本返回0吧。</p>
+<h2 id="自定义变量"><a href="#自定义变量" class="headerlink" title="自定义变量"></a>自定义变量</h2><p>Nagios在调用编写的报警脚本时，通过定义好的command格式，完成传参。</p>
+<p>对应到每一个联系人，需要有变量告知联系人的联系方式，针对IM，比如QQ，自然是QQ号。查阅<a href="https://assets.nagios.com/downloads/nagioscore/docs/nagioscore/3/en/macrolist.html" target="_blank" rel="external">Nagios预定义宏</a>，会发现并没有QQ号这样的预定义宏。</p>
+<p>当然可以选用预定义的 <a href="https://assets.nagios.com/downloads/nagioscore/docs/nagioscore/3/en/objectdefinitions.html#contact" target="_blank" rel="external">CONTACTPAGER</a> 。考虑到寻呼机已经几乎没人使用了，可以借用一下变量。</p>
+<p>针对各种工具（IM/内部通信接口/短信平台接口等），需要自定义。</p>
+<p>关于自定义，Nagios的<a href="https://assets.nagios.com/downloads/nagioscore/docs/nagioscore/3/en/customobjectvars.html" target="_blank" rel="external">文档</a>已有说明，这里简单提及一下：</p>
+<ul>
+<li>自定义变量必须以<code>_</code>开头以防止与预定义变量冲突</li>
+<li>自定义变量使用时需要转为全大写</li>
+<li>自定义变量会在前方加上所属的对象类型</li>
+</ul>
+<p>针对第三点，简单说来，针对Contact，即联系人这一对象，如果定义了名为<code>uid</code>的自定义变量，那么，在contact的配置中，需要写成<code>_uid</code>，而实际在配置command时，会变为<code>$_CONTACTUID$</code>。</p>
+<h2 id="配置commands"><a href="#配置commands" class="headerlink" title="配置commands"></a>配置commands</h2><p>新增一个发送报警命令<code>send_pm</code>，定义这一自定义报警的调用方式。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 'send_pm' is an alert command</span></span><br><span class="line">define <span class="built_in">command</span> &#123;</span><br><span class="line">    <span class="built_in">command</span>_name    send_pm</span><br><span class="line">    <span class="built_in">command</span>_line    /path/to/your/own/plugins/send_pm.php -h <span class="variable">$HOSTADDRESS</span>$ -u <span class="variable">$_CONTACTUID</span>$ <span class="operator">-l</span> <span class="variable">$SERVICESTATE</span>$ <span class="operator">-s</span> <span class="variable">$SERVICEDISPLAYNAME</span>$  -m <span class="string">"<span class="variable">$HOSTADDRESS</span>$|$</span><br><span class="line">SERVICEDISPLAYNAME$|<span class="variable">$SERVICEOUTPUT</span>$"</span> -n <span class="variable">$NOTIFICATIONTYPE</span>$ -r <span class="number">300</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>参数列表正如上文提及的。</p>
+<p>报警内容为了简短，只会发送主机名、服务名称以及检查结果的首行。</p>
+<h2 id="配置contacts"><a href="#配置contacts" class="headerlink" title="配置contacts"></a>配置contacts</h2><p>在需要报警的联系人配置中，加上自定义的<code>uid</code>变量，以及指定报警方法：</p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">service_notification_commands   send_pm,<span class="keyword">notify</span>-service-<span class="keyword">by</span>-email</span><br><span class="line">host_notification_commands      send_pm,<span class="keyword">notify</span>-service-<span class="keyword">by</span>-email</span><br><span class="line">_uid <span class="number">9527</span></span><br></pre></td></tr></table></figure>
+<p>以上。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Nagios/" rel="tag">#Nagios</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2016/02/16/one-step-into-tmux/" rel="next" title="一些简单的Tmux设置">
+                <i class="fa fa-chevron-left"></i> 一些简单的Tmux设置
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2016/03/16/benchmark-logstash-and-elasticsearch/" rel="prev" title="一组Logstash与Elasticsearch的压测数据">
+                一组Logstash与Elasticsearch的压测数据 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关键点"><span class="nav-number">2.</span> <span class="nav-text">关键点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#开发语言"><span class="nav-number">2.1.</span> <span class="nav-text">开发语言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#脚本输入输出"><span class="nav-number">2.2.</span> <span class="nav-text">脚本输入输出</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#输入"><span class="nav-number">2.2.1.</span> <span class="nav-text">输入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#输出"><span class="nav-number">2.2.2.</span> <span class="nav-text">输出</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义变量"><span class="nav-number">2.3.</span> <span class="nav-text">自定义变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置commands"><span class="nav-number">2.4.</span> <span class="nav-text">配置commands</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置contacts"><span class="nav-number">2.5.</span> <span class="nav-text">配置contacts</span></a></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

@@ -1,0 +1,769 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="PHP,支付,电商," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="TL;DR出于系统分层的目的，售卖系统中订单可以设计成业务层订单和支付层订单，前者关注业务行为，后者更关注资金变更，二者通过唯一ID关联。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="订单系统设计的思考（分层篇）">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2017/08/10/order-system-design-i/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="TL;DR出于系统分层的目的，售卖系统中订单可以设计成业务层订单和支付层订单，前者关注业务行为，后者更关注资金变更，二者通过唯一ID关联。">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.483Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="订单系统设计的思考（分层篇）">
+<meta name="twitter:description" content="TL;DR出于系统分层的目的，售卖系统中订单可以设计成业务层订单和支付层订单，前者关注业务行为，后者更关注资金变更，二者通过唯一ID关联。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 订单系统设计的思考（分层篇） | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                订单系统设计的思考（分层篇）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2017-08-10T20:58:37+08:00" content="2017-08-10">
+              2017-08-10
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/系统/" itemprop="url" rel="index">
+                    <span itemprop="name">系统</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>出于系统分层的目的，售卖系统中订单可以设计成业务层订单和支付层订单，前者关注业务行为，后者更关注资金变更，二者通过唯一ID关联。</p>
+<a id="more"></a>
+<h1 id="不分层的订单系统"><a href="#不分层的订单系统" class="headerlink" title="不分层的订单系统"></a>不分层的订单系统</h1><h2 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h2><p>以下讨论的订单系统基于LNMP实现。</p>
+<p>对于描述错误的地方，烦请告知。</p>
+<h2 id="订单的基本组成"><a href="#订单的基本组成" class="headerlink" title="订单的基本组成"></a>订单的基本组成</h2><p>说起订单，个人认为至少应该包含如下元素：</p>
+<ul>
+<li>商品信息</li>
+<li>购买者信息</li>
+<li>支付信息</li>
+<li>支付状态</li>
+<li>订单状态</li>
+</ul>
+<p><code>商品信息</code>指的是诸如商品的编号，名称这类商品的基础信息。</p>
+<p><code>购买者信息</code>是购买者的物流信息，用户身份信息等数据。</p>
+<p><code>支付信息</code>是支付金额，支付方式等数据。</p>
+<p><code>支付状态</code>是订单支付相关行为的操作依据。</p>
+<p><code>订单状态</code>是订单在业务系统中，对其他使用者给出的带有业务特征的操作依据。</p>
+<h2 id="不做分层的实现"><a href="#不做分层的实现" class="headerlink" title="不做分层的实现"></a>不做分层的实现</h2><p>最简单的一种方式，就是一条表记录，记录上述所有信息。</p>
+<p>接触过的某网店框架的订单部分，订单的所有信息，甚至物流信息都记录在一张表中，好处当然是有的，就是操作起来相当方便，只要一次查询，就能拿出订单相关的所有信息。对于数据报表之类的需求来说，这样的订单表设计大大降低了数据获取部分的开发难度。</p>
+<p>在业务系统规模较小时，这并不成为任何问题，因为一切运行正常，不需要过度设计。</p>
+<p>一旦业务规模增大，需要使用这一系统的业务方增多，对接的外部服务越来越复杂，这个系统还能正常运转吗？</p>
+<p>想象一下当需要修改新增订单的一个状态，然而其他需求的开发人员提到这个状态添加之后会给他们的功能带来流程上的影响；或者是需要通过多个字段才能确定出一个订单的实际状态，相信会想问当初设计时为什么杂糅了这么多的数据。</p>
+<p>可能会引发的现象：</p>
+<ul>
+<li>表字段过多，难以添加有效索引</li>
+<li>新增业务行为需要新增字段，增加表字段数量</li>
+<li>对接上游支付的行为需要业务开发人员关注（耦合了实际支付操作）</li>
+<li>逻辑单元越来越臃肿，开发上难以细致的拆分工作</li>
+<li>错误的操作引起不正确的支付行为</li>
+</ul>
+<h1 id="分层方案"><a href="#分层方案" class="headerlink" title="分层方案"></a>分层方案</h1><h2 id="分层目标"><a href="#分层目标" class="headerlink" title="分层目标"></a>分层目标</h2><p>之前提到说不分层在业务规模发展到一定程度后会给后续功能开发带来不便，分层的目标就是解决这些问题。</p>
+<p>归结起来，核心的问题就是如何能提高业务的<code>可扩展性</code>、<code>开发效率</code>和<code>安全性</code>。</p>
+<h2 id="设计方案"><a href="#设计方案" class="headerlink" title="设计方案"></a>设计方案</h2><p>可以在订单系统内部实现两层。</p>
+<p>一层在本文中称为<code>业务层</code>，关注的是业务行为，比如订单的商品个数，收件人，地址，电话等数据。</p>
+<p>另一层在本文中会称作<code>支付层</code>，关注的是订单的金额，与上游支付系统的关联关系，支付的状态。</p>
+<p>二者之间通过唯一ID进行关联，<code>支付层</code>通过<code>业务层</code>订单ID进行关联，而<code>支付层</code>则与上游的支付系统通过<code>支付层</code>订单ID进行关联。</p>
+<p>所有操作通过 HTTP API 进行。</p>
+<h2 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h2><p>乍一看这样的划分不过是相当于增加了表，通信还增加了成本，感觉像是引入的更多的问题。</p>
+<p>首先从<code>可扩展性</code>说起。</p>
+<h3 id="可扩展性问题"><a href="#可扩展性问题" class="headerlink" title="可扩展性问题"></a>可扩展性问题</h3><p>单表超多字段的问题，通过拆表，其实就能解决。在表记录不多时，不需要分层，直接通过数据库事务对单次操作多张关联的数据表，可以完成业务功能。</p>
+<p>这样强依赖事务的业务，数据库会对系统的吞吐产生较大的影响。</p>
+<p>如果订单数量相当巨大（比如历史悠久的小额充值记录，订单记录多）；或者并发增大，单机数据库逐渐无法支撑业务的发展。</p>
+<p>订单如果存在多个影响因素（物流状态/退款/优惠券/返现）等信息时，如果采用多个数据库提高处理能力，就无法通过数据库事务完成二者的状态一致性。</p>
+<p>所以，拆表不是目的，拆表的初衷是<code>实现资源的横向可扩展性</code>。</p>
+<p>分层之后，<code>业务层</code>专注做好业务层的新需求，业务数据与核心数据分离，任何改动对订单的核心数据<code>支付信息</code>与<code>支付状态</code>可以降低到最小。需要关注的方向越少，就更容易的控制复杂度，增加功能。</p>
+<p><code>支付层</code>分层完成之后，支付层需要关心的数据只有操作者与操作金额数，以及操作的最终状态。简单来说，就是“谁付了多少钱给谁”。无论再新增任何类型的订单，最终都转化为同样的支付行为。</p>
+<p>最后，从资源上来说，由于把数据库事务分拆成了多个系统之间的任务，通过 HTTP API 进行通信，在正常情况下，资源无论如何分布，由于约束已经确定，业务逻辑不会受到影响。</p>
+<p>综上，更容易增加功能，资源可以拆分，无论代码执行者还是资源约束上，整个系统扩展起来会变得更加的容易。</p>
+<h3 id="开发效率"><a href="#开发效率" class="headerlink" title="开发效率"></a>开发效率</h3><p>订单作为用户购买行为的记录，必定会收到购买物品的影响，购买商品的一些特定属性会影响到记录订单的方式。</p>
+<p>但是，归根结底，订单终究是表示操作者和操作金额数的。这些产品业务形态上的复杂度，应该在有限的领域内进行处理。</p>
+<p>此外，订单的关键步骤——支付还涉及到与支付上游的交互，一旦需要新增支付上游，比如近期苹果要求打赏等服务接入IAP这类事件时，和业务系统耦合程度越高，越会带来开发上的问题。</p>
+<p>开发效率不仅和功能的复杂度，结构的清晰程度有关系，也和人力的合理安排有关系。当需要加速开发速度时，划分出合理的结构，可以让不同的人员能真正并行的开发，负责的功能点越小，能更容易高质量的实现，就像 <a href="https://en.wikipedia.org/wiki/Unix_philosophy" target="_blank" rel="external">Unix 的设计哲学</a>提到的：</p>
+<blockquote>
+<p>Write programs that do one thing and do it well</p>
+</blockquote>
+<h3 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h3><p>想象一下，直接操作数据库，和通过 API 操作数据库，哪一个更可能带来副作用？</p>
+<p>API 约束了操作方式，检查了参数，实现得正确的话，可以保证至少操作不会出错。不出错，是订单系统的底线。</p>
+<h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><h2 id="唯一ID选用"><a href="#唯一ID选用" class="headerlink" title="唯一ID选用"></a>唯一ID选用</h2><p>订单分层中，各层数据之间进行关联需要通过唯一ID，订单号在一个系统中必定唯一的，所以可以考虑使用订单ID关联<code>业务层</code>与<code>支付层</code>订单。</p>
+<p>但是这两类订单都有自身的ID，到底选用谁关联谁成为了一个问题。或者说，能不能只用<code>业务层</code>的订单ID关联所有的操作？</p>
+<p>考虑如下一种情况，支付可能会失败，由于各层之间应当实现的是幂等的接口，订单ID常作为请求标识，如果只使用<code>业务层</code>的订单ID，支付失败之后，再次使用这一ID是无法创建新的支付请求的，原因是这一个ID已经失败了。</p>
+<p>所以，出于幂等操作的考虑，<code>支付层</code>通过<strong><em>业务层订单ID</em></strong>进行关联，而<code>支付层</code>则与上游的支付系统通过<strong><em>支付层订单ID</em></strong>进行关联。</p>
+<p>如果非要使用同一个<code>业务层</code>ID进行关联，就需要引入其他的幂等操作标识。</p>
+<h2 id="状态一致"><a href="#状态一致" class="headerlink" title="状态一致"></a>状态一致</h2><p>上面的篇幅描述了分层的意义和一个基本的分层方案，但是这个方案似乎没有提到拆分之后带来的一个巨大的问题——多层数据<code>状态一致</code>的解决方案。</p>
+<p>这个问题就交给下一篇文章<a href="/articles/2017/08/11/order-system-design-ii/">《订单系统设计的思考（状态一致篇）》</a>来解释了。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag">#PHP</a>
+          
+            <a href="/tags/支付/" rel="tag">#支付</a>
+          
+            <a href="/tags/电商/" rel="tag">#电商</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2017/08/06/interesting-and-useful-designs-of-redis/" rel="next" title="Redis里那些有用又有趣的设计">
+                <i class="fa fa-chevron-left"></i> Redis里那些有用又有趣的设计
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2017/08/11/order-system-design-ii/" rel="prev" title="订单系统设计的思考（状态一致篇）">
+                订单系统设计的思考（状态一致篇） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TL-DR"><span class="nav-number">1.</span> <span class="nav-text">TL;DR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#不分层的订单系统"><span class="nav-number">2.</span> <span class="nav-text">不分层的订单系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前提"><span class="nav-number">2.1.</span> <span class="nav-text">前提</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#订单的基本组成"><span class="nav-number">2.2.</span> <span class="nav-text">订单的基本组成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不做分层的实现"><span class="nav-number">2.3.</span> <span class="nav-text">不做分层的实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分层方案"><span class="nav-number">3.</span> <span class="nav-text">分层方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分层目标"><span class="nav-number">3.1.</span> <span class="nav-text">分层目标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设计方案"><span class="nav-number">3.2.</span> <span class="nav-text">设计方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决问题"><span class="nav-number">3.3.</span> <span class="nav-text">解决问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#可扩展性问题"><span class="nav-number">3.3.1.</span> <span class="nav-text">可扩展性问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开发效率"><span class="nav-number">3.3.2.</span> <span class="nav-text">开发效率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安全性"><span class="nav-number">3.3.3.</span> <span class="nav-text">安全性</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题"><span class="nav-number">4.</span> <span class="nav-text">问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#唯一ID选用"><span class="nav-number">4.1.</span> <span class="nav-text">唯一ID选用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#状态一致"><span class="nav-number">4.2.</span> <span class="nav-text">状态一致</span></a></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

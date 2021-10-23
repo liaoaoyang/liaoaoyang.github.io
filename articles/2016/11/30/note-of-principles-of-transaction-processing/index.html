@@ -1,0 +1,977 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Transaction," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="概述年中参与了一个售卖系统的开发工作，开发过程中涉及较多的数据库事务操作以及多层系统之间的状态同步问题。对于事务大方向上的理解，个人觉得需要加强。
+查阅相关书籍，发现首推的都是Jim Grey编写的《事务处理》。此书虽然经典，但是篇幅较大（800+页），希望快速了解一些共性原理的情况下，同事推荐了这本《事务处理原理》。
+在工作之余，挑选了自己较为关注的章节进行阅读并做了一些笔记。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《事务处理原理》">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2016/11/30/note-of-principles-of-transaction-processing/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="概述年中参与了一个售卖系统的开发工作，开发过程中涉及较多的数据库事务操作以及多层系统之间的状态同步问题。对于事务大方向上的理解，个人觉得需要加强。
+查阅相关书籍，发现首推的都是Jim Grey编写的《事务处理》。此书虽然经典，但是篇幅较大（800+页），希望快速了解一些共性原理的情况下，同事推荐了这本《事务处理原理》。
+在工作之余，挑选了自己较为关注的章节进行阅读并做了一些笔记。">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.482Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《事务处理原理》">
+<meta name="twitter:description" content="概述年中参与了一个售卖系统的开发工作，开发过程中涉及较多的数据库事务操作以及多层系统之间的状态同步问题。对于事务大方向上的理解，个人觉得需要加强。
+查阅相关书籍，发现首推的都是Jim Grey编写的《事务处理》。此书虽然经典，但是篇幅较大（800+页），希望快速了解一些共性原理的情况下，同事推荐了这本《事务处理原理》。
+在工作之余，挑选了自己较为关注的章节进行阅读并做了一些笔记。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 《事务处理原理》 | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                《事务处理原理》
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-11-30T23:50:31+08:00" content="2016-11-30">
+              2016-11-30
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Reading/" itemprop="url" rel="index">
+                    <span itemprop="name">Reading</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>年中参与了一个售卖系统的开发工作，开发过程中涉及较多的数据库事务操作以及多层系统之间的状态同步问题。对于事务大方向上的理解，个人觉得需要加强。</p>
+<p>查阅相关书籍，发现首推的都是Jim Grey编写的<a href="https://book.douban.com/subject/1144543/" target="_blank" rel="external">《事务处理》</a>。此书虽然经典，但是篇幅较大（800+页），希望快速了解一些共性原理的情况下，同事推荐了这本<a href="https://book.douban.com/subject/5412835/" target="_blank" rel="external">《事务处理原理》</a>。</p>
+<p>在工作之余，挑选了自己较为关注的章节进行阅读并做了一些笔记。</p>
+<a id="more"></a>
+<h1 id="分章节笔记"><a href="#分章节笔记" class="headerlink" title="分章节笔记"></a>分章节笔记</h1><h2 id="第1章-简介"><a href="#第1章-简介" class="headerlink" title="第1章 简介"></a>第1章 简介</h2><blockquote>
+<p>事务处理(Transaction Processing, TP)</p>
+</blockquote>
+<p>对于真实世界中的交换产生的记账行为，通过网络连接起来计算机进行处理。</p>
+<blockquote>
+<p>在线事务(Online Transaction)</p>
+</blockquote>
+<p>在线用户执行程序，操作数据库。</p>
+<blockquote>
+<p> ACID</p>
+</blockquote>
+<p>原子性(Atomicity)：事务或全部执行，或不执行，<br>一致性(Consistency)：事务保持数据库的内部一致性<br>隔离性(Isolation)：每个事务不影响其他事务<br>持久性(Durability)：故障发生时事务不丢失</p>
+<p>通过ACID测试才能称之为一个事务系统。</p>
+<blockquote>
+<p>原子性(Atomicity)</p>
+</blockquote>
+<p>成功称为提交<code>commit</code>，事务异常终止则是<code>abort</code>。</p>
+<p>对于<code>已提交</code>的事务发现错误的，需要有事务补偿（compensating transaction）机制，考虑到任何事务都有可能失败，设计良好的TP系统需要对各类事务有补偿机制。但是补偿仍有可能不够完备，可以通过其他策略进行修正。</p>
+<blockquote>
+<p>一致性(Consistency)</p>
+</blockquote>
+<p>数据库事务的一致性指的是“内部一致性”，即满足所有逻辑上的约束，不能出现不合理的值。</p>
+<p>一致性不仅仅需要事务系统负责，更需要应用程序参与，而且应用程序负主责。</p>
+<blockquote>
+<p>隔离性(Isolation)</p>
+</blockquote>
+<p>隔离性的关键是可串行化。即执行事务集和按顺序逐个执行事务结果一致。</p>
+<p>加锁机制是大多数数据库系统保持隔离性的一种方法。</p>
+<blockquote>
+<p>持久性(Durability)</p>
+</blockquote>
+<p>事务执行完成，并一定存入稳定存储器，才能称作实现了持久性。</p>
+<p>持久性的主要实现方式之一即将事务更新的副本追加到日志文件中获得的，事务提交时，系统会确保写入日志已经写入磁盘，之后返回给应用程序事务已被提交。如果是数据库程序，实际入库时机不定。事务系统崩溃之后，会通过日志进行恢复，且必须通过日志进行恢复。</p>
+<blockquote>
+<p>两阶段提交(2PC two-phase commit)</p>
+</blockquote>
+<p>解决涉及多个数据库系统的数据不同步的问题。</p>
+<p>由事务管理模块控制。执行两阶段提交时，事务管理器发出两轮消息，第一轮通知所有资源将事务结果写入稳定存储中，所有资源均确认已写入后，发出第二轮消息，通知资源管理器实际提交事务。写入的数据量要足以恢复提交前的状态。</p>
+<h2 id="第2章-事务处理抽象"><a href="#第2章-事务处理抽象" class="headerlink" title="第2章 事务处理抽象"></a>第2章 事务处理抽象</h2><blockquote>
+<p>集合事务（Transaction Bracketing）</p>
+</blockquote>
+<p>个人理解：集合事务是一组标准的编程模式，提供启动(Start)、提交（Commit）与异常终止（Abort）三个事务命令。</p>
+<blockquote>
+<p>组合事务的两种解决方法</p>
+</blockquote>
+<ul>
+<li>实现Start时只执行第一个Start操作，实现Commit操作时只执行最后一个Commit操作</li>
+<li>实现每一个事务组合实现包装器代码，在包装器中进行Start/Commit操作，事务操作编写为元方法</li>
+</ul>
+<blockquote>
+<p>事务标识符</p>
+</blockquote>
+<p>每个事务都应该有个唯一的事务标识符，启动时分配，通过标识符关联全部事务操作。</p>
+<blockquote>
+<p>嵌套事务</p>
+</blockquote>
+<p>嵌套事务在大多数商用系统中不被支持，其表示模式如下：</p>
+<ul>
+<li>事务中使用Start命令，则这一事务是其所在事务的子事务</li>
+<li>不在事务中使用Start，则这一事务成为顶级事务</li>
+<li>顶级的Commit和Abort操作可以影响子事务</li>
+<li>子事务Abort只通知父事务，父事务酌情处理</li>
+<li>子事务之间是隔离的</li>
+</ul>
+<blockquote>
+<p>必备的异常处理</p>
+</blockquote>
+<p>事务故障的恢复，系统故障恢复。</p>
+<blockquote>
+<p>保存点（Savepoints）</p>
+</blockquote>
+<p>保存点是通过通知资源记录操作完成状态实现回退部分事务的一种机制。保存点只会保存顶级事务带来的影响，当子事务调用保存点记录状态时，子事务存在并发操作的情况下，使用保存点无法回退单一子事务带来的影响。</p>
+<h2 id="第3章-事务处理应用程序体系结构"><a href="#第3章-事务处理应用程序体系结构" class="headerlink" title="第3章 事务处理应用程序体系结构"></a>第3章 事务处理应用程序体系结构</h2><blockquote>
+<p>事务处理系统的影响因素</p>
+</blockquote>
+<ul>
+<li>组件是否共享地址空间</li>
+<li>地址空间是否有多个线程中的一个线程在执行</li>
+<li>是否有硬件、OS或者语言机制保护共享地址空间的程序，免于意外修改内存</li>
+</ul>
+<blockquote>
+<p>事务中间件</p>
+</blockquote>
+<p>提供了API以及各类工具，提供与DB和应用程序的交互功能，对开发人员屏蔽事务操作中的操作系统级别的问题，如多线程、通信和安全性。</p>
+<blockquote>
+<p>存储过程VS事务服务器/中间件</p>
+</blockquote>
+<p>存储过程可以完成事务服务器的工作，然而为什么事务服务器/中间件仍然有市场？</p>
+<p>原因在于：</p>
+<ul>
+<li>数据库对于新的通信协议、特性的添加相当缓慢且稳定</li>
+<li>事务服务器/中间件对开发者更友好（语言，特性，规避问题）</li>
+<li>事务服务器可水平扩展性远优于数据库（通过事务服务器更容易扩容）</li>
+</ul>
+<h2 id="第4章-队列化的事务处理"><a href="#第4章-队列化的事务处理" class="headerlink" title="第4章 队列化的事务处理"></a>第4章 队列化的事务处理</h2><blockquote>
+<p>队列化的事务处理</p>
+</blockquote>
+<ul>
+<li>队列分为请求队列以及应答队列</li>
+<li>队列必须写入到非易失性存储之中</li>
+<li>TP程序从请求队列获取任务，处理后写入应答队列</li>
+<li>客户端和服务端需要在会话中提供足够的上下文，用于恢复和按序处理</li>
+</ul>
+<blockquote>
+<p>队列化的事务处理对于不可撤销操作的处理</p>
+</blockquote>
+<p>对于输出，如果只是涉及到非实物的情况，那么影响并不大。<br>但是当涉及金钱出入等问题时，需要处理，方法是在出应答队列之前先写入日志，如果没有前期的写入日志的情况，那么说明并没有执行过这一步骤，如果存在，需要人工告知或者通过其他手段确认到底是否可以执行这一操作。总而言之，即先记录动作，再实际操作（带来的问题可能是对用户的不良体验，但是保证了TP系统不会遭受损失）。</p>
+<p>个人理解：比如ATM出钞操作，步骤如下：</p>
+<ol>
+<li>由于已经扣款，那么取款机启动一个事务，从应答队列中，取出此次取款操作的返回值，即成功取款；</li>
+<li>本地查看是否有本次取款的物理出钞记录，没有则进行到3，有则终止</li>
+<li>记录本次出钞</li>
+<li>实际打开取钞盒，吐出钞票</li>
+<li>提交事务</li>
+</ol>
+<h2 id="第6章-锁定"><a href="#第6章-锁定" class="headerlink" title="第6章 锁定"></a>第6章 锁定</h2><blockquote>
+<p>两阶段锁定（two-phase locking）</p>
+</blockquote>
+<p>一个事务必须在释放其获得的锁之前得到他的锁定。</p>
+<p>目的在于不留出因为先解锁后加锁带来的可供其他事物修改已锁定目标的时间段。两阶段锁定生效的有效的前提是事务只通过事务内读取和写入两种操作进行交互，如果借助了其他手段，那么会破坏可靠性。</p>
+<p>如果一个执行中的事务都遵循两阶段锁定，此执行就是可串行化的。</p>
+<blockquote>
+<p>死锁解决的唯一方法</p>
+</blockquote>
+<p>终止死锁涉及到的事务之一。</p>
+<blockquote>
+<p>死锁检测的技术</p>
+</blockquote>
+<p><code>基于超时</code>与<code>基于图形</code>的检测。</p>
+<p><code>基于超时</code>的检测易于实现，但是可能会终止实际上并没有死锁的事务，同样的由于基于时间进行控制，也会让死锁持续过久。</p>
+<p><code>基于图形</code>的检测，通过<code>等待图</code>(waits-for graph)这一工具进行，从直观上，节点表示事务，边根据方向A-&gt;B，表示A上等待着B上的一个锁定被解除，当锁定解除时，边会被删除，当出现闭环时，说明存在死锁。检查可以是定期检测。同时，基于图形的死锁检测同时也可以在边上设定允许的等待时间，超时的循环存在则可以有效的检验死锁。</p>
+<p>然而基于超时的检测并非一无是处，在异构拓扑，以及分布式网络环境中，效果较好。</p>
+<blockquote>
+<p>死锁牺牲品的选择</p>
+</blockquote>
+<ul>
+<li>产生了循环的事务（最易于发现）</li>
+<li>锁数量最少的事务（完成最少工作量）</li>
+<li>生成日志最少的事务（成本最低）</li>
+<li>写入锁数量最少的事务（成本最低）</li>
+</ul>
+<blockquote>
+<p>死锁的循环式重新启动问题（cyclic restart）</p>
+</blockquote>
+<p>被牺牲的事务因为重新启动又触发死锁，导致无法进行。解决办法是可以将启动时间作为牺牲的考虑因素，牺牲最晚出现的事务。</p>
+<blockquote>
+<p>死锁触发的因素</p>
+</blockquote>
+<ul>
+<li>锁转换（lock conversion）：多个事务同时要求将同一位置上的读锁转换为写锁，由于两阶段锁定的限制，需要先解锁读锁，但是多个事务互相等待其他事务上读锁的释放，于是死锁；解决方法是对于影响范围先上写锁，确定不需要更改时降级为读锁定，或者使用不和读锁冲突的共享锁模式，先上共享锁，会比先上写锁的方式提高一定并发度。共享锁因为和读锁不冲突，不需要进行解锁等操作，所以不会触发死锁。</li>
+<li>锁抖动（lock thrashing）：启动太多事务，由于请求锁的数量倍增，会阻塞住大量事务，造成吞吐量减小的情况。</li>
+</ul>
+<h2 id="第7章-系统恢复"><a href="#第7章-系统恢复" class="headerlink" title="第7章 系统恢复"></a>第7章 系统恢复</h2><blockquote>
+<p>系统故障的衡量指标MTBF与MTTR</p>
+</blockquote>
+<p>MTBF即Mean Time Between Failures，即系统出现故障前的平均运行时间，MTTR则是Mean Time To Repair，即系统出现故障之后进行修复所用时间。</p>
+<p>可用性可以定义为MTBF/(MTBF+MTTR)。</p>
+<blockquote>
+<p>TP系统服务端恢复的原则</p>
+</blockquote>
+<p>非幂等的操作，恢复时对于没有完成的任务需要执行完成，而不是重试。</p>
+<p>系统恢复的关注点应该是已执行的事务，这样会简化系统恢复（基于事务的服务器恢复无需复制运行时内存状态，只需通过增量的改动日志进行恢复，不完整的事务不会被理会）。</p>
+<blockquote>
+<p>基于保存点的非幂等操作服务端恢复</p>
+</blockquote>
+<p>基于保存点的非幂等操作的服务端恢复，需要在执行非幂等操作之前，将内存状态保存到非易失性存储中。</p>
+<p>这样操作可以使得系统在恢复过程中确定执行非幂等操作时数据的状态，以便从指定的时间点完成任务，防止出现错误的重复操作。</p>
+<blockquote>
+<p>数据库的故障类型</p>
+</blockquote>
+<ul>
+<li>事务故障：事务运行异常</li>
+<li>系统故障：主存发生问题</li>
+<li>媒介故障：持久化存储器发生问题</li>
+</ul>
+<blockquote>
+<p>数据库的恢复策略</p>
+</blockquote>
+<ul>
+<li>事务故障：恢复到事务执行之前的数据状态</li>
+<li>系统故障：中断所有未提交的事务，保证写入已提交事务的结果</li>
+<li>媒介故障：与系统故障基本相同</li>
+</ul>
+<blockquote>
+<p>数据库错误恢复的日志格式要点</p>
+</blockquote>
+<ul>
+<li>被更新的页面地址</li>
+<li>执行更新事务的标识符</li>
+<li>页面被写入后的值（后像）</li>
+<li>页面被写入前的值（前像）</li>
+<li>冲突操作的实际执行顺序</li>
+</ul>
+<blockquote>
+<p>数据库恢复管理器应该具有的三大操作</p>
+</blockquote>
+<ul>
+<li>提交：原子的将更新后数据写入数据库，不可撤销</li>
+<li>中断：将事务带来的数据影响还原，不可撤销</li>
+<li>重启：中断故障时所有未提交的的事务，写入已提交的事务尚未同步到数据文件中的数据。这一个操作必须是幂等的</li>
+</ul>
+<blockquote>
+<p>预写日志协议</p>
+</blockquote>
+<p>先改动数据文件，后写入前像日志，在第二步出现错误时，系统恢复，会引起前像丢失的问题，无法恢复。</p>
+<p>预写日志协议的定义是：不要讲未提交的更新输出到稳定数据库中，直至其前像日志记录被输出到日志之中。</p>
+<p>通过这一方式，数据库可以实现异常终止，明确恢复时可以关闭的事务，以及需要补充写入数据文件的部分。</p>
+<p>No-Steal方法是一个简化的规避上述问题的方法，即未提交的改动全部记录到日志之中，事务提交之后才将改动写入到DB之中（问题：如何保证提交之后，数据写入稳定存储和其他事务读取了正确的数据？事务已提交，结果就能被读取，未写入到稳定存储中，也需要能被读取？）。</p>
+<blockquote>
+<p>提交时的强制规则</p>
+</blockquote>
+<p>与预写日志协议相冲突，这一规则的定义为：在事务所有已更新数据的后像写入到稳定存储之前，不能提交事务。</p>
+<blockquote>
+<p>故障恢复方法（Shadow-paging）</p>
+</blockquote>
+<p>核心思想是维护两份数据，数据库中的数据只存储已提交的事务，提交事务的操作即将数据指向已写入稳定存储中的状态副本（shadow page）。</p>
+<p>所谓Shadow page可以看做是数据的目录，会指向实际的数据页面文件，在Shadow page完成指向之后，数据库会更换shadow page的指向，之前的关联关系就会被废弃。</p>
+<p>中断事务因为没有做实际的改变（指向关系没有变动），所以可以直接通过废弃主存中的修改数据以及已写入稳定存储的数据，无需做特别恢复操作。</p>
+<p>Shadow-paging方法在书中提到在商业系统不常用的原因，虽然简单，但是提交时直接将整个页面写入稳定存储，需要耗费大量的IO操作，涉及大量的随机写，在机械盘时代必然会有其劣势。</p>
+<blockquote>
+<p>基于日志完成中断</p>
+</blockquote>
+<p>基于日志完成中断操作时，事务管理器需要从日志记录的的最后一个更新开始，用前像替换已更改的数据文件。</p>
+<p>实现中断操作的问题在于，顺序查找日志中的更新事务效率低下，所以在需要实现一份事务与事务最后一条执行日志的匹配关系，同时事务的每条日志也要记录事务的上一条位置的指针（文件指针？），便于从后往前还原前像。</p>
+<blockquote>
+<p>基于日志完成恢复</p>
+</blockquote>
+<p>基于日志完成恢复，仍然是通过从后向前扫描日志进行，直到完成到检查点。</p>
+<p>原因在于，最后一条日志可以明确事务是否已提交。中断的事务会被丢弃，并恢复前像；已提交的事务则会检查并写入数据；而运行中的事务，则会检查并写入后像，继续运行这一事务。</p>
+<p>恢复时会阻塞所有新事务请求。</p>
+<blockquote>
+<p>日志恢复速度优化——模糊检查点</p>
+</blockquote>
+<p>核心在于，正常运行时写入检查点之前，脏页面已经全部写入。写入操作在系统空闲时进行。由于写入新检查点的前提是之前一个检查点之前数据已经完成写入，所以检查需要从第二个检查点之后进行。</p>
+<h2 id="第8章-两阶段提交"><a href="#第8章-两阶段提交" class="headerlink" title="第8章 两阶段提交"></a>第8章 两阶段提交</h2><blockquote>
+<p>两阶段提交的处理对象</p>
+</blockquote>
+<p>应对多个资源管理器的事务操作。</p>
+<blockquote>
+<p>2PC的四个通信指令</p>
+</blockquote>
+<p>REQUEST-TO-PREPARE：协调者-&gt;参与者<br>PREPRARED：参与者-&gt;协调者（失败则发送NO）<br>COMMIT：协调者-&gt;参与者<br>DONE：参与者-&gt;协调者</p>
+<p>然而，任意阶段出现问题时，协调者可能还会发出ABORT指令，让参与者放弃事务，解锁资源。</p>
+<blockquote>
+<p>2PC PREPARE</p>
+</blockquote>
+<p>2PC中PREPARE所做的操作，是持久存储了事务的余像（afterimages）。</p>
+<blockquote>
+<p>参与者与协调者的等待时机</p>
+</blockquote>
+<p>参与者需要在不明确收到COMMIT/ABORT指令时进行等待（参与者可以请求协调者要求指令状态）。<br>协调者则需要在未收到DONE消息时进行等待（然而协调者还会定时要求参与者反馈状态）。</p>
+<blockquote>
+<p>参与者与协调者写入日志的时机</p>
+</blockquote>
+<p>参与者：PREPARED与DONE发送之前<br>协调者：REQUREST-TO-PREPARE与COMMIT发送之前（REQUREST-TO-PREPARE可以优化不写入，COMMIT日志存在的前提下，可以给参与者请求执行指令时有明确回复）</p>
+<blockquote>
+<p>2PC可以使用三轮通信的条件</p>
+</blockquote>
+<ul>
+<li>只有一个参与者且参与者没有独立的准备阶段</li>
+</ul>
+<p>可以在REQUEST-TO-PREPARE这一个阶段完成之后，将协调者的角色转移到参与者，通过新的协调者（即参与者）完成本地事务之后，发送COMMIT，驱动新参与者（原协调者）发送DONE消息，完成整个事务流程。由于角色变更，新协调者（即参与者）必须要等待DONE消息</p>
+<blockquote>
+<p>合作终止协议</p>
+</blockquote>
+<p>处理参与者者宕机恢复而此时协调者也宕机的情况，通过了解其他参与者收到的通知，决定本参与者执行的操作。参与者告知自己收到的状态，未收到REQUREST-TO-PREPARE的情况的，需要回复ABORT指令，而已PREPARED的，因为不知道原协调者的指令，需要回复UNCERTAIN。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Transaction/" rel="tag">#Transaction</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2016/10/15/Je-me-libere/" rel="next" title="《从自我苛求中解放出来》">
+                <i class="fa fa-chevron-left"></i> 《从自我苛求中解放出来》
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2016/12/14/note-of-building-microservices/" rel="prev" title="《微服务设计》">
+                《微服务设计》 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分章节笔记"><span class="nav-number">2.</span> <span class="nav-text">分章节笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#第1章-简介"><span class="nav-number">2.1.</span> <span class="nav-text">第1章 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第2章-事务处理抽象"><span class="nav-number">2.2.</span> <span class="nav-text">第2章 事务处理抽象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第3章-事务处理应用程序体系结构"><span class="nav-number">2.3.</span> <span class="nav-text">第3章 事务处理应用程序体系结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第4章-队列化的事务处理"><span class="nav-number">2.4.</span> <span class="nav-text">第4章 队列化的事务处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第6章-锁定"><span class="nav-number">2.5.</span> <span class="nav-text">第6章 锁定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第7章-系统恢复"><span class="nav-number">2.6.</span> <span class="nav-text">第7章 系统恢复</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第8章-两阶段提交"><span class="nav-number">2.7.</span> <span class="nav-text">第8章 两阶段提交</span></a></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

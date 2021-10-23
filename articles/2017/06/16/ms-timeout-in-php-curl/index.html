@@ -1,0 +1,758 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="PHP," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="TL;DRPHP5/7加上7.19的libcurl，设置低于1s的超时时间时，curl_exec仍会执行超过1s以上。原因在于此版本的libcurl实现逻辑上以1000ms作为curl_exec中poll系统调用的超时值。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP中curl设置毫秒级超时的问题">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2017/06/16/ms-timeout-in-php-curl/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="TL;DRPHP5/7加上7.19的libcurl，设置低于1s的超时时间时，curl_exec仍会执行超过1s以上。原因在于此版本的libcurl实现逻辑上以1000ms作为curl_exec中poll系统调用的超时值。">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.480Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP中curl设置毫秒级超时的问题">
+<meta name="twitter:description" content="TL;DRPHP5/7加上7.19的libcurl，设置低于1s的超时时间时，curl_exec仍会执行超过1s以上。原因在于此版本的libcurl实现逻辑上以1000ms作为curl_exec中poll系统调用的超时值。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> PHP中curl设置毫秒级超时的问题 | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                PHP中curl设置毫秒级超时的问题
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2017-06-16T22:16:20+08:00" content="2017-06-16">
+              2017-06-16
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>PHP5/7加上7.19的libcurl，设置低于1s的超时时间时，<code>curl_exec</code>仍会执行超过1s以上。原因在于此版本的libcurl实现逻辑上以1000ms作为<code>curl_exec</code>中<code>poll</code>系统调用的超时值。</p>
+<a id="more"></a>
+<h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>某些HTTP接口响应时间可能因为种种原因会引起响应时间延长的问题，在这种情况下，从性能、体验角度考虑，设置调用方的超时时间成为必要。</p>
+<p>从<a href="http://php.net/manual/zh/function.curl-setopt.php" target="_blank" rel="external">手册</a>上得知：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>设置value为</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CURLOPT_TIMEOUT_MS</td>
+<td>设置cURL允许执行的最长毫秒数。 如果 libcurl 编译时使用系统标准的名称解析器（ standard system name resolver），那部分的连接仍旧使用以秒计的超时解决方案，最小超时时间还是一秒钟。</td>
+<td>在 cURL 7.16.2 中被加入。从 PHP 5.2.3 起可使用。</td>
+</tr>
+</tbody>
+</table>
+<p>在符合版本条件的服务器上用PHP内置的HTTP服务器模拟一个时长超过1s的接口：</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="constant">@vm</span> curl_test]<span class="preprocessor"># cat slow.php</span></span><br><span class="line">&lt;?php</span><br><span class="line">        <span class="variable">$sleep</span> = isset(<span class="variable">$_GET[</span><span class="string">'sleep'</span>]) ? <span class="variable">$_GET[</span><span class="string">'sleep'</span>] : <span class="number">1</span><span class="comment">;</span></span><br><span class="line">        <span class="built_in">sleep</span>(<span class="variable">$sleep</span>)<span class="comment">;</span></span><br><span class="line">        echo <span class="string">"SLOW RESPONSE\n"</span><span class="comment">;</span></span><br><span class="line">[root<span class="constant">@vm</span> curl_test]<span class="preprocessor"># php -S 127.0.0.1:8000</span></span><br></pre></td></tr></table></figure>
+<p>通过如下代码访问这一接口：</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">   <span class="variable">$timeout</span>_ms = isset(<span class="variable">$argv</span>[<span class="number">1</span>]) ? <span class="variable">$argv</span>[<span class="number">1</span>] : <span class="number">200</span>;</span><br><span class="line">   <span class="variable">$sleep</span> = isset(<span class="variable">$argv</span>[<span class="number">2</span>]) ? <span class="variable">$argv</span>[<span class="number">2</span>] : <span class="number">1</span>;</span><br><span class="line">   <span class="variable">$url</span> = <span class="string">"http://127.0.0.1:8000/slow.php?sleep=&#123;$sleep&#125;"</span>;</span><br><span class="line">   <span class="variable">$ch</span> = curl_init();</span><br><span class="line">   curl_setopt(<span class="variable">$ch</span>, CURLOPT_URL, <span class="variable">$url</span>);</span><br><span class="line">   curl_setopt(<span class="variable">$ch</span>, CURLOPT_NOSIGNAL, <span class="number">1</span>);</span><br><span class="line">   curl_setopt(<span class="variable">$ch</span>, CURLOPT_TIMEOUT_MS, <span class="variable">$timeout</span>_ms);</span><br><span class="line">   <span class="variable">$start</span> = microtime(<span class="literal">true</span>);</span><br><span class="line">   curl_exec(<span class="variable">$ch</span>);</span><br><span class="line">   <span class="variable">$end</span> = microtime(<span class="literal">true</span>);</span><br><span class="line">   <span class="variable">$time</span> = (<span class="variable">$end</span> - <span class="variable">$start</span>) * <span class="number">1000</span>;</span><br><span class="line">   curl_close(<span class="variable">$ch</span>);</span><br><span class="line"></span><br><span class="line">   echo <span class="string">"sleep:   &#123;$sleep&#125;s\n"</span>;</span><br><span class="line">   echo <span class="string">"timeout: &#123;$timeout_ms&#125;ms\n"</span>;</span><br><span class="line">   echo <span class="string">"start:   &#123;$start&#125;\n"</span>;</span><br><span class="line">   echo <span class="string">"end:     &#123;$end&#125;\n"</span>;</span><br><span class="line">   echo <span class="string">"used:    "</span> . (<span class="variable">$end</span> - <span class="variable">$start</span>) * <span class="number">1000</span>  . <span class="string">"ms\n"</span>;</span><br></pre></td></tr></table></figure>
+<p>通过如下命令，设定了200ms的超时时间，同时还有2s的接口延迟响应时间。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@vm curl_test]<span class="preprocessor"># php curl_test.php <span class="number">200</span> <span class="number">2</span></span></span><br></pre></td></tr></table></figure>
+<p>预料中，客户端应该会在200ms左右的时间结束程序，然而实际执行输出让人感到困惑：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@vm curl_test]<span class="preprocessor"># php curl_test.php <span class="number">200</span> <span class="number">2</span></span></span><br><span class="line">sleep:   <span class="number">2</span>s</span><br><span class="line">timeout: <span class="number">200</span>ms</span><br><span class="line">start:   <span class="number">1497665724.8918</span></span><br><span class="line">end:     <span class="number">1497665725.8937</span></span><br><span class="line">used:    <span class="number">1001.8589496613</span>ms</span><br></pre></td></tr></table></figure>
+<p>客户端运行了1000ms+的时间。</p>
+<h1 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h1><h2 id="查询手册"><a href="#查询手册" class="headerlink" title="查询手册"></a>查询手册</h2><p>从PHP手册中查询到的结果，字面意思并没有太多的歧义，使用方法上也并没有明显错误，下面可以从运行时的状态开始分析。</p>
+<h2 id="Strace跟踪运行过程"><a href="#Strace跟踪运行过程" class="headerlink" title="Strace跟踪运行过程"></a>Strace跟踪运行过程</h2><p>通过<code>strace</code>查看运行过程中的系统调用：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">strace -o curl_strace<span class="class">.log</span> -ttt php curl_test<span class="class">.php</span> <span class="number">200</span> <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>为了方便分析，将输出记录到<code>curl_strace.log</code>文件之中，并记录各个系统调用产生时的时间戳。</p>
+<p>关键的网络请求部分系统调用记录如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span>  <span class="number">1497665724.892491</span> connect(<span class="number">3</span>, &#123;sa_family=AF_INET, sin_port=htons(<span class="number">8000</span>), sin_addr=inet_addr(<span class="string">"127.0.0.1"</span>)&#125;, <span class="number">16</span>) = -<span class="number">1</span> EINPROGRESS (Operation now in progress)</span><br><span class="line"> <span class="number">2</span>  <span class="number">1497665724.892632</span> clock_gettime(CLOCK_MONOTONIC, &#123;<span class="number">17533335</span>, <span class="number">287262686</span>&#125;) = <span class="number">0</span></span><br><span class="line"> <span class="number">3</span>  <span class="number">1497665724.892660</span> poll([&#123;fd=<span class="number">3</span>, events=POLLOUT|POLLWRNORM&#125;], <span class="number">1</span>, <span class="number">200</span>) = <span class="number">1</span> ([&#123;fd=<span class="number">3</span>, revents=POLLOUT|POLLWRNORM&#125;])</span><br><span class="line"> <span class="number">4</span>  <span class="number">1497665724.892689</span> getsockopt(<span class="number">3</span>, SOL_SOCKET, SO_ERROR, [<span class="number">0</span>], [<span class="number">4</span>]) = <span class="number">0</span></span><br><span class="line"> <span class="number">5</span>  <span class="number">1497665724.892714</span> clock_gettime(CLOCK_MONOTONIC, &#123;<span class="number">17533335</span>, <span class="number">287343820</span>&#125;) = <span class="number">0</span></span><br><span class="line"> <span class="number">6</span>  <span class="number">1497665724.892737</span> clock_gettime(CLOCK_MONOTONIC, &#123;<span class="number">17533335</span>, <span class="number">287371368</span>&#125;) = <span class="number">0</span></span><br><span class="line"> <span class="number">7</span>  <span class="number">1497665724.892767</span> clock_gettime(CLOCK_MONOTONIC, &#123;<span class="number">17533335</span>, <span class="number">287395792</span>&#125;) = <span class="number">0</span></span><br><span class="line"> <span class="number">8</span>  <span class="number">1497665724.892789</span> clock_gettime(CLOCK_MONOTONIC, &#123;<span class="number">17533335</span>, <span class="number">287418504</span>&#125;) = <span class="number">0</span></span><br><span class="line"> <span class="number">9</span>  <span class="number">1497665724.892811</span> clock_gettime(CLOCK_MONOTONIC, &#123;<span class="number">17533335</span>, <span class="number">287439788</span>&#125;) = <span class="number">0</span></span><br><span class="line"><span class="number">10</span>  <span class="number">1497665724.892849</span> sendto(<span class="number">3</span>, <span class="string">"GET /slow.php?sleep=2 HTTP/1.1\r\n"</span>..., <span class="number">69</span>, MSG_NOSIGNAL, <span class="literal">NULL</span>, <span class="number">0</span>) = <span class="number">69</span></span><br><span class="line"><span class="number">11</span>  <span class="number">1497665724.893017</span> poll([&#123;fd=<span class="number">3</span>, events=POLLIN|POLLPRI|POLLRDNORM|POLLRDBAND&#125;], <span class="number">1</span>, <span class="number">0</span>) = <span class="number">0</span> (Timeout)</span><br><span class="line"><span class="number">12</span>  <span class="number">1497665724.893046</span> poll([&#123;fd=<span class="number">3</span>, events=POLLIN|POLLPRI|POLLRDNORM|POLLRDBAND&#125;], <span class="number">1</span>, <span class="number">0</span>) = <span class="number">0</span> (Timeout)</span><br><span class="line"><span class="number">13</span>  <span class="number">1497665724.893070</span> clock_gettime(CLOCK_MONOTONIC, &#123;<span class="number">17533335</span>, <span class="number">287699255</span>&#125;) = <span class="number">0</span></span><br><span class="line"><span class="number">14</span>  <span class="number">1497665724.893093</span> clock_gettime(CLOCK_MONOTONIC, &#123;<span class="number">17533335</span>, <span class="number">287722637</span>&#125;) = <span class="number">0</span></span><br><span class="line"><span class="number">15</span>  <span class="number">1497665724.893117</span> clock_gettime(CLOCK_MONOTONIC, &#123;<span class="number">17533335</span>, <span class="number">287746751</span>&#125;) = <span class="number">0</span></span><br><span class="line"><span class="number">16</span>  <span class="number">1497665724.893139</span> poll([&#123;fd=<span class="number">3</span>, events=POLLIN|POLLPRI|POLLRDNORM|POLLRDBAND&#125;], <span class="number">1</span>, <span class="number">1000</span>) = <span class="number">0</span> (Timeout)</span><br><span class="line"><span class="number">17</span>  <span class="number">1497665725.893450</span> poll([&#123;fd=<span class="number">3</span>, events=POLLIN|POLLPRI|POLLRDNORM|POLLRDBAND&#125;], <span class="number">1</span>, <span class="number">0</span>) = <span class="number">0</span> (Timeout)</span><br><span class="line"><span class="number">18</span>  <span class="number">1497665725.893480</span> clock_gettime(CLOCK_MONOTONIC, &#123;<span class="number">17533336</span>, <span class="number">288109801</span>&#125;) = <span class="number">0</span></span><br><span class="line"><span class="number">19</span>  <span class="number">1497665725.893505</span> clock_gettime(CLOCK_MONOTONIC, &#123;<span class="number">17533336</span>, <span class="number">288133751</span>&#125;) = <span class="number">0</span></span><br><span class="line"><span class="number">20</span>  <span class="number">1497665725.893545</span> clock_gettime(CLOCK_MONOTONIC, &#123;<span class="number">17533336</span>, <span class="number">288174671</span>&#125;) = <span class="number">0</span></span><br><span class="line"><span class="number">21</span>  <span class="number">1497665725.893576</span> gettimeofday(&#123;<span class="number">1497665725</span>, <span class="number">893582</span>&#125;, <span class="literal">NULL</span>) = <span class="number">0</span></span><br><span class="line"><span class="number">22</span>  <span class="number">1497665725.893602</span> close(<span class="number">3</span>)              = <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<p><code>fd=3</code>的文件描述符即用于处理网络请求。在上述步骤的第10行发出请求之后，调用了<code>poll</code>系统调用来检验fd是否可以读写。查阅<a href="http://man7.org/linux/man-pages/man2/poll.2.html" target="_blank" rel="external">手册</a>得知，poll系统调用的声明为：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">poll</span><span class="params">(<span class="keyword">struct</span> pollfd *fds, nfds_t nfds, <span class="keyword">int</span> timeout)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>第三个参数即以毫秒为单位的等待超时时间。</p>
+<p>请注意16行的系统<code>poll</code>调用，超时时间足足设定了1000ms，之后程序执行结束退出，那么这个1000ms的超时设定，应该就是程序没有在200ms左右的时间退出的主要原因。</p>
+<h2 id="PHP-curl扩展"><a href="#PHP-curl扩展" class="headerlink" title="PHP curl扩展"></a>PHP curl扩展</h2><p>PHP中的curl函数在curl的扩展中定义，如果怀疑对运行的方式产生了怀疑，可以查看扩展源码。</p>
+<p>在PHP源码的<code>ext/curl</code>目录下的<code>interface.c</code>文件中，可以看到<code>curl_exec</code>方法的定义：</p>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml">/* </span><span class="expression">&#123;&#123;&#123; <span class="variable">proto</span> <span class="variable">bool</span> <span class="variable">curl</span>_<span class="variable">exec</span>(<span class="variable">resource</span> <span class="variable">ch</span>)</span><br><span class="line">     <span class="variable">Perform</span> <span class="variable">a</span> <span class="variable">cURL</span> <span class="variable">session</span> */</span><br><span class="line">  <span class="variable">PHP</span>_<span class="variable">FUNCTION</span>(<span class="variable">curl</span>_<span class="variable">exec</span>)</span><br><span class="line">  &#123;</span><br><span class="line">      <span class="variable">CURLcode</span>    <span class="variable">error</span>;</span><br><span class="line">      <span class="variable">zval</span>        *<span class="variable">zid</span>;</span><br><span class="line">      <span class="variable">php</span>_<span class="variable">curl</span>    *<span class="variable">ch</span>;</span><br><span class="line"></span><br><span class="line">      <span class="variable"><span class="keyword">if</span></span> (<span class="variable">zend</span>_<span class="variable">parse</span>_<span class="variable">parameters</span>(<span class="variable">ZEND</span>_<span class="variable">NUM</span>_<span class="variable">ARGS</span>() <span class="variable">TSRMLS</span>_<span class="variable">CC</span>, <span class="string">"r"</span>, &amp;<span class="variable">zid</span>) == <span class="variable">FAILURE</span>) &#123;</span><br><span class="line">          <span class="variable">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="variable">ZEND</span>_<span class="variable">FETCH</span>_<span class="variable">RESOURCE</span>(<span class="variable">ch</span>, <span class="variable">php</span>_<span class="variable">curl</span> *, &amp;<span class="variable">zid</span>, <span class="variable">-</span>1, <span class="variable">le</span>_<span class="variable">curl</span>_<span class="variable">name</span>, <span class="variable">le</span>_<span class="variable">curl</span>);</span><br><span class="line"></span><br><span class="line">      _<span class="variable">php</span>_<span class="variable">curl</span>_<span class="variable">verify</span>_<span class="variable">handlers</span>(<span class="variable">ch</span>, 1 <span class="variable">TSRMLS</span>_<span class="variable">CC</span>);</span><br><span class="line"></span><br><span class="line">      _<span class="variable">php</span>_<span class="variable">curl</span>_<span class="variable">cleanup</span>_<span class="variable">handle</span>(<span class="variable">ch</span>);</span><br><span class="line"></span><br><span class="line">      <span class="variable">error</span> = <span class="variable">curl</span>_<span class="variable">easy</span>_<span class="variable">perform</span>(<span class="variable">ch-</span>&gt;<span class="variable">cp</span>);</span></span><br></pre></td></tr></table></figure>
+<p>可以看到，实际上PHP中的<code>curl_exec</code>调用的是<code>libcurl</code>中的<code>curl_easy_perform</code>这一函数执行的网络请求。</p>
+<p>对于超时的问题，需要深入到libcurl之中了。</p>
+<h2 id="libcurl-7-19"><a href="#libcurl-7-19" class="headerlink" title="libcurl 7.19"></a>libcurl 7.19</h2><p>通过<code>curl --version</code>命令可以获取cUrl的版本，之后在GitHub是哪个clone<a href="https://github.com/curl/curl" target="_blank" rel="external">源码repo</a>，checkout对应版本（<code>7.19.x</code>）即可。</p>
+<p>可以看到<code>curl_easy_perform</code>在libcurl源码目录中<code>lib/easy.c</code>中被定义了。主要执行步骤如下：</p>
+<p>1.执行<code>Curl_perform</code>函数<br>2.在<code>Curl_perform</code>中完成连接（<code>connect_host</code>函数）与传输数据操作（<code>Transfer</code>函数）<br>3.在<code>Transfer</code>中对第一次poll操作设定0ms的超时，之后均设定为1000ms的超时，参见代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span>(first &amp;&amp;</span><br><span class="line">       ((fd_read != CURL_SOCKET_BAD) || (fd_write != CURL_SOCKET_BAD)))</span><br><span class="line">      <span class="comment">/* if this is the first lap and one of the file descriptors is fine</span><br><span class="line">         to work with, skip the timeout */</span></span><br><span class="line">      timeout_ms = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      timeout_ms = <span class="number">1000</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> (Curl_socket_ready(fd_read, fd_write, timeout_ms)) &#123;</span><br><span class="line">    <span class="keyword">case</span> -<span class="number">1</span>: <span class="comment">/* select() error, stop reading */</span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">ifdef</span> EINTR</span></span><br><span class="line">      <span class="comment">/* The EINTR is not serious, and it seems you might get this more</span><br><span class="line">         often when using the lib in a multi-threaded environment! */</span></span><br><span class="line">      <span class="keyword">if</span>(SOCKERRNO == EINTR)</span><br><span class="line">        <span class="keyword">continue</span>;</span><br><span class="line"><span class="preprocessor">#<span class="keyword">endif</span></span></span><br><span class="line">      <span class="keyword">return</span> CURLE_RECV_ERROR;  <span class="comment">/* indicate a network problem */</span></span><br><span class="line">    <span class="keyword">case</span> <span class="number">0</span>:  <span class="comment">/* timeout */</span></span><br><span class="line">    <span class="keyword">default</span>: <span class="comment">/* readable descriptors */</span></span><br><span class="line"></span><br><span class="line">      result = Curl_readwrite(conn, &amp;done);</span><br><span class="line">      <span class="comment">/* "done" signals to us if the transfer(s) are ready */</span></span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+<p>4.<code>Curl_socket_ready</code>方法中会根据传入的超时时间即变量<code>timeout_ms</code>的值设定<code>poll</code>系统调用的超时值，结合strace日志，即<code>11</code>与<code>16</code>行的<code>poll</code>操作。<br>5.第一次超时为0ms时，<code>poll</code>会立刻返回，显然没有socket可以读写，会走入<code>switch</code>语句的<code>case 0</code>的分支，调用<code>Curl_readwrite</code>函数；在第二次以及之后的执行中，超时会恒定在1000ms，在可读写之后，会走入<code>switch</code>语句的<code>default</code>的分支，也会调用<code>Curl_readwrite</code>函数。<br>6.在<code>Curl_readwrite</code>函数中会再次调用<code>Curl_socket_ready</code>方法，但是这次传入的超时时间则固定为0ms了：</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * <span class="type">Curl_readwrite</span><span class="literal">()</span> is the low-level <span class="keyword">function</span> <span class="keyword">to</span> be called <span class="keyword">when</span> data is <span class="keyword">to</span></span><br><span class="line"> * be read <span class="keyword">and</span> written <span class="keyword">to</span>/from the connection.</span><br><span class="line"> */</span><br><span class="line"><span class="type">CURLcode</span> <span class="type">Curl_readwrite</span>(<span class="keyword">struct</span> connectdata *conn,</span><br><span class="line">                        <span class="built_in">bool</span> *<span class="keyword">done</span>)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">struct</span> <span class="type">SessionHandle</span> *data = conn-&gt;data;</span><br><span class="line">  <span class="keyword">struct</span> <span class="type">SingleRequest</span> *k = &amp;data-&gt;req;</span><br><span class="line">  <span class="type">CURLcode</span> result;</span><br><span class="line">  <span class="built_in">int</span> didwhat=<span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  curl_socket_t fd_read;</span><br><span class="line">  curl_socket_t fd_write;</span><br><span class="line">  <span class="built_in">int</span> select_res = conn-&gt;cselect_bits;</span><br><span class="line"></span><br><span class="line">  conn-&gt;cselect_bits = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  /* only use the proper socket <span class="keyword">if</span> the *_HOLD bit is not set simultaneously <span class="keyword">as</span></span><br><span class="line">     <span class="keyword">then</span> we are <span class="keyword">in</span> rate limiting state <span class="keyword">in</span> that transfer direction */</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>((k-&gt;keepon &amp; <span class="type">KEEP_RECVBITS</span>) == <span class="type">KEEP_RECV</span>) &#123;</span><br><span class="line">    fd_read = conn-&gt;sockfd;</span><br><span class="line">  &#125; <span class="keyword">else</span></span><br><span class="line">    fd_read = <span class="type">CURL_SOCKET_BAD</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>((k-&gt;keepon &amp; <span class="type">KEEP_SENDBITS</span>) == <span class="type">KEEP_SEND</span>)</span><br><span class="line">    fd_write = conn-&gt;writesockfd;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    fd_write = <span class="type">CURL_SOCKET_BAD</span>;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">if</span>(!select_res) &#123; /* <span class="type">Call</span> <span class="keyword">for</span> select<span class="literal">()</span>/poll<span class="literal">()</span> only, <span class="keyword">if</span> read/write/error</span><br><span class="line">                         status is not known. */</span><br><span class="line">       select_res = <span class="type">Curl_socket_ready</span>(fd_read, fd_write, <span class="number">0</span>);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">	...</span><br></pre></td></tr></table></figure>
+<p>这里的<code>Curl_socket_ready</code>就是strace日志中<code>12</code>与<code>17</code>行两次<code>poll</code>操作记录的来源。<br>7.在<code>Curl_readwrite</code>中会判断当前已执行时间是否已经超过了设定的超时时间：</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="built_in">data</span><span class="subst">-&gt;</span><span class="built_in">set</span><span class="built_in">.</span>timeout <span class="subst">&amp;&amp;</span></span><br><span class="line">    (Curl_tvdiff(k<span class="subst">-&gt;</span>now, k<span class="subst">-&gt;</span>start) &gt;= <span class="built_in">data</span><span class="subst">-&gt;</span><span class="built_in">set</span><span class="built_in">.</span>timeout)) &#123;</span><br><span class="line">   <span class="keyword">if</span>(k<span class="subst">-&gt;</span>size != -<span class="number">1</span>) &#123;</span><br><span class="line">     failf(<span class="built_in">data</span>, <span class="string">"Operation timed out after %ld milliseconds with %"</span></span><br><span class="line">           FORMAT_OFF_T <span class="string">" out of %"</span> FORMAT_OFF_T <span class="string">" bytes received"</span>,</span><br><span class="line">           <span class="built_in">data</span><span class="subst">-&gt;</span><span class="built_in">set</span><span class="built_in">.</span>timeout, k<span class="subst">-&gt;</span>bytecount, k<span class="subst">-&gt;</span>size);</span><br><span class="line">   &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">     failf(<span class="built_in">data</span>, <span class="string">"Operation timed out after %ld milliseconds with %"</span></span><br><span class="line">           FORMAT_OFF_T <span class="string">" bytes received"</span>,</span><br><span class="line">           <span class="built_in">data</span><span class="subst">-&gt;</span><span class="built_in">set</span><span class="built_in">.</span>timeout, k<span class="subst">-&gt;</span>bytecount);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> CURLE_OPERATION_TIMEDOUT;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>如果已超过则，返回已超时。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>综上，老版本curl设定了ms级别超时但是仍然会执行s级别的问题在于curl的<code>poll</code>超时设定被固定在1000ms之上，造成了这一问题。</p>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>可以考虑升级libcurl，或者在编译的PHP中使用高版本的libcurl。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@vm curl_test]<span class="preprocessor"># curl --version</span></span><br><span class="line">curl <span class="number">7.55</span><span class="number">.0</span>-DEV (x86_64-unknown-linux-gnu) libcurl/<span class="number">7.55</span><span class="number">.0</span>-DEV OpenSSL/<span class="number">1.0</span><span class="number">.1</span>e zlib/<span class="number">1.2</span><span class="number">.3</span></span><br><span class="line">Release-Date: [unreleased]</span><br><span class="line">Protocols: dict file ftp ftps gopher http https imap imaps ldap ldaps pop3 pop3s rtsp smb smbs smtp smtps telnet tftp</span><br><span class="line">[root@vm curl_test]<span class="preprocessor"># /opt/softwares/php/<span class="number">7.1</span><span class="number">.6</span>_newlibcurl/bin/php curl_test.php <span class="number">200</span> <span class="number">1</span></span></span><br><span class="line">sleep:   <span class="number">1</span>s</span><br><span class="line">timeout: <span class="number">200</span>ms</span><br><span class="line">start:   <span class="number">1497667324.1965</span></span><br><span class="line">end:     <span class="number">1497667324.3967</span></span><br><span class="line">used:    <span class="number">200.21796226501</span>ms</span><br></pre></td></tr></table></figure>
+<p>以上。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag">#PHP</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2017/06/05/a-note-of-mysql-isolation-level/" rel="next" title="MySQL InnoDB事务隔离级别笔记">
+                <i class="fa fa-chevron-left"></i> MySQL InnoDB事务隔离级别笔记
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2017/07/22/codeigniter3/" rel="prev" title="CodeIgniter3">
+                CodeIgniter3 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TL-DR"><span class="nav-number">1.</span> <span class="nav-text">TL;DR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题"><span class="nav-number">2.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分析"><span class="nav-number">3.</span> <span class="nav-text">分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#查询手册"><span class="nav-number">3.1.</span> <span class="nav-text">查询手册</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Strace跟踪运行过程"><span class="nav-number">3.2.</span> <span class="nav-text">Strace跟踪运行过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP-curl扩展"><span class="nav-number">3.3.</span> <span class="nav-text">PHP curl扩展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#libcurl-7-19"><span class="nav-number">3.4.</span> <span class="nav-text">libcurl 7.19</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">3.5.</span> <span class="nav-text">小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决"><span class="nav-number">3.6.</span> <span class="nav-text">解决</span></a></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

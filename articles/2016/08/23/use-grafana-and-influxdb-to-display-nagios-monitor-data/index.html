@@ -1,0 +1,797 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Grafana,InfluxDB,Nagios," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="TL;DRNagios 收集监控数据；InfluxDB 作为存储设施；Grafana 展现指标；Nagios 通过 graphios 向 InfluxDB写入数据。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Grafana+InfluxDB展示Nagios监控数据">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2016/08/23/use-grafana-and-influxdb-to-display-nagios-monitor-data/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="TL;DRNagios 收集监控数据；InfluxDB 作为存储设施；Grafana 展现指标；Nagios 通过 graphios 向 InfluxDB写入数据。">
+<meta property="og:image" content="https://blog.wislay.com/wp-content/uploads/2016/08/php4nagios-sample.png">
+<meta property="og:image" content="https://blog.wislay.com/wp-content/uploads/2016/08/grafana-sample-small.jpg">
+<meta property="og:image" content="https://blog.wislay.com/wp-content/uploads/2016/08/nagios-load-data-in-grafana.jpg">
+<meta property="og:image" content="https://blog.wislay.com/wp-content/uploads/2016/08/nagios-cpu-data-in-grafana.jpg">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.488Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用Grafana+InfluxDB展示Nagios监控数据">
+<meta name="twitter:description" content="TL;DRNagios 收集监控数据；InfluxDB 作为存储设施；Grafana 展现指标；Nagios 通过 graphios 向 InfluxDB写入数据。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 使用Grafana+InfluxDB展示Nagios监控数据 | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                使用Grafana+InfluxDB展示Nagios监控数据
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-08-23T21:32:26+08:00" content="2016-08-23">
+              2016-08-23
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/系统/" itemprop="url" rel="index">
+                    <span itemprop="name">系统</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>Nagios 收集监控数据；<br>InfluxDB 作为存储设施；<br>Grafana 展现指标；<br>Nagios 通过 <a href="https://github.com/shawn-sterling/graphios" target="_blank" rel="external">graphios</a> 向 InfluxDB写入数据。</p>
+<a id="more"></a>
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><code>Nagios</code>作为监控软件来说已经让人基本满意了，但是个人在使用中感觉还存在部分问题：</p>
+<ol>
+<li>不能绘图</li>
+</ol>
+<p>可能有同学会说不是有<a href="https://docs.pnp4nagios.org/" target="_blank" rel="external">PNP4Nagios</a>这样的软件吗？这个软件Nagios并没有默认携带，需要自己手动安装配置。</p>
+<p>另外<code>PHP4Nagios</code>虽然已经能满足显示上的需求，但是绘图效果比较古老（图片来自网络，侵删）：</p>
+<p><img src="https://blog.wislay.com/wp-content/uploads/2016/08/php4nagios-sample.png" alt="PNP4Nagios sample"></p>
+<p>并且不能对某些数据进行对比（比如多台机器的负载情况在同一个图表中显示）。</p>
+<ol start="2">
+<li>无法查看历史数据</li>
+</ol>
+<p>Nagios只能看到“现在”的数据，无法回顾历史以及查看趋势。</p>
+<p>譬如，如果使用现有的Nagios，想要回顾周日半夜任务对系统的消耗时，就会比较抓瞎了。</p>
+<h1 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h1><h2 id="绘图"><a href="#绘图" class="headerlink" title="绘图"></a>绘图</h2><p>先说绘图。</p>
+<p>绘图作为一个附加的功能，可以考虑现有的一些优秀的数据展现软件，譬如<a href="https://www.elastic.co/products/kibana" target="_blank" rel="external">Kibana</a>和<a href="http://grafana.org/" target="_blank" rel="external">Grafana</a>。</p>
+<p>个人认为，Kibana更适合展现日志计数类型的数据，并且本身没有权限控制等功能，这一点比较麻烦，虽然可以通过第三方插件或者HTTP Basic Auth来解决，但是总是增加了维护成本。</p>
+<p>相比之下，Grafana带有权限控制，能支持相当多的时序数据库，从graphite、opentsdb、influxdb，当然也有ES。多条曲线同时展示时还可以看到具体数值，显示效果也相当不错。</p>
+<p><img src="https://blog.wislay.com/wp-content/uploads/2016/08/grafana-sample-small.jpg" alt="Grafana sample from it&#39;s website"></p>
+<p>并且，Grafana在4.0后将会具有告警功能，玩法会变得更多。</p>
+<p>最终选择Grafana作为展示端。</p>
+<h2 id="数据内容"><a href="#数据内容" class="headerlink" title="数据内容"></a>数据内容</h2><p>提一下数据内容。</p>
+<p>在这个方案中，我们展现的数据，实际上是Nagios插件产生的Performance Data（或者叫<code>PERFDATA</code>），如果自行编写的插件没有按照 <code>PERFDATA</code> 的格式输出信息，是不会被收集到InfluxDB中的。如果有自行编写业务监控插件，除了基本的返回码和错误信息之外，要考虑按照标准输出相关的信息，以便收集到InfluxDB中。</p>
+<p>Nagios 3的插件多行输出格式为：</p>
+<font color="red">TEXT OUTPUT</font> | <font color="#FFAA10">OPTIONAL PERFDATA</font><br><font color="blue">LONG TEXT LINE 1</font><br><font color="blue">LONG TEXT LINE 2</font><br><font color="blue">…</font><br><font color="blue">LONG TEXT LINE N</font> | <font color="#FFAA10">PERFDATA LINE 2</font><br><font color="#FFAA10">PERFDATA LINE 3</font><br><font color="#FFAA10">…</font><br><font color="#FFAA10">PERFDATA LINE N</font>
+
+<p>如磁盘信息的收集，单行模式很好理解，通过 <code>|</code> 分隔输出信息以及 <code>PERFDATA</code>；多行模式的话，引用官网的例子：</p>
+<font color="red">DISK OK - free space: / 3326 MB (56%);</font> | <font color="#FFAA10">/=2643MB;5948;5958;0;5968</font><br><font color="blue">/ 15272 MB (77%);</font><br><font color="blue">/boot 68 MB (69%);</font><br><font color="blue">/home 69357 MB (27%);</font><br><font color="blue">/var/log 819 MB (84%);</font> | <font color="#FFAA10">/boot=68MB;88;93;0;98</font><br><font color="#FFAA10">/home=69357MB;253404;253409;0;253414</font><br><font color="#FFAA10">/var/log=818MB;970;975;0;980</font>
+
+<p>第一行仍然可以按照单行模式进行理解（<font color="red">红色</font>部分是输出信息，<font color="#FFAA10">橙色</font>部分是 <code>PERFDATA</code>），从第二行开始，每行一个输出信息，最后将剩余的 <code>PERFDATA</code> 紧接着输出信息的最后一行，通过 <code>|</code> 分隔，逐行输出。</p>
+<p>每项 <code>PERFDATA</code> 格式为：</p>
+<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'label'</span>=<span class="atom">value</span>[<span class="name">UOM</span>];[<span class="atom">warn</span>];[<span class="atom">crit</span>];[<span class="atom">min</span>];[<span class="atom">max</span>]</span><br></pre></td></tr></table></figure>
+<p>引用上述例子的数据 <code>/=2643MB;5948;5958;0;5968</code>，可以看到对应关系为：</p>
+<table>
+<thead>
+<tr>
+<th>label</th>
+<th>/</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>value</td>
+<td>263MB</td>
+</tr>
+<tr>
+<td>warn</td>
+<td>5498</td>
+</tr>
+<tr>
+<td>crit</td>
+<td>5958</td>
+</tr>
+<tr>
+<td>min</td>
+<td>0</td>
+</tr>
+<tr>
+<td>max</td>
+<td>5968</td>
+</tr>
+</tbody>
+</table>
+<p><code>UOM</code> 表示 <code>unit of measurement</code>，即单位，可以是：</p>
+<ul>
+<li>不设定（即数字）</li>
+<li>秒<code>s</code>（或者<code>ms</code>或<code>us</code>）</li>
+<li>百分数<code>%</code></li>
+<li>字节<code>B</code>（或者<code>KB</code>, <code>MB</code>, <code>TB</code>）</li>
+</ul>
+<p>详情可以参阅 <a href="https://nagios-plugins.org/doc/guidelines.html" target="_blank" rel="external">Nagios Plugin Development Guidelines</a> 以及 <a href="https://assets.nagios.com/downloads/nagioscore/docs/nagioscore/3/en/pluginapi.html" target="_blank" rel="external">Nagios Plugin API</a>。</p>
+<h2 id="数据落地"><a href="#数据落地" class="headerlink" title="数据落地"></a>数据落地</h2><p>只有Grafana是不能完成期望的工作的，Grafana只是展现工具，需要有数据源才能展现。</p>
+<p>目前主力使用的时序数据库是ES，但是可以看到Nagios官方网站上关于<a href="https://exchange.nagios.org/directory/Addons/Graphing-and-Trending" target="_blank" rel="external">绘图</a>这一主题推荐的插件中没有看到写入到ES中的插件（ES倒是可以把输出作为监控信息交给Nagios，<a href="http://kibana.logstash.es/content/logstash/plugins/output/nagios.html" target="_blank" rel="external">参见</a>）。</p>
+<p>查阅资料，graphite性能可能存在问题，opentsdb需要有专业的运维同学维护（毕竟是Hadoop衍生产品），InfluxDB兼顾了性能和运维成本，考虑使用。</p>
+<p>值得一提的是，InfluxDB提供了Web管理端，查询语句上类似SQL，便捷程度让人满意。</p>
+<h2 id="数据收集"><a href="#数据收集" class="headerlink" title="数据收集"></a>数据收集</h2><p>落地方式确定之后，需要考虑如何将Nagios收集的诸如load、CPU、内存使用等信息存入InfluxDB了。</p>
+<p><a href="https://github.com/shawn-sterling/graphios" target="_blank" rel="external">graphios</a>可以相当便捷的完成这一工作。这是一个将Nagios perf data写入到InfluxDB中的工具。配置也相当便捷，基本上按照README即可完成。</p>
+<p><a href="https://github.com/Griesbacher/nagflux" target="_blank" rel="external">Nagflux</a>看起来也是不错，然而问题在于这个适用于<code>4.x</code>版本的Nagios，在不打算升级Nagios的情况下，只能放弃。</p>
+<p>但是，凡事总有例外，使用软件的特定组合的情况下，会出现一些问题。</p>
+<h3 id="数据解析异常"><a href="#数据解析异常" class="headerlink" title="数据解析异常"></a>数据解析异常</h3><p>graphios在Nagios官网上声称匹配<code>3.x</code>版本的Nagios，但是在与实际使用的Nagios <code>3.5</code>结合时，会出现部分perf data无法成功解析的情况，检查后发现Nagios <code>3.5</code>的部分数据在graphios读取时，并没有按数据协议组织，导致解析错误。</p>
+<p>对此，针对输出数据，修改了解析所在部分<a href="https://github.com/shawn-sterling/graphios/blob/master/graphios.py" target="_blank" rel="external">源码</a>进行了匹配，筛选出了所需数据。</p>
+<h3 id="InfluxDB版本"><a href="#InfluxDB版本" class="headerlink" title="InfluxDB版本"></a>InfluxDB版本</h3><p>提示的InfluxDB版本较新，为<code>0.13</code>，然而，在graphios的配置文件中，backend部分，只有<code>enable_influxdb09</code>以及<code>enable_influxdb</code>选项，默认使用的json数据写入协议已经在<code>0.13</code>中<a href="https://docs.influxdata.com/influxdb/v0.13/write_protocols/json/" target="_blank" rel="external">废弃</a>。</p>
+<p>上述问题，考虑到版本后续兼容性，将<code>0.13</code>视作<code>0.9</code>版本配置，并且配置数据写入协议为<a href="https://docs.influxdata.com/influxdb/v0.13/write_protocols/line/" target="_blank" rel="external"><code>line</code></a>即可（即配置<code>influxdb_line_protocol = True</code>）。</p>
+<p>为了让graphios永驻后台，可以考虑使用supervisord等工具。</p>
+<h2 id="展现样例"><a href="#展现样例" class="headerlink" title="展现样例"></a>展现样例</h2><h3 id="load"><a href="#load" class="headerlink" title="load"></a>load</h3><p><img src="https://blog.wislay.com/wp-content/uploads/2016/08/nagios-load-data-in-grafana.jpg" alt="load"></p>
+<h3 id="CPU"><a href="#CPU" class="headerlink" title="CPU"></a>CPU</h3><p><img src="https://blog.wislay.com/wp-content/uploads/2016/08/nagios-cpu-data-in-grafana.jpg" alt="CPU"></p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>使用<code>Nagios</code>+<code>graphios</code>+<code>InfluxDB</code>+<code>Grafana</code>可以将监控数据以更好的方式进行展现，并能够回顾历史，查看趋势，随着Grafana的升级，还可以有更多的玩法。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Grafana/" rel="tag">#Grafana</a>
+          
+            <a href="/tags/InfluxDB/" rel="tag">#InfluxDB</a>
+          
+            <a href="/tags/Nagios/" rel="tag">#Nagios</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2016/08/14/high-output-management/" rel="next" title="《格鲁夫给经理人的第一课》">
+                <i class="fa fa-chevron-left"></i> 《格鲁夫给经理人的第一课》
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2016/09/11/influxdb-note/" rel="prev" title="InfluxDB使用笔记">
+                InfluxDB使用笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TL-DR"><span class="nav-number">1.</span> <span class="nav-text">TL;DR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">2.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方案"><span class="nav-number">3.</span> <span class="nav-text">方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#绘图"><span class="nav-number">3.1.</span> <span class="nav-text">绘图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据内容"><span class="nav-number">3.2.</span> <span class="nav-text">数据内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据落地"><span class="nav-number">3.3.</span> <span class="nav-text">数据落地</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据收集"><span class="nav-number">3.4.</span> <span class="nav-text">数据收集</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据解析异常"><span class="nav-number">3.4.1.</span> <span class="nav-text">数据解析异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InfluxDB版本"><span class="nav-number">3.4.2.</span> <span class="nav-text">InfluxDB版本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#展现样例"><span class="nav-number">3.5.</span> <span class="nav-text">展现样例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#load"><span class="nav-number">3.5.1.</span> <span class="nav-text">load</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CPU"><span class="nav-number">3.5.2.</span> <span class="nav-text">CPU</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">4.</span> <span class="nav-text">小结</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

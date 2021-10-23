@@ -1,0 +1,755 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Eloquent,Laravel,PHP,Yaf," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="TL;DR在Yaf中集成Eloquent ORM需要通过Composer管理相关依赖，并完成Eloquent的初始化。
+&amp;lt;!-- integrate-yaf-with-eloquent --&amp;gt;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Yaf集成Eloquent">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2017/08/01/integrate-yaf-with-eloquent/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="TL;DR在Yaf中集成Eloquent ORM需要通过Composer管理相关依赖，并完成Eloquent的初始化。
+&amp;lt;!-- integrate-yaf-with-eloquent --&amp;gt;">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.474Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Yaf集成Eloquent">
+<meta name="twitter:description" content="TL;DR在Yaf中集成Eloquent ORM需要通过Composer管理相关依赖，并完成Eloquent的初始化。
+&amp;lt;!-- integrate-yaf-with-eloquent --&amp;gt;">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> Yaf集成Eloquent | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Yaf集成Eloquent
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2017-08-01T11:46:00+08:00" content="2017-08-01">
+              2017-08-01
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><p>在Yaf中集成Eloquent ORM需要通过Composer管理相关依赖，并完成Eloquent的初始化。</p>
+<!-- integrate-yaf-with-eloquent -->
+<a id="more"></a>
+<h1 id="Yaf"><a href="#Yaf" class="headerlink" title="Yaf"></a>Yaf</h1><p><a href="https://github.com/laruence/yaf" target="_blank" rel="external">Yaf</a> 是以性能优秀著称的通过PHP扩展实现的框架。</p>
+<p>与常规的框架使用上不同，这一框架需要安装PHP扩展才可以使用。安装方法不再赘述。</p>
+<p>Yaf 的优点自然是性能，抽象出了常规框架必备的加载、路由等功能，提供了插件机制，对一个请求的一些阶段可以进行hook，实现对输入输出的控制，可谓是极简框架。</p>
+<p>但是极简框架带来的问题在于，一些便于代码编写的工具并不会被包含到框架之中，虽然与框架的设计目的相违背，但是对于使用者来说，也增加了一些成本。</p>
+<h1 id="Eloquent"><a href="#Eloquent" class="headerlink" title="Eloquent"></a>Eloquent</h1><p><a href="http://laravel.com/docs/eloquent" target="_blank" rel="external">Eloquent</a> 是Laravel框架操作数据库的利器，已被抽出成为独立组件<a href="https://github.com/illuminate/database" target="_blank" rel="external">illuminate/database</a>，对于基本的查询工作，省去了编写SQL的时间，同时提供自动修改时间戳，软删除等功能也让开发成本大大降低。<code>Seeder</code>与<code>Migration</code>工具更是开发过程的有力工具。<code>Seeder</code>结合<code>Faker</code>方便制造假数据供接口测试，<code>Migration</code>则帮助建立库表结构。</p>
+<h1 id="Yaf集成Eloquent"><a href="#Yaf集成Eloquent" class="headerlink" title="Yaf集成Eloquent"></a>Yaf集成Eloquent</h1><p>使用Yaf作为PHP开发框架，又想要享受Eloquent便捷的数据库操作方式，唯一的办法自然是将二者集成。</p>
+<p>示例代码位于<a href="https://github.com/liaoaoyang/YafWithEloquentSample" target="_blank" rel="external">GitHub</a>上。</p>
+<h2 id="开启Yaf的命名空间模式（非必须）"><a href="#开启Yaf的命名空间模式（非必须）" class="headerlink" title="开启Yaf的命名空间模式（非必须）"></a>开启Yaf的命名空间模式（非必须）</h2><p>Yaf框架可以在<code>php.ini</code>中通过 <code>yaf.use_namespace = 1</code> 这一配置项开启命名空间模式。开启之后Yaf的一些内置类名称从下划线分隔变为命名空间的形式，如<code>Yaf_Controller_Abstract</code> 变为 <code>Yaf\Controller_Abstract</code>。</p>
+<p>这一步骤是非必须的，因为不开启命名空间也可以实现后续的功能。</p>
+<p>如果开发阶段不想在php.ini里修改yaf的配置，也可以通过php -d传入参数启动内置http服务器，如：<code>php -d &#39;yaf.use_namespace=1&#39; -S 127.0.0.1:8080</code>。</p>
+<h2 id="通过yaf-cg工具生成初始化项目"><a href="#通过yaf-cg工具生成初始化项目" class="headerlink" title="通过yaf_cg工具生成初始化项目"></a>通过yaf_cg工具生成初始化项目</h2><p>Yaf文档中有<a href="http://yaf.laruence.com/manual/tutorial.firstpage.html#tutorial.directory" target="_blank" rel="external">经典的项目结构</a>：</p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">+ <span class="keyword">public</span></span><br><span class="line">  |- <span class="keyword">index</span>.php <span class="comment">//入口文件</span></span><br><span class="line">  |- .htaccess <span class="comment">//重写规则    </span></span><br><span class="line">  |+ css</span><br><span class="line">  |+ img</span><br><span class="line">  |+ js</span><br><span class="line">+ conf</span><br><span class="line">  |- application.ini <span class="comment">//配置文件   </span></span><br><span class="line">+ application</span><br><span class="line">  |+ controllers</span><br><span class="line">     |- <span class="keyword">Index</span>.php <span class="comment">//默认控制器</span></span><br><span class="line">  |+ views    </span><br><span class="line">     |+ <span class="keyword">index</span>   <span class="comment">//控制器</span></span><br><span class="line">        |- <span class="keyword">index</span>.phtml <span class="comment">//默认视图</span></span><br><span class="line">  |+ modules <span class="comment">//其他模块</span></span><br><span class="line">  |+ <span class="keyword">library</span> <span class="comment">//本地类库</span></span><br><span class="line">  |+ models  <span class="comment">//model目录</span></span><br><span class="line">  |+ plugins <span class="comment">//插件目录</span></span><br></pre></td></tr></table></figure>
+<p>如果还想更简单，<a href="https://github.com/laruence/php-yaf/tree/master/tools/cg" target="_blank" rel="external">Yaf Codes Generator</a> 可以帮助生成一个类似这一结构的项目，也就是示例代码的目录结构。</p>
+<p>如果开启了命名空间模式，需要对当中的一些代码进行改写。</p>
+<h2 id="Composer添加依赖"><a href="#Composer添加依赖" class="headerlink" title="Composer添加依赖"></a>Composer添加依赖</h2><p>Composer用作PHP项目依赖管理工具是最好的选择之一，通过<code>composer require illuminate/database v4.2.17</code>可以在<code>composer.json</code>中添加依赖，这里使用的是较老版本的illuminate/database。</p>
+<p>执行<code>composer install</code>进行安装依赖。</p>
+<h2 id="自动加载配置"><a href="#自动加载配置" class="headerlink" title="自动加载配置"></a>自动加载配置</h2><h3 id="Yaf-1"><a href="#Yaf-1" class="headerlink" title="Yaf"></a>Yaf</h3><p>Yaf有自己的一套加载规则，在未做特殊配置的情况下，在默认模块下进行开发，简单来说可以概括成如下几个：</p>
+<ul>
+<li>代码的起始查找目录都在于在ini中定义的<code>application.directory</code>(此处值可以使用PHP代码中的预定义常量)</li>
+<li><code>_</code>表示目录分隔符，<code>class Foo_BarBar_Var</code>等同于目录<code>Foo/BarBar/Var.php</code></li>
+<li><code>Controller</code>为结尾的类会在<code>controllers</code>目录下进行查找</li>
+<li><code>Model</code>为结尾的类会在<code>models</code>目录下进行查找</li>
+<li><code>Plugin</code>为结尾的类会在<code>plugins</code>目录下进行查找</li>
+<li>其他类会在<code>library</code>目录下进行查找</li>
+</ul>
+<h3 id="Eloquent-1"><a href="#Eloquent-1" class="headerlink" title="Eloquent"></a>Eloquent</h3><p>Eloquent的加载规则就是标准的PSR-4加载规则。</p>
+<p>每次更新依赖之后或者在<code>composer.json</code>中新增了映射规则之后，通过<code>composer dump-autoload</code>更新<code>vendor/autoload.php</code>文件即可。</p>
+<h3 id="Yaf-Eloquent"><a href="#Yaf-Eloquent" class="headerlink" title="Yaf+Eloquent"></a>Yaf+Eloquent</h3><p>Yaf的加载规则和PSR-4并不能完全匹配，所幸Yaf允许增加自动加载规则，通过<code>Yaf\Loader::import()</code>方法可以将<code>vendor/autoload.php</code>引入，针对不满足Yaf框架的加载规则的依赖包完成依赖加载工作。</p>
+<h2 id="初始化Eloquent"><a href="#初始化Eloquent" class="headerlink" title="初始化Eloquent"></a>初始化Eloquent</h2><p>在上述步骤完整之后，可以定义一个基类，继承了这一个基类的model可以不用再重复处理连接初始化等问题。</p>
+<p>我们使用的数据库是MySQL，对于MySQL需要配置用户名、密码等连接参数，为了方便起见，在ini文件中按照Eloquent需要的形式配置字段：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">database<span class="class">.driver</span>    = <span class="string">"mysql"</span></span><br><span class="line">database<span class="class">.host</span>      = <span class="string">"127.0.0.1"</span></span><br><span class="line">database<span class="class">.port</span>      = <span class="string">"3306"</span></span><br><span class="line">database<span class="class">.database</span>  = <span class="string">"learn"</span></span><br><span class="line">database<span class="class">.username</span>  = <span class="string">"learn"</span></span><br><span class="line">database<span class="class">.password</span>  = <span class="string">"123456"</span></span><br><span class="line">database<span class="class">.charset</span>   = <span class="string">"utf8"</span></span><br><span class="line">database<span class="class">.collation</span> = <span class="string">"utf8_general_ci"</span></span><br><span class="line">database<span class="class">.prefix</span>    = <span class="string">""</span></span><br></pre></td></tr></table></figure>
+<p>Yaf读取这一配置之后，会转化为一个数组，key为<code>database.</code>之后的字符串，值即等号之后的值。</p>
+<p>按照Eloquent的手册，赋值后完成初始化操作：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="preprocessor">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Database</span>\<span class="title">Capsule</span>\<span class="title">Manager</span> <span class="title">as</span> <span class="title">IlluminateCapsule</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Database</span>\<span class="title">Eloquent</span>\<span class="title">Model</span> <span class="title">as</span> <span class="title">IlluminateModel</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Yaf</span>\<span class="title">Registry</span> <span class="title">as</span> <span class="title">YRegistry</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BaseModel</span> <span class="keyword">extends</span> <span class="title">IlluminateModel</span></span><br><span class="line"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$config</span> = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$capsule</span> = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(array <span class="variable">$attributes</span> = array<span class="params">()</span>)</span></span><br><span class="line">    </span>&#123;</span><br><span class="line">        <span class="keyword">parent</span>::__construct(<span class="variable">$attributes</span>);</span><br><span class="line">        <span class="variable">$dbConfigKey</span> = DATABASE_CONFIG_KEY;</span><br><span class="line">        <span class="variable">$this</span>-&gt;config = YRegistry::get(<span class="string">'config'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!<span class="variable">$this</span>-&gt;config-&gt;<span class="variable">$dbConfigKey</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="keyword">Exception</span>(<span class="string">"Must configure database in .ini first"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="variable">$this</span>-&gt;config = <span class="variable">$this</span>-&gt;config-&gt;<span class="variable">$dbConfigKey</span>-&gt;toArray();</span><br><span class="line">        <span class="variable">$this</span>-&gt;capsule = <span class="keyword">new</span> IlluminateCapsule();</span><br><span class="line">        <span class="variable">$this</span>-&gt;capsule-&gt;addConnection(<span class="variable">$this</span>-&gt;config);</span><br><span class="line">        <span class="variable">$this</span>-&gt;capsule-&gt;bootEloquent();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>通过<code>Yaf\Registry::get()</code>方法是因为在<code>Bootstrap.php</code>的<code>_initConfig()</code>方法中已经对配置做了存储：</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public <span class="keyword">function</span> _initConfig()</span><br><span class="line">&#123;</span><br><span class="line">   //把配置保存起来</span><br><span class="line">   <span class="variable">$arrConfig</span> = Yaf\Application::app()-&gt;getConfig();</span><br><span class="line">   Yaf\Registry::set(<span class="string">'config'</span>, <span class="variable">$arrConfig</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>2018-05-09更新</code>：针对于需要使用事务以及门面的情况，此处进行了<a href="/articles/2018/05/03/integrate-yaf-with-eloquent-ii/">描述</a>。</p>
+<h2 id="实现Model"><a href="#实现Model" class="headerlink" title="实现Model"></a>实现Model</h2><p>将要操作的表结构为：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`db_sample`</span> (</span><br><span class="line">    <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">    <span class="string">`name`</span> <span class="built_in">varchar</span>(<span class="number">100</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span>,</span><br><span class="line">    PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8;</span></span><br></pre></td></tr></table></figure>
+<p>继承BaseModel，设置表、是否使用时间戳等属性，实现Model：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DBSampleModel</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">\BaseModel</span></span><br><span class="line"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> $table = <span class="symbol">'db_sampl</span>e';</span><br><span class="line">    public $timestamps = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>至此，Yaf之中已经可以通过Eloquent操作MySQL数据库。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Eloquent/" rel="tag">#Eloquent</a>
+          
+            <a href="/tags/Laravel/" rel="tag">#Laravel</a>
+          
+            <a href="/tags/PHP/" rel="tag">#PHP</a>
+          
+            <a href="/tags/Yaf/" rel="tag">#Yaf</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2017/07/25/modern-php/" rel="next" title="《Modern PHP》">
+                <i class="fa fa-chevron-left"></i> 《Modern PHP》
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2017/08/06/interesting-and-useful-designs-of-redis/" rel="prev" title="Redis里那些有用又有趣的设计">
+                Redis里那些有用又有趣的设计 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TL-DR"><span class="nav-number">1.</span> <span class="nav-text">TL;DR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Yaf"><span class="nav-number">2.</span> <span class="nav-text">Yaf</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Eloquent"><span class="nav-number">3.</span> <span class="nav-text">Eloquent</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Yaf集成Eloquent"><span class="nav-number">4.</span> <span class="nav-text">Yaf集成Eloquent</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#开启Yaf的命名空间模式（非必须）"><span class="nav-number">4.1.</span> <span class="nav-text">开启Yaf的命名空间模式（非必须）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过yaf-cg工具生成初始化项目"><span class="nav-number">4.2.</span> <span class="nav-text">通过yaf_cg工具生成初始化项目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Composer添加依赖"><span class="nav-number">4.3.</span> <span class="nav-text">Composer添加依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自动加载配置"><span class="nav-number">4.4.</span> <span class="nav-text">自动加载配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Yaf-1"><span class="nav-number">4.4.1.</span> <span class="nav-text">Yaf</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Eloquent-1"><span class="nav-number">4.4.2.</span> <span class="nav-text">Eloquent</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Yaf-Eloquent"><span class="nav-number">4.4.3.</span> <span class="nav-text">Yaf+Eloquent</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化Eloquent"><span class="nav-number">4.5.</span> <span class="nav-text">初始化Eloquent</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现Model"><span class="nav-number">4.6.</span> <span class="nav-text">实现Model</span></a></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

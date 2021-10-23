@@ -1,0 +1,844 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="MySQL," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="概述中秋假期的前夕的9月12日，MySQL 8.0.0 放出了 Development Milestone Release。是开源数据库的一大新闻。
+要知道MySQL的上一个版本号仅仅是 5.7。在MySQL归属于Oracle公司之后，版本号的飞速提升也开始了，按此趋势，预计不日将会赶超Oracle自家商业数据库产品……
+发布之际，简要的了解和比较一下 MySQL 5.5/5.6/5.7/8 之间">
+<meta property="og:type" content="article">
+<meta property="og:title" content="简要了解 MySQL 5.5/5.6/5.7/8 出现的新特性">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2016/09/18/a-brief-note-between-mysql-5-5-5-6-5-7-and-8/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="概述中秋假期的前夕的9月12日，MySQL 8.0.0 放出了 Development Milestone Release。是开源数据库的一大新闻。
+要知道MySQL的上一个版本号仅仅是 5.7。在MySQL归属于Oracle公司之后，版本号的飞速提升也开始了，按此趋势，预计不日将会赶超Oracle自家商业数据库产品……
+发布之际，简要的了解和比较一下 MySQL 5.5/5.6/5.7/8 之间">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.466Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="简要了解 MySQL 5.5/5.6/5.7/8 出现的新特性">
+<meta name="twitter:description" content="概述中秋假期的前夕的9月12日，MySQL 8.0.0 放出了 Development Milestone Release。是开源数据库的一大新闻。
+要知道MySQL的上一个版本号仅仅是 5.7。在MySQL归属于Oracle公司之后，版本号的飞速提升也开始了，按此趋势，预计不日将会赶超Oracle自家商业数据库产品……
+发布之际，简要的了解和比较一下 MySQL 5.5/5.6/5.7/8 之间">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 简要了解 MySQL 5.5/5.6/5.7/8 出现的新特性 | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                简要了解 MySQL 5.5/5.6/5.7/8 出现的新特性
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-09-18T23:58:14+08:00" content="2016-09-18">
+              2016-09-18
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/系统/" itemprop="url" rel="index">
+                    <span itemprop="name">系统</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>中秋假期的前夕的9月12日，<code>MySQL 8.0.0</code> 放出了 <a href="http://dev.mysql.com/doc/relnotes/mysql/8.0/en/news-8-0-0.html" target="_blank" rel="external">Development Milestone Release</a>。是开源数据库的一大新闻。</p>
+<p>要知道MySQL的上一个版本号仅仅是 <code>5.7</code>。在MySQL归属于Oracle公司之后，版本号的飞速提升也开始了，按此趋势，预计不日将会赶超Oracle自家商业数据库产品……</p>
+<p>发布之际，简要的了解和比较一下 MySQL 5.5/5.6/5.7/8 之间的区别和特性。</p>
+<p>如有错误，烦请指出。</p>
+<a id="more"></a>
+<h1 id="MySQL的开发周期"><a href="#MySQL的开发周期" class="headerlink" title="MySQL的开发周期"></a>MySQL的开发周期</h1><p>在比较之前，首先提一下<a href="https://dev.mysql.com/doc/mysql-development-cycle/en/preface.html" target="_blank" rel="external">MySQL的开发周期</a>.</p>
+<p>MySQL一个大版本的开发，大致经历如下几个阶段：</p>
+<ul>
+<li>Feature Development</li>
+<li>Feature Testing</li>
+<li>Performance Testing</li>
+<li>Lab Releases</li>
+<li>Development Milestone Releases</li>
+<li>General Availability Release(GA)</li>
+</ul>
+<h2 id="Feature-Development"><a href="#Feature-Development" class="headerlink" title="Feature Development"></a>Feature Development</h2><p>也即是所谓的特性开发阶段。这个阶段是常规的功能点确定，代码开发，完成CR以及QA等常规的开发流程。</p>
+<p>在一系列的测试以及bugfix之后，当QA “signs off” 即测试通过之后，会合并到TRUNK之中。</p>
+<h2 id="Feature-Testing"><a href="#Feature-Testing" class="headerlink" title="Feature Testing"></a>Feature Testing</h2><p>即特性测试阶段。</p>
+<p>特性测试的阶段，从质量保证的角度出发，MySQL的测试工作将会有以下的关注点：</p>
+<ul>
+<li>完成新特性的基本测试工作</li>
+<li>未出现性能衰减/特性的倒退</li>
+<li>至少达到80%的代码覆盖率</li>
+</ul>
+<p>一个新特性达到要能被合并到TRUNK之中，需要满足如下条件：</p>
+<ul>
+<li>没有任何已知的错误，包括那些微小的错误</li>
+<li>没有任何已知的性能衰减/特性的倒退</li>
+<li>代码覆盖率达到预期</li>
+<li>自动化测试集中需要有这一新特性的回归测试用例</li>
+</ul>
+<h2 id="Performance-Testing"><a href="#Performance-Testing" class="headerlink" title="Performance Testing"></a>Performance Testing</h2><p>作为应用的基础组件，性能是绝大多数开发人员都在关注的问题。在特性测试完成之后，将要进行的是性能测试。</p>
+<p>性能测试主要关注两个指标：<code>吞吐量</code>和<code>响应时间</code>。</p>
+<p>针对于<code>吞吐量</code>的测试，会有如下的特点：</p>
+<ul>
+<li>并发测试范围从<code>8</code>到<code>1024</code>个连接</li>
+<li>使用诸如<code>sysbench</code>这类开源软件，进行简单<a href="https://en.wikipedia.org/wiki/Online_transaction_processing" target="_blank" rel="external">OLTP</a>（基本的事务处理）的测试，每个测试时间在5-10min范围内，随着数据集以及系统配置而定</li>
+<li>针对特定场景也会有相应的测试用例</li>
+<li>测试数据会被存储到数据库中，以便比较或者确定测试的基准值</li>
+</ul>
+<p>而对于<code>响应时间</code>的测试，则会有如下的特点：</p>
+<ul>
+<li>在单个被测试线程上完成测试</li>
+<li>准备两方面测试用例，分别考验计算复杂型场景和IO密集型场景</li>
+</ul>
+<h2 id="Lab-Releases"><a href="#Lab-Releases" class="headerlink" title="Lab Releases"></a>Lab Releases</h2><p>实验室发布是在用户对某一特性有着强烈的兴趣时，发布的快照版本，通常还没有合并到TRUNK之中。</p>
+<p>实验室发布版本存在的特性，并不会保证在正式版等版本中存在。如果想要尝鲜，可以访问<a href="http://labs.mysql.com/" target="_blank" rel="external">labs.mysql.com</a>。</p>
+<h2 id="Development-Milestone-Releases"><a href="#Development-Milestone-Releases" class="headerlink" title="Development Milestone Releases"></a>Development Milestone Releases</h2><p>上述步骤结束之后，到了DMR阶段，也就是本次 8.0 版本所处的阶段。</p>
+<p>DMR将会是一个重复迭代的阶段，下一个DMR版本将会包含上一个DMR版本的新特性或者功能修复。并且，DMR了的MySQL将会支持所有的平台，DMR状态下的MySQL的代码质量是达到了可供发布的水准的。</p>
+<p>DMR看起来像是游戏的公测版本，每3-6个月会发布一个版本，每个DMR版本的MySQL会有一个特性需求收集截止时间点，新增的特性会历经开发、测试的历程，合并到TRUNK之中，变为下一个DMR。</p>
+<p>总之，DMR的目的就是能够时常发布，让用户和客户能够反馈需求，体验新版本。</p>
+<h2 id="General-Availability-Release-GA"><a href="#General-Availability-Release-GA" class="headerlink" title="General Availability Release(GA)"></a>General Availability Release(GA)</h2><p>终于，在n个DMR之后，MySQL表现稳定，需求“无可”增加，客户满意，质量过关。</p>
+<p>基于最后一个DMR版本，会发布GA版本，即我们可以“放心”使用在生产环境中的MySQL。</p>
+<p>每个GA版本的发布周期间隔在18-24个月。</p>
+<h1 id="版本比较"><a href="#版本比较" class="headerlink" title="版本比较"></a>版本比较</h1><p>对于这些MySQL版本，如果想要了解之间的差异，一个可行的办法是阅读GA版本的Release Notes。</p>
+<p>MySQL 的近几个版本发行时间间隔并不太大：</p>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>GA 版本发布时间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5.5.8</td>
+<td>2010-12-03</td>
+</tr>
+<tr>
+<td>5.6.10</td>
+<td>2013-02-05</td>
+</tr>
+<tr>
+<td>5.7.9</td>
+<td>2015-10-21</td>
+</tr>
+</tbody>
+</table>
+<p>大约2年会有一个较大更新的版本会发出。</p>
+<h2 id="新特性"><a href="#新特性" class="headerlink" title="新特性"></a>新特性</h2><p>对于使用者而言，新特性应该是关注的第一焦点。下面会针对版本列出一些个人认为有特点的新特性。</p>
+<h3 id="5-5"><a href="#5-5" class="headerlink" title="5.5"></a>5.5</h3><h4 id="InnoDB-作为默认存储引擎"><a href="#InnoDB-作为默认存储引擎" class="headerlink" title="InnoDB 作为默认存储引擎"></a>InnoDB 作为默认存储引擎</h4><p>InnoDB 因为支持事务、行级别锁而广为人知，并广泛应用。但是在之前的版本中，InnoDB并不是默认的存储引擎。在5.5中，InnoDB成为了默认的存储引擎。</p>
+<h4 id="半同步复制"><a href="#半同步复制" class="headerlink" title="半同步复制"></a>半同步复制</h4><p>半同步复制（<a href="https://dev.mysql.com/doc/refman/5.5/en/replication-semisync.html" target="_blank" rel="external">Semisynchronous Replication</a>）在MySQL 5.5中被支持（以插件形式实现）。</p>
+<p>默认的MySQL通过异步模式进行复制，主库写入binlog之后，从库不一定能够被读取并处理，因为写入成功只是说明在主库上成功。主从不同步带来的问题相当之多，提升了开发难度。</p>
+<p>而半同步复制则是主库需要有至少一个半同步从库，当一次写入操作进行之后，至少在主库和至少一个半同步从库上都完成了写入之后，用户才会收到已成功的信息。</p>
+<p>半同步复制在这一程度上提高了数据的安全性。</p>
+<h4 id="复制心跳"><a href="#复制心跳" class="headerlink" title="复制心跳"></a>复制心跳</h4><p>从库如何尽早发现主库宕机？</p>
+<p>通过5.5新增的复制心跳机制即可。复制过程中主库会定期发送心跳到从库，当从库SHOW STATUS时可以看到连接情况。</p>
+<h4 id="增删索引优化"><a href="#增删索引优化" class="headerlink" title="增删索引优化"></a>增删索引优化</h4><p>InnoDB中新（Add）增删除（Drop）索引在这一代中不会复制表中的原始数据，这个操作会在一定程度上提高索引的操作效率。</p>
+<h3 id="5-6"><a href="#5-6" class="headerlink" title="5.6"></a>5.6</h3><p>MySQL 5.6 的主要变化在性能优化方面。有一些小的新特性也值得关注。</p>
+<h4 id="表中可以设置多个Timestamp属性"><a href="#表中可以设置多个Timestamp属性" class="headerlink" title="表中可以设置多个Timestamp属性"></a>表中可以设置多个Timestamp属性</h4><p>MySQL 5.5 中，如果设定多个Timestamp的属性为 <code>ON UPDATE CURRENT_TIMESTAMP</code> 时，这样的操作是不能完成的，这样的需求，通常要在业务代码中完成。</p>
+<p>而到了 MySQL 5.6 中，这样的操作可以直接通过设定字段的属性即可完成。</p>
+<h4 id="InnoDB-支持全文索引"><a href="#InnoDB-支持全文索引" class="headerlink" title="InnoDB 支持全文索引"></a>InnoDB 支持全文索引</h4><p><a href="http://dev.mysql.com/doc/refman/5.6/en/innodb-fulltext-index.html" target="_blank" rel="external">全文索引</a> MyISAM 存储引擎之前相对于InnoDB的一个“优势”特性，在MySQL 5.6中不复存在。</p>
+<p>针对字符串型的字段(<code>CHAR</code>，<code>VARCHAR</code>或者<code>TEXT</code>)，可以选择在创建表时增加这个类型的索引。也可以后续添加。</p>
+<p>InnoDB的全文索引也使用的是倒排索引的设计，分词完成的词汇将会存储在独立的索引表之中。当包含全文索引的字段插入之后，会进行分词，同时先将分词结果进入内存缓存，之后再刷入索引表中，避免一次写入带来的大量附加的小规模的更改操作。</p>
+<h4 id="多线程复制"><a href="#多线程复制" class="headerlink" title="多线程复制"></a>多线程复制</h4><p>在MySQL 5.6中，会针对每一个数据库开启一个独立的复制线程，如果数据库压力平均的话，对于主从同步延迟会有一定的改善。但是如果数据操作都在一个数据库上，就不会有太多显著的效果了。</p>
+<h4 id="加入全局事务ID（GTID）"><a href="#加入全局事务ID（GTID）" class="headerlink" title="加入全局事务ID（GTID）"></a>加入全局事务ID（GTID）</h4><p>在MySQL 5.6前，如果从库宕机，重启之后需要进行同步，需要知道binlog文件名已经位置。</p>
+<p>在MySQL 5.6中，加入了GTID（<a href="http://dev.mysql.com/doc/refman/5.6/en/replication-gtids-concepts.html" target="_blank" rel="external">global transaction identifier</a>）。GTID由source_id和transaction_id构成，source_id标识主库，transaction_id标识在数据库上进行的事务，格式即<code>GTID = source_id:transaction_id</code>。</p>
+<p>在加入GTID之后，重启从库之后，不需要重新进行位置的指向，只需要连接到主库即可，剩下的步骤将会是自动的。</p>
+<h3 id="5-7"><a href="#5-7" class="headerlink" title="5.7"></a>5.7</h3><h4 id="InnoDB"><a href="#InnoDB" class="headerlink" title="InnoDB"></a>InnoDB</h4><p>InnoDB地位进一步增强，这一次系统表已然变成了基于InnoDB存储引擎的表。并且也不能禁用InnoDB存储引擎了。</p>
+<h4 id="增强的多线程复制"><a href="#增强的多线程复制" class="headerlink" title="增强的多线程复制"></a>增强的多线程复制</h4><p>在5.6中添加的多线程复制的增强版，针对每个数据库可以增加线程数进行同步，对5.7.9版本，在实际使用中，在机械盘的服务器上，原有业务高峰时主从同步延迟在10-30分钟左右，使用5.7.9之后基本实现了数据上的同步。</p>
+<h4 id="多源复制"><a href="#多源复制" class="headerlink" title="多源复制"></a>多源复制</h4><p>即将多个主库的数据归并到一个从库的实例上。</p>
+<p>之前的MySQL，每个从库都只能拥有一个主库，如今MySQL提供了官方的解决方案，用于将多个主库的数据同步到一个从库之上。</p>
+<p>多源复制有一个关键概念，即频道（channel）。频道指代一个主从库之间用于同步binlog的连接，通过新增的<code>FOR CHANNEL</code>子句，指定一个非空的频道名称，按照先前版本的连接主库的方法，即可实现多源复制功能。</p>
+<p>需要注意的是，当多个主库均写入同一张表时，需要自行处理主键冲突。</p>
+<h4 id="JSON数据类型操作"><a href="#JSON数据类型操作" class="headerlink" title="JSON数据类型操作"></a>JSON数据类型操作</h4><p>PostgreSQL 9.3开始，PostgreSQL中JSON成为了内置的数据类型。</p>
+<p>作为被广泛使用的数据组织格式，之前版本的只能讲JSON格式数据按照字符串形式进行存储。</p>
+<p>到了5.7之后，JSON支持也被加入。</p>
+<p>JSON中的字符串在MySQL中会被转化成<code>utf8mb4</code>的字符集，给携带诸如emoji字符的数据的存储带来了方便。</p>
+<p>对于JSON数据的结构特性，MySQL中对JSON的查询需要借助path expression以及<code>JSON_EXTRACT</code>方法进行查询。path expression的简要要点如下：</p>
+<ul>
+<li>以<code>$</code>符号开头</li>
+<li><code>.</code>符号紧接着的是对象中的key</li>
+<li><code>[n]</code>中表示的是数组中的第n个元素，n&gt;=0</li>
+<li><code>.[*]</code>表示一个key下的所有对象</li>
+<li><code>[*]</code>表示一个key下所有的数组</li>
+<li><code>exp_a**exp_b</code>则表示path中带有<code>exp_a</code>与<code>exp_b</code>的值</li>
+<li>key如果包含特殊字符，需要通过双引号包裹起来</li>
+</ul>
+<p>更多操作参见<a href="http://dev.mysql.com/doc/refman/5.7/en/json.html" target="_blank" rel="external">手册</a>。</p>
+<h4 id="innodb-buffer-pool-size参数动态修改"><a href="#innodb-buffer-pool-size参数动态修改" class="headerlink" title="innodb_buffer_pool_size参数动态修改"></a>innodb_buffer_pool_size参数动态修改</h4><p>在之前的版本中，<code>innodb_buffer_pool_size</code>调整之后，需要重启数据库实例，这个对于线上业务几乎是不可接受的。硬件性能强悍的服务器，调整这一参数之后，MySQL的表现会有较为客观的提升。</p>
+<p>到了MySQL 5.7，这一参数终于可以在线调整了。</p>
+<h4 id="初始化工具"><a href="#初始化工具" class="headerlink" title="初始化工具"></a>初始化工具</h4><p>在之前的版本中，初始化系统表一般都会使用<code>mysql_install_db</code>脚本，到MySQL 5.7之后建议使用<code>mysqld --initialize</code>完成实例初始化。</p>
+<p>在通过<code>mysqld --initialize</code>进行初始化时，需要加上<code>--initial-insecure</code>才能实现空密码登录，否则会将初始化的默认密码写入到错误文件中。</p>
+<p>初始化完成之后，还需要使用MySQL 5.7版本的客户端登录，并且修改默认密码。</p>
+<h3 id="8-0"><a href="#8-0" class="headerlink" title="8.0"></a>8.0</h3><p>作为版本号突飞猛进的一个版本，在MySQL 8.0中新增了如下的特性：</p>
+<h4 id="用户角色"><a href="#用户角色" class="headerlink" title="用户角色"></a>用户角色</h4><p>8.0中将会增强账号管理的功能，提供<code>角色</code>这一概念，即能组合权限，批量授权给某一用户。使用步骤可以参见<a href="https://yq.aliyun.com/articles/60654" target="_blank" rel="external">博文</a>或<a href="http://dev.mysql.com/doc/refman/8.0/en/roles.html" target="_blank" rel="external">官方文档</a>。</p>
+<h4 id="增强的InnoDB"><a href="#增强的InnoDB" class="headerlink" title="增强的InnoDB"></a>增强的InnoDB</h4><ul>
+<li>自增id会写入到redo log中，这一改动使得数据库重启之后的自增值能恢复到重启前的状态</li>
+<li>增加了死锁检测开关<code>innodb_deadlock_detect</code>，可以在高并发系统中动态调整这一特性，提升性能</li>
+</ul>
+<h4 id="增强的JSON操作"><a href="#增强的JSON操作" class="headerlink" title="增强的JSON操作"></a>增强的JSON操作</h4><ul>
+<li>增加了<code>-&gt;&gt;</code>操作符，使用这一操作符等同于对<code>JSON_EXTRACT</code>的结果进行<code>JSON_UNQUOTE</code>操作，简化了SQL语句（PostgreSQL也有类似的操作符）</li>
+<li>增加了按JSON数据组织返回数据操作的两个方法：<code>JSON_ARRAYAGG</code>与<code>JSON_OBJECTAGG</code>。<code>JSON_ARRAYAGG</code>将某列的值按照一个JSON数据返回，而<code>JSON_OBJECTAGG</code>将列A作为键，列B作为值，返回一个JSON对象格式的数据</li>
+</ul>
+<p>后续将会继续更新本文。</p>
+<h1 id="相关"><a href="#相关" class="headerlink" title="相关"></a>相关</h1><p>[1]: <a href="http://mysqlserverteam.com/whats-new-in-mysql-5-7-so-far/" target="_blank" rel="external">What’s New in MySQL 5.7? (So Far)</a></p>
+<p>[2]: <a href="http://imysql.com/2015/06/23/mysql-57-new-feature-part-1.shtml" target="_blank" rel="external">MySQL 5.7版本新特性连载（一）</a></p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/MySQL/" rel="tag">#MySQL</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2016/09/11/influxdb-note/" rel="next" title="InfluxDB使用笔记">
+                <i class="fa fa-chevron-left"></i> InfluxDB使用笔记
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2016/09/24/a-brief-intro-to-octobercms-form-widget-development/" rel="prev" title="编写 October CMS Form Widget">
+                编写 October CMS Form Widget <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL的开发周期"><span class="nav-number">2.</span> <span class="nav-text">MySQL的开发周期</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Feature-Development"><span class="nav-number">2.1.</span> <span class="nav-text">Feature Development</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Feature-Testing"><span class="nav-number">2.2.</span> <span class="nav-text">Feature Testing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Performance-Testing"><span class="nav-number">2.3.</span> <span class="nav-text">Performance Testing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lab-Releases"><span class="nav-number">2.4.</span> <span class="nav-text">Lab Releases</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Development-Milestone-Releases"><span class="nav-number">2.5.</span> <span class="nav-text">Development Milestone Releases</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#General-Availability-Release-GA"><span class="nav-number">2.6.</span> <span class="nav-text">General Availability Release(GA)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#版本比较"><span class="nav-number">3.</span> <span class="nav-text">版本比较</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#新特性"><span class="nav-number">3.1.</span> <span class="nav-text">新特性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-5"><span class="nav-number">3.1.1.</span> <span class="nav-text">5.5</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#InnoDB-作为默认存储引擎"><span class="nav-number">3.1.1.1.</span> <span class="nav-text">InnoDB 作为默认存储引擎</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#半同步复制"><span class="nav-number">3.1.1.2.</span> <span class="nav-text">半同步复制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#复制心跳"><span class="nav-number">3.1.1.3.</span> <span class="nav-text">复制心跳</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#增删索引优化"><span class="nav-number">3.1.1.4.</span> <span class="nav-text">增删索引优化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-6"><span class="nav-number">3.1.2.</span> <span class="nav-text">5.6</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#表中可以设置多个Timestamp属性"><span class="nav-number">3.1.2.1.</span> <span class="nav-text">表中可以设置多个Timestamp属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#InnoDB-支持全文索引"><span class="nav-number">3.1.2.2.</span> <span class="nav-text">InnoDB 支持全文索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多线程复制"><span class="nav-number">3.1.2.3.</span> <span class="nav-text">多线程复制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#加入全局事务ID（GTID）"><span class="nav-number">3.1.2.4.</span> <span class="nav-text">加入全局事务ID（GTID）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-7"><span class="nav-number">3.1.3.</span> <span class="nav-text">5.7</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#InnoDB"><span class="nav-number">3.1.3.1.</span> <span class="nav-text">InnoDB</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#增强的多线程复制"><span class="nav-number">3.1.3.2.</span> <span class="nav-text">增强的多线程复制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多源复制"><span class="nav-number">3.1.3.3.</span> <span class="nav-text">多源复制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JSON数据类型操作"><span class="nav-number">3.1.3.4.</span> <span class="nav-text">JSON数据类型操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#innodb-buffer-pool-size参数动态修改"><span class="nav-number">3.1.3.5.</span> <span class="nav-text">innodb_buffer_pool_size参数动态修改</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#初始化工具"><span class="nav-number">3.1.3.6.</span> <span class="nav-text">初始化工具</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-0"><span class="nav-number">3.1.4.</span> <span class="nav-text">8.0</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#用户角色"><span class="nav-number">3.1.4.1.</span> <span class="nav-text">用户角色</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#增强的InnoDB"><span class="nav-number">3.1.4.2.</span> <span class="nav-text">增强的InnoDB</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#增强的JSON操作"><span class="nav-number">3.1.4.3.</span> <span class="nav-text">增强的JSON操作</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#相关"><span class="nav-number">4.</span> <span class="nav-text">相关</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

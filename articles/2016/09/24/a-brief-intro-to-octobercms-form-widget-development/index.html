@@ -1,0 +1,815 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <!--<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">-->
+  <link href="/vendors/googleapis/css/Lato.css" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Laravel,OctoberCMS,PHP," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="A Programmer" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="概述近期接触 Laravel 这一框架之后，对使用便捷性和功能的丰富感到十分满意，同时开发者与相关的社区都相当活跃，这样的框架算是相当之理想的了。
+了解了框架的使用之后，自然是希望能够找到这一框架构建的应用进行进一步的学习。CMS作为常见的系统，模式上个人理解起来比较容易，同时涉及面也比较多，同时还有一定的实用性，学习起来有价值。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编写 October CMS Form Widget">
+<meta property="og:url" content="http://www.liaoaoyang.com/articles/2016/09/24/a-brief-intro-to-octobercms-form-widget-development/index.html">
+<meta property="og:site_name" content="A Programmer">
+<meta property="og:description" content="概述近期接触 Laravel 这一框架之后，对使用便捷性和功能的丰富感到十分满意，同时开发者与相关的社区都相当活跃，这样的框架算是相当之理想的了。
+了解了框架的使用之后，自然是希望能够找到这一框架构建的应用进行进一步的学习。CMS作为常见的系统，模式上个人理解起来比较容易，同时涉及面也比较多，同时还有一定的实用性，学习起来有价值。">
+<meta property="og:image" content="https://github.com/liaoaoyang/RelatedRecordsFormWidgetDemo/blob/master/images/select_records.png?raw=true">
+<meta property="og:image" content="https://github.com/liaoaoyang/RelatedRecordsFormWidgetDemo/blob/master/images/selected.png?raw=true">
+<meta property="og:updated_time" content="2021-10-23T05:16:33.466Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="编写 October CMS Form Widget">
+<meta name="twitter:description" content="概述近期接触 Laravel 这一框架之后，对使用便捷性和功能的丰富感到十分满意，同时开发者与相关的社区都相当活跃，这样的框架算是相当之理想的了。
+了解了框架的使用之后，自然是希望能够找到这一框架构建的应用进行进一步的学习。CMS作为常见的系统，模式上个人理解起来比较容易，同时涉及面也比较多，同时还有一定的实用性，学习起来有价值。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 编写 October CMS Form Widget | A Programmer </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74385074-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">A Programmer</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                编写 October CMS Form Widget
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-09-24T22:00:32+08:00" content="2016-09-24">
+              2016-09-24
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Try/" itemprop="url" rel="index">
+                    <span itemprop="name">Try</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>近期接触 <a href="https://laravel.com/" target="_blank" rel="external"><code>Laravel</code></a> 这一框架之后，对使用便捷性和功能的丰富感到十分满意，同时开发者与相关的社区都相当活跃，这样的框架算是相当之理想的了。</p>
+<p>了解了框架的使用之后，自然是希望能够找到这一框架构建的应用进行进一步的学习。CMS作为常见的系统，模式上个人理解起来比较容易，同时涉及面也比较多，同时还有一定的实用性，学习起来有价值。</p>
+<a id="more"></a>
+<p>使用 Laravel 的 CMS 不少，有本文的主角<a href="https://github.com/octobercms/october" target="_blank" rel="external">October CMS</a>、<a href="https://github.com/AsgardCms" target="_blank" rel="external">Asgard CMS</a>、<a href="https://github.com/LavaLite/cms" target="_blank" rel="external">Lavalite</a>，但是后续的这些，无论从 GitHub star数目上，还是更新频率上，以及社区活跃度上，完全无法与 October CMS 相提并论。</p>
+<p>于是决定简单了解一下October CMS（以下将会用October表示，二者不做区分）。希望通过开发一个表单部件的方式，开始二次开发的学习。</p>
+<p>本文写作的前提是：</p>
+<ul>
+<li>使用过基本的OctoberCMS的Ajax框架</li>
+<li>基本了解后端管理界面的组织方式</li>
+<li>了解基本的jQuery/CSS知识</li>
+<li>了解基本的Laravel使用</li>
+</ul>
+<h1 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h1><p>October宣传自身是一个简单、现代、以人为本、通用的、可拓展的、有趣的、可靠地、易学、节省时间的CMS。</p>
+<p>对于OctoberCMS，对于一对多的关系，可以在model层进行处理。</p>
+<p>然而，处于对体验优化的考虑，简单的关联记录的效果并不能满足。譬如需要完成一个相关文章的编辑表单，如果能够以card的形式展现相关文章的<code>头图</code>，<code>标题</code>，<code>摘要</code>等内容，那么会更加便于后台人员的操作，提供更好的体验。</p>
+<p>同时，可以通过这一个简单的表单插件，熟悉October CMS表单插件的二次开发。</p>
+<p>总而言之，需求如下：</p>
+<ul>
+<li>开发一个相关记录的表单插件</li>
+<li>表单插件可以显示相关记录的<code>头图</code>，<code>标题</code>，<code>摘要</code></li>
+<li>相关记录可以调整顺序</li>
+</ul>
+<h1 id="OctoberCMS-表单部件"><a href="#OctoberCMS-表单部件" class="headerlink" title="OctoberCMS 表单部件"></a>OctoberCMS 表单部件</h1><p>OctoberCMS的有一类组件，被称为<a href="https://octobercms.com/docs/backend/forms" target="_blank" rel="external"><code>Form</code></a>组件，为后台操作数据提供了极大的方便，通过配置各种Form插件的组合，可以对数据进行操作。</p>
+<p>常规的管理界面的开发，一种模式是通过编写接口，提供修改对应数据的功能，并且前端开发需要构建对应的操作界面。对于CMS系统，这样无疑是一个低效的行为，使得管理平台开发也成为了开发工作的一大负担，提供更为简便的管理平台开发方式，对于减少开发工作量有很大意义。</p>
+<p>OctoberCMS的表单部件通过yaml配置文件的形式，将数据库字段与前端编辑表单部件关联起来，为快速构建针对于数据的管理界面提供了可能。</p>
+<p>针对于基本的字符串，时间选择器，富文本编辑器，单选/复选框，OctoberCMS也都默认提供了。</p>
+<h2 id="组件设计"><a href="#组件设计" class="headerlink" title="组件设计"></a>组件设计</h2><p>对于表单部件，功能上可以一言概之，即通过图形方式构建JSON格式的字符串，并写入数据库。</p>
+<h3 id="设计细化"><a href="#设计细化" class="headerlink" title="设计细化"></a>设计细化</h3><p>细化需求来说，关键点在于表单，数据格式，图形界面。</p>
+<p>对于<code>表单</code>，最简单的情况即通过一个input标签，在进行form提交时，带上需要提交的数据。</p>
+<p>对于<code>数据格式</code>，我们需要记录的是相关记录的数据库中的自增ID，存储格式会整编为JSON格式。</p>
+<p>对于<code>图形界面</code>，考虑到操作的便捷性，同时考虑到显示足够的有效信息，通过显示blog的头图、标题、摘要等信息的card的形式，表现关联记录。</p>
+<h4 id="进一步细化-表单"><a href="#进一步细化-表单" class="headerlink" title="进一步细化[表单]"></a>进一步细化[表单]</h4><p>对于表单来说，只需要确定表单中的name属性即可。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">input</span></span><br><span class="line">   <span class="attribute">type</span>=<span class="value">"text"</span></span><br><span class="line">   <span class="attribute">name</span>=<span class="value">"<span class="php"><span class="preprocessor">&lt;?php</span> <span class="keyword">echo</span> <span class="variable">$name</span> <span class="preprocessor">?&gt;</span></span>"</span></span><br><span class="line">   <span class="attribute">id</span>=<span class="value">"<span class="php"><span class="preprocessor">&lt;?php</span> <span class="keyword">echo</span> <span class="variable">$this</span>-&gt;getId() <span class="preprocessor">?&gt;</span></span>"</span></span><br><span class="line">   <span class="attribute">value</span>=<span class="value">"<span class="php"><span class="preprocessor">&lt;?php</span> <span class="keyword">echo</span> json_encode(<span class="variable">$value</span>); <span class="preprocessor">?&gt;</span></span>"</span></span><br><span class="line">   <span class="attribute">placeholder</span>=<span class="value">""</span></span><br><span class="line">   <span class="attribute">class</span>=<span class="value">"form-control"</span></span><br><span class="line">   <span class="attribute">autocomplete</span>=<span class="value">"off"</span></span><br><span class="line">   <span class="attribute">style</span>=<span class="value">"display: none;"</span></span><br><span class="line">&gt;</span></span><br></pre></td></tr></table></figure>
+<p>新增的情况，无需填充记录的默认值，而在更新的情况，则需要进行填充，相关PHP代码的说明会在后续提及。</p>
+<h4 id="进一步细化-数据格式"><a href="#进一步细化-数据格式" class="headerlink" title="进一步细化[数据格式]"></a>进一步细化[数据格式]</h4><p>选用JSON作为数据格式，记录各个关联记录的自增ID。</p>
+<h4 id="进一步细化-图形界面"><a href="#进一步细化-图形界面" class="headerlink" title="进一步细化[图形界面]"></a>进一步细化[图形界面]</h4><p>同时显示头图，标题，摘要，通过card形式展现。</p>
+<p>操作上，需要有<code>增加</code>，<code>删除</code>，<code>调整顺序</code>三种。</p>
+<ul>
+<li><code>增加</code>操作可以通过弹出记录列表的形式，选取后展现。</li>
+<li><code>删除</code>则直接通过点击card上的删除按钮/文字即可。</li>
+<li><code>调整顺序</code>通过前移/后移按钮完成。</li>
+</ul>
+<h2 id="组件目录结构"><a href="#组件目录结构" class="headerlink" title="组件目录结构"></a>组件目录结构</h2><p>OctoberCMS的表单插件需要符合一定的目录结构规则。</p>
+<p>可以通过直接创建对应的目录以及文件，也可以通过内置的工具进行初始化：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">php</span> <span class="tag">artisan</span> <span class="tag">create</span><span class="pseudo">:formwidget</span> <span class="tag">rainlab</span><span class="class">.blog</span> <span class="tag">RelatedRecords</span></span><br></pre></td></tr></table></figure>
+<p><code>rainlab.blog</code> 是将要创建这一组件的插件的名称，这里可以换成自己插件的名字。关于插件，参见<a href="http://octobercms.com/docs/plugin/registration" target="_blank" rel="external">OctoberCMS的手册</a>。</p>
+<p>自动建立的目录结构如下：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">→ tree</span><br><span class="line">.</span><br><span class="line">└── formwidgets</span><br><span class="line">    ├── RelatedRecords<span class="class">.php</span></span><br><span class="line">    └── relatedrecords</span><br><span class="line">        ├── assets</span><br><span class="line">        │   ├── css</span><br><span class="line">        │   │   └── relatedrecords<span class="class">.css</span></span><br><span class="line">        │   └── js</span><br><span class="line">        │       └── relatedrecords<span class="class">.js</span></span><br><span class="line">        └── partials</span><br><span class="line">            └── _relatedrecords.htm</span><br></pre></td></tr></table></figure>
+<p>文件不多，简而言之，<code>RelatedRecords.php</code>用来描述表单部件以及编写处理逻辑，<code>relatedrecords.css</code>自然是控制表单后台操作样式，<code>relatedrecords.js</code>则是实现表单项目在后台的前端操作逻辑，最后<code>partials</code>中的<code>_relatedrecords.htm</code>则定义了表单部件在后台的html展示部分。</p>
+<p>如果不想通过内置工具生成表单部件，同样也可以直接在对应plugin的目录中中的<code>widgets</code>子目录中直接新增插件的方式完成，仿照October默认的modules/backend中表单插件的结构即可：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">→ tree widgets</span><br><span class="line">widgets</span><br><span class="line">├── Filter<span class="class">.php</span></span><br><span class="line">├── Form<span class="class">.php</span></span><br><span class="line">├── Lists<span class="class">.php</span></span><br><span class="line">├── ReportContainer<span class="class">.php</span></span><br><span class="line">├── Search<span class="class">.php</span></span><br><span class="line">├── Table<span class="class">.php</span></span><br><span class="line">├── Toolbar<span class="class">.php</span></span><br><span class="line">├── <span class="attribute">filter</span></span><br><span class="line">│   └── partials</span><br><span class="line">│       ├── _filter<span class="class">.htm</span></span><br><span class="line">...</span><br><span class="line">│       └── _scope_switch<span class="class">.htm</span></span><br><span class="line">├── <span class="tag">form</span></span><br><span class="line">│   ├── assets</span><br><span class="line">│   │   └── js</span><br><span class="line">│   │       └── october<span class="class">.form</span><span class="class">.js</span></span><br><span class="line">│   └── partials</span><br><span class="line">│       ├── _field-container<span class="class">.htm</span></span><br><span class="line">...</span><br><span class="line">│       └── _section<span class="class">.htm</span></span><br><span class="line">├── lists</span><br><span class="line">│   ├── assets</span><br><span class="line">│   │   └── js</span><br><span class="line">│   │       └── october<span class="class">.list</span><span class="class">.js</span></span><br><span class="line">│   └── partials</span><br><span class="line">│       ├── _list-container<span class="class">.htm</span></span><br><span class="line">...</span><br><span class="line">│       └── _setup_form<span class="class">.htm</span></span><br><span class="line">├── reportcontainer</span><br><span class="line">│   ├── assets</span><br><span class="line">│   │   ├── css</span><br><span class="line">│   │   │   └── reportcontainer<span class="class">.css</span></span><br><span class="line">│   │   ├── js</span><br><span class="line">│   │   │   └── reportcontainer<span class="class">.js</span></span><br><span class="line">│   │   ├── less</span><br><span class="line">│   │   │   └── reportcontainer<span class="class">.less</span></span><br><span class="line">│   │   └── vendor</span><br><span class="line">│   │       └── isotope</span><br><span class="line">│   │           ├── jquery<span class="class">.isotope</span><span class="class">.js</span></span><br><span class="line">│   │           └── jquery<span class="class">.isotope</span><span class="class">.min</span><span class="class">.js</span></span><br><span class="line">│   └── partials</span><br><span class="line">│       ├── _container<span class="class">.htm</span></span><br><span class="line">...</span><br><span class="line">│       └── _widget_toolbar<span class="class">.htm</span></span><br><span class="line">├── search</span><br><span class="line">│   └── partials</span><br><span class="line">│       └── _search<span class="class">.htm</span></span><br><span class="line">├── <span class="tag">table</span></span><br><span class="line">│   ├── ClientMemoryDataSource<span class="class">.php</span></span><br><span class="line">│   ├── DataSourceBase<span class="class">.php</span></span><br><span class="line">│   ├── README<span class="class">.md</span></span><br><span class="line">│   ├── ServerEventDataSource<span class="class">.php</span></span><br><span class="line">│   ├── assets</span><br><span class="line">│   │   ├── css</span><br><span class="line">│   │   │   └── <span class="tag">table</span><span class="class">.css</span></span><br><span class="line">│   │   ├── images</span><br><span class="line">│   │   │   └── table-icons<span class="class">.gif</span></span><br><span class="line">│   │   ├── js</span><br><span class="line">│   │   │   ├── build-min<span class="class">.js</span></span><br><span class="line">...</span><br><span class="line">│   │   │   └── <span class="tag">table</span><span class="class">.validator</span><span class="class">.required</span><span class="class">.js</span></span><br><span class="line">│   │   └── less</span><br><span class="line">│   │       └── <span class="tag">table</span><span class="class">.less</span></span><br><span class="line">│   └── partials</span><br><span class="line">│       └── _table<span class="class">.htm</span></span><br><span class="line">└── toolbar</span><br><span class="line">    └── partials</span><br><span class="line">        └── _toolbar.htm</span><br></pre></td></tr></table></figure>
+<p>本文的<a href="https://github.com/liaoaoyang/RelatedRecordsFormWidgetDemo" target="_blank" rel="external">demo</a>即是通过这种方式生成的，结构如下：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">→ tree</span><br><span class="line">widgets</span><br><span class="line">├── RelatedRecords<span class="class">.php</span></span><br><span class="line">└── relatedrecords</span><br><span class="line">    ├── assets</span><br><span class="line">    │   ├── css</span><br><span class="line">    │   │   └── relatedrecords<span class="class">.css</span></span><br><span class="line">    │   ├── fonts</span><br><span class="line">    │   ├── <span class="tag">img</span></span><br><span class="line">    │   │   └── default<span class="class">.png</span></span><br><span class="line">    │   ├── js</span><br><span class="line">    │   │   └── relatedrecords<span class="class">.js</span></span><br><span class="line">    │   └── libs</span><br><span class="line">    │       └── materialize</span><br><span class="line">    │           ├── LICENSE</span><br><span class="line">    │           ├── README<span class="class">.md</span></span><br><span class="line">    │           ├── css</span><br><span class="line">    │           │   ├── materialize<span class="class">.css</span></span><br><span class="line">    │           │   └── materialize<span class="class">.min</span><span class="class">.css</span></span><br><span class="line">    │           ├── fonts</span><br><span class="line">    │           │   └── roboto</span><br><span class="line">    │           │       ├── Roboto-Bold<span class="class">.eot</span></span><br><span class="line">...</span><br><span class="line">    │           │       └── Roboto-Thin<span class="class">.woff2</span></span><br><span class="line">    │           └── js</span><br><span class="line">    │               ├── materialize<span class="class">.js</span></span><br><span class="line">    │               └── materialize<span class="class">.min</span><span class="class">.js</span></span><br><span class="line">    └── partials</span><br><span class="line">        └── _field_relatedrecords.htm</span><br></pre></td></tr></table></figure>
+<p>可以看到，二者并无太大差别，都需要有css/js/partial以及主要的逻辑所在的.php文件，后续以demo中的文件组织结构进行描述。</p>
+<h2 id="组件实现细节简述"><a href="#组件实现细节简述" class="headerlink" title="组件实现细节简述"></a>组件实现细节简述</h2><h3 id="主要逻辑文件RelatedRecords-php"><a href="#主要逻辑文件RelatedRecords-php" class="headerlink" title="主要逻辑文件RelatedRecords.php"></a>主要逻辑文件RelatedRecords.php</h3><p>这一文件要直接放置于<code>widgets</code>的目录之下。</p>
+<p>需要继承<code>Backend\Classes\FormWidgetBase</code>这一基类，同时我们需要实现一些关键的方法，以便完成逻辑以及正确显示组件。</p>
+<p>下面，将会说明几个关键的方法。</p>
+<h4 id="init"><a href="#init" class="headerlink" title="init()"></a>init()</h4><p><code>init()</code>方法顾名思义，即初始化表单部件，一些组件自身需要进行的变量定义，参数定义等操作可以在这里编写。</p>
+<p>在使用过程中，每个表单部件都或多或少有一些自定义的参数，譬如富文本编辑器的大小等，这些参数通过yaml文件配置，但是如何才能在表单部件中的读取到呢？</p>
+<p>可以在<code>init()</code>中调用<code>fillFromConfig()</code>这一成员方法，通过数组的形式，将参数名传入，之后将会出现同名的成员变量，其值就是传入的参数名称。如果没有设定，那么也可以指定默认值。</p>
+<p>为了完成需求，我们需要允许配置：</p>
+<ul>
+<li><code>titleField</code> <code>card的标题域数据库字段名</code></li>
+<li><code>imageField</code> <code>card的图片域数据库字段名</code></li>
+<li><code>contentField</code> <code>card的正文域数据库字段名</code></li>
+<li><code>modelClass</code> <code>需要操作的Model名称</code></li>
+<li><code>whereClause</code> <code>查询数据时的WHERE子句内容</code></li>
+<li><code>recordsPerPage</code> <code>弹出列表页每页显示个数</code></li>
+</ul>
+<p>在实际使用中，在<code>models/yourmodel/</code>下的<code>fields.yaml</code>文件中指定使用这一表单部件时，可以通过指定这些参数的形式，影响展现以及效果，形如：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">related_samples</span>:</span><br><span class="line">  <span class="attribute">tab</span>: sample_tab</span><br><span class="line">  <span class="attribute">type</span>: relatedrecords</span><br><span class="line">  <span class="attribute">titleField</span>: title</span><br><span class="line">  <span class="attribute">imageField</span>: img</span><br><span class="line">  <span class="attribute">contentField</span>: content</span><br><span class="line">  <span class="attribute">recordsPerPage</span>: <span class="number">10</span></span><br><span class="line">  <span class="attribute">modelClass</span>: Your\Plugin\Models\Sample</span><br><span class="line">  <span class="attribute">whereClause</span>: <span class="string">'published = true'</span></span><br></pre></td></tr></table></figure>
+<h4 id="render"><a href="#render" class="headerlink" title="render()"></a>render()</h4><p><code>render()</code>方法，即完成组件的渲染，如果已经设定好了模板中需要的值，那么只需要通过<code>makePartial</code>这一个成员方法即可对当前组件渲染完成。</p>
+<p>实现以上两个方法之后，几乎这一组件就能基本上完成数据获取并展现的功能了。其他方法，也可以按照默认生成的文件的模式进行组织。</p>
+<h3 id="模板文件-relatedrecords-htm"><a href="#模板文件-relatedrecords-htm" class="headerlink" title="模板文件_relatedrecords.htm"></a>模板文件_relatedrecords.htm</h3><p>模板文件作为一个<a href="http://octobercms.com/docs/cms/partials" target="_blank" rel="external">partial</a>，文件名需要以下划线开头，放置在组件的<code>partials</code>目录下。</p>
+<p>由于实际要修改的数值是一个JSON格式的数组，提交时，实际上是作为表单的一对键值。为了完成表单提交，需要设定input标签的name属性。</p>
+<p>那么问题来了，如何才能设定正确的name属性呢？</p>
+<p>OctoberCMS框架在实现表单部件时，会根据表单部件所对应的Model和列的名称，生成key的名字，即input标签的name属性，可以通过成员变量<code>formField</code>的方法<code>getName()</code>获取。</p>
+<p>在主逻辑文件<code>RelatedRecords.php</code>的<code>render()</code>（或者其他被这一方法调用的方法之中），为name属性赋值：</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public <span class="keyword">function</span> prepareData()</span><br><span class="line">&#123;</span><br><span class="line">   <span class="variable">$this-</span>&gt;vars[<span class="string">'value'</span>] = <span class="variable">$this-</span>&gt;getLoadValue();</span><br><span class="line">   ...</span><br><span class="line">   <span class="variable">$this-</span>&gt;vars[<span class="string">'name'</span>]           = <span class="variable">$this-</span>&gt;formField-&gt;getName();</span><br><span class="line">   ...</span><br><span class="line">   <span class="variable">$this-</span>&gt;vars[<span class="string">'recordId'</span>]       = isset(<span class="variable">$this-</span>&gt;model-&gt;id) ? <span class="variable">$this-</span>&gt;model-&gt;id : <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public <span class="keyword">function</span> render()</span><br><span class="line">&#123;</span><br><span class="line">   <span class="variable">$this-</span>&gt;addCss(<span class="variable">$this-</span>&gt;widgetDir . <span class="string">'/assets/css/relatedrecords.css'</span>);</span><br><span class="line">   <span class="variable">$this-</span>&gt;addJs(<span class="variable">$this-</span>&gt;widgetDir . <span class="string">'/assets/js/relatedrecords.js'</span>);</span><br><span class="line">   <span class="variable">$this-</span>&gt;prepareData();</span><br><span class="line">   return <span class="variable">$this-</span>&gt;makePartial(<span class="string">'field_relatedrecords'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在partial中进行相应变量赋值代码编写即可。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"input-group"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">input</span></span><br><span class="line">        <span class="attribute">type</span>=<span class="value">"text"</span></span><br><span class="line">        <span class="attribute">name</span>=<span class="value">"<span class="php"><span class="preprocessor">&lt;?php</span> <span class="keyword">echo</span> <span class="variable">$name</span> <span class="preprocessor">?&gt;</span></span>"</span></span><br><span class="line">        <span class="attribute">id</span>=<span class="value">"<span class="php"><span class="preprocessor">&lt;?php</span> <span class="keyword">echo</span> <span class="variable">$this</span>-&gt;getId() <span class="preprocessor">?&gt;</span></span>"</span></span><br><span class="line">        <span class="attribute">value</span>=<span class="value">"<span class="php"><span class="preprocessor">&lt;?php</span> <span class="keyword">echo</span> json_encode(<span class="variable">$value</span>); <span class="preprocessor">?&gt;</span></span>"</span></span><br><span class="line">        <span class="attribute">placeholder</span>=<span class="value">""</span></span><br><span class="line">        <span class="attribute">class</span>=<span class="value">"form-control"</span></span><br><span class="line">        <span class="attribute">autocomplete</span>=<span class="value">"off"</span></span><br><span class="line">        <span class="attribute">style</span>=<span class="value">"display: none;"</span></span><br><span class="line">    &gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>而展现上，使用了部分<a href="https://github.com/Dogfalo/materialize" target="_blank" rel="external">materialize</a>的样式，实现了图文card的显示效果。</p>
+<h3 id="弹出列表模板文件-list-related-records-sample-htm"><a href="#弹出列表模板文件-list-related-records-sample-htm" class="headerlink" title="弹出列表模板文件_list_related_records_sample.htm"></a>弹出列表模板文件_list_related_records_sample.htm</h3><p>图文card的底部，有添加记录的按钮，但是如何才能最便捷的展现出可以加入的记录呢？</p>
+<p>这里可以借用OctoberCMS内置的一个特性：<a href="http://octobercms.com/docs/ui/popup" target="_blank" rel="external">Remote popups</a>。</p>
+<h4 id="实现简要说明"><a href="#实现简要说明" class="headerlink" title="实现简要说明"></a>实现简要说明</h4><p>想要通过列表展示数据对于OctoberCMS来说简直是轻而易举。从操作步骤上来看，可以描述如下：</p>
+<ul>
+<li>点击<code>添加</code></li>
+<li>触发Ajax请求，请求对应Controller上的方法</li>
+<li>对应方法获取指定数据，渲染partial返回</li>
+</ul>
+<p>Ajax请求如何能够返回并显示html呢？作为OctoberCMS的一个重要特性，简要来说即通过特定的请求方法发出请求，指定操作的handler。这里可以通过js完成。</p>
+<p>参见下的<code>assets/js/relatedrecords.js</code>文件：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fetchRelatedRecords = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">   <span class="keyword">var</span> $<span class="keyword">this</span> = $(<span class="keyword">this</span>);</span><br><span class="line">   ...</span><br><span class="line"></span><br><span class="line">   $(<span class="keyword">this</span>).popup(&#123;</span><br><span class="line">       handler: <span class="string">'onLoadRelatedRecords'</span>,</span><br><span class="line">       extraData: &#123;</span><br><span class="line">           page:           page,</span><br><span class="line">           excludeIds:     excludeIds,</span><br><span class="line">           recordsPerPage: CONFIG.recordsPerPage,</span><br><span class="line">           modelClass:     CONFIG.modelClass,</span><br><span class="line">           whereClause:    CONFIG.whereClause,</span><br><span class="line">           titleField:     CONFIG.titleField,</span><br><span class="line">           imageField:     CONFIG.imageField,</span><br><span class="line">           contentField:   CONFIG.contentField</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>通过popup方法，指定了handler为<code>onLoadRelatedRecords</code>方法。</p>
+<p>handler方法归属的Controller，即当前编辑对象所对应的<br>Controller，所以，需要在Controller中实现对应的同名方法。demo中编辑的是Sample这一个对象，那么方法实现起来将会类似：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Sample</span> <span class="keyword">extends</span> <span class="title">Controller</span></span><br><span class="line"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onLoadRelatedRecords</span><span class="params">()</span></span><br><span class="line">    </span>&#123;</span><br><span class="line">        <span class="variable">$page</span>           = Request::input(<span class="string">'page'</span>);</span><br><span class="line">        <span class="variable">$recordsPerPage</span> = Request::input(<span class="string">'recordsPerPage'</span>);</span><br><span class="line">        <span class="variable">$excludeIds</span>     = Request::input(<span class="string">'excludeIds'</span>);</span><br><span class="line">        <span class="variable">$modelClass</span>     = Request::input(<span class="string">'modelClass'</span>);</span><br><span class="line">        <span class="variable">$whereClause</span>    = Request::input(<span class="string">'whereClause'</span>);</span><br><span class="line">        <span class="keyword">if</span> (!class_exists(<span class="variable">$modelClass</span>)) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">"&#123;$modelClass&#125; not exists"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/**</span><br><span class="line">         * var $model | Model;</span><br><span class="line">         */</span></span><br><span class="line">        <span class="variable">$model</span> = <span class="keyword">new</span> <span class="variable">$modelClass</span>();</span><br><span class="line">        <span class="keyword">if</span> (!is_array(<span class="variable">$excludeIds</span>)) &#123;</span><br><span class="line">            <span class="variable">$excludeIds</span> = json_decode(<span class="variable">$excludeIds</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="variable">$records</span> = <span class="variable">$model</span>-&gt;whereNotIn(<span class="string">'id'</span>, <span class="variable">$excludeIds</span>);</span><br><span class="line">        <span class="keyword">if</span> (<span class="variable">$whereClause</span>) &#123;</span><br><span class="line">            <span class="variable">$records</span> = <span class="variable">$records</span>-&gt;whereRaw(<span class="variable">$whereClause</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="variable">$records</span> = <span class="variable">$records</span>-&gt;orderBy(<span class="string">'id'</span>, <span class="string">'desc'</span>)-&gt;paginate(<span class="variable">$recordsPerPage</span>, <span class="variable">$page</span>);</span><br><span class="line">        <span class="keyword">return</span> [</span><br><span class="line">            <span class="string">'result'</span> =&gt; <span class="variable">$this</span>-&gt;makePartial(<span class="string">'list_related_records'</span>, [</span><br><span class="line">                <span class="string">'records'</span> =&gt; <span class="variable">$records</span>,</span><br><span class="line">                <span class="string">'modelClass'</span> =&gt; <span class="variable">$modelClass</span></span><br><span class="line">            ])</span><br><span class="line">        ];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>考虑到不能重复加入关联记录，所以每次请求要通过<code>excludeIds</code>传入已加入的id，进行排除。</p>
+<p>通过popup方式弹出列表之后，选择加入这些操作就相当容易实现了。</p>
+<p>其他如前端的操作、样式的编写等等不在赘述。</p>
+<h3 id="注册表单部件"><a href="#注册表单部件" class="headerlink" title="注册表单部件"></a>注册表单部件</h3><p>完成上述工作之后，还需要关键的一步，即在<code>Plugin.php</code>中的<code>registerFormWidgets()</code>方法注册编写完成的部件。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">registerFormWidgets</span><span class="params">()</span></span><br><span class="line">    </span>&#123;</span><br><span class="line">        <span class="comment">// register the widget</span></span><br><span class="line">        <span class="comment">// relatedrecords in fields.yaml will represent this form widget</span></span><br><span class="line">        <span class="keyword">return</span> [</span><br><span class="line">            <span class="string">'Your\Plugin\Widgets\RelatedRecords'</span> =&gt; [</span><br><span class="line">                <span class="string">'label'</span> =&gt; <span class="string">'Related Records'</span>,</span><br><span class="line">                <span class="string">'code'</span>  =&gt; <span class="string">'relatedrecords'</span></span><br><span class="line">            ]</span><br><span class="line">        ];</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="组件效果"><a href="#组件效果" class="headerlink" title="组件效果"></a>组件效果</h2><p>通过弹出的Modal窗口添加关联：</p>
+<p><img src="https://github.com/liaoaoyang/RelatedRecordsFormWidgetDemo/blob/master/images/select_records.png?raw=true" alt="select related records"></p>
+<p>选择后可供调整顺序或移除：</p>
+<p><img src="https://github.com/liaoaoyang/RelatedRecordsFormWidgetDemo/blob/master/images/selected.png?raw=true" alt="selected"></p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Laravel/" rel="tag">#Laravel</a>
+          
+            <a href="/tags/OctoberCMS/" rel="tag">#OctoberCMS</a>
+          
+            <a href="/tags/PHP/" rel="tag">#PHP</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/articles/2016/09/18/a-brief-note-between-mysql-5-5-5-6-5-7-and-8/" rel="next" title="简要了解 MySQL 5.5/5.6/5.7/8 出现的新特性">
+                <i class="fa fa-chevron-left"></i> 简要了解 MySQL 5.5/5.6/5.7/8 出现的新特性
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/articles/2016/10/15/Je-me-libere/" rel="prev" title="《从自我苛求中解放出来》">
+                《从自我苛求中解放出来》 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <a href="/about">
+          	<img class="site-author-image" src="https://blog.wislay.com/wp-content/uploads/2017/03/hippo.jpeg" alt="liaoaoyang" itemprop="image"/>
+          </a>
+          <p class="site-author-name" itemprop="name">liaoaoyang</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="/" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> Homepage
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/wislay/" target="_blank">
+                  
+                    <i class="fa fa-weibo"></i> Weibo
+                  
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/liaoaoyang/" target="_blank">
+                  
+                    <i class="fa fa-github"></i> GitHub
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#需求"><span class="nav-number">2.</span> <span class="nav-text">需求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#OctoberCMS-表单部件"><span class="nav-number">3.</span> <span class="nav-text">OctoberCMS 表单部件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#组件设计"><span class="nav-number">3.1.</span> <span class="nav-text">组件设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#设计细化"><span class="nav-number">3.1.1.</span> <span class="nav-text">设计细化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#进一步细化-表单"><span class="nav-number">3.1.1.1.</span> <span class="nav-text">进一步细化[表单]</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#进一步细化-数据格式"><span class="nav-number">3.1.1.2.</span> <span class="nav-text">进一步细化[数据格式]</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#进一步细化-图形界面"><span class="nav-number">3.1.1.3.</span> <span class="nav-text">进一步细化[图形界面]</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#组件目录结构"><span class="nav-number">3.2.</span> <span class="nav-text">组件目录结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#组件实现细节简述"><span class="nav-number">3.3.</span> <span class="nav-text">组件实现细节简述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#主要逻辑文件RelatedRecords-php"><span class="nav-number">3.3.1.</span> <span class="nav-text">主要逻辑文件RelatedRecords.php</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#init"><span class="nav-number">3.3.1.1.</span> <span class="nav-text">init()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#render"><span class="nav-number">3.3.1.2.</span> <span class="nav-text">render()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模板文件-relatedrecords-htm"><span class="nav-number">3.3.2.</span> <span class="nav-text">模板文件_relatedrecords.htm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#弹出列表模板文件-list-related-records-sample-htm"><span class="nav-number">3.3.3.</span> <span class="nav-text">弹出列表模板文件_list_related_records_sample.htm</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#实现简要说明"><span class="nav-number">3.3.3.1.</span> <span class="nav-text">实现简要说明</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注册表单部件"><span class="nav-number">3.3.4.</span> <span class="nav-text">注册表单部件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#组件效果"><span class="nav-number">3.4.</span> <span class="nav-text">组件效果</span></a></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liaoaoyang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+    
+
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>
