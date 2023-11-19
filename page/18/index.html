@@ -209,11 +209,102 @@
 
     
     
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/articles/2014/12/28/use-cpp-11-with-qt-creator/" itemprop="url">
+                  使用QtCreator配置C++ 11开发调试环境
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2014-12-28T00:00:00+08:00" content="2014-12-28">
+              2014-12-28
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Try/" itemprop="url" rel="index">
+                    <span itemprop="name">Try</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
       
       
 
       
-    
+        
+          <p>编译<a href="http://lwan.ws"><code>lwan</code></a>的时候顺道看了下MinGW，发现64位版本也更新到了<a href="http://mingw-w64.sourceforge.net/download.php#mingw-builds"><code>4.9</code></a>，感觉自己很久没更新过Windows下的C++环境了，也想体验一下C++ 11，顺手升级了一下。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/articles/2014/12/28/use-cpp-11-with-qt-creator/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
 
     
       
@@ -622,120 +713,12 @@ img {
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/articles/2014/10/25/mysql-errno-28-solution/" itemprop="url">
-                  MySQL Errno 28解决方案
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2014-10-25T00:00:00+08:00" content="2014-10-25">
-              2014-10-25
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp; 分类于
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/LAMP-LNMP/" itemprop="url" rel="index">
-                    <span itemprop="name">LAMP/LNMP</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <span itemprop="articleBody">
-            
-              <p>昨天下午组里的同学跟我说数据库不能更改字段了，原本这台CentOS的机器工作很久都还还算正常，于是过去看了一下，发现MySQL在执行SQL之后报错，类似：</p>
-<figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Cant't create <span class="built_in">table</span> <span class="comment">#xxxxxx, Errno 28</span></span><br></pre></td></tr></table></figure>
-<p>即提示错误码为28，告知用户无法创建表格。</p>
-<p>错误码28第一反应就是磁盘空间不足，之后查看了<code>df -hl</code>查看了磁盘空间，发现MySQL所在的分区挂载的磁盘空间余量还有70%之多，之后查看是否是因为<code>/tmp</code>目录已满（即<code>my.cnf</code>中配置的<code>tempdir</code>）导致的，结果发现<code>/tmp</code>挂载的分区也有不少剩余空间，最后一想是不是有可能是inode已满导致的无法创建新文件的问题，使用<code>df -i</code>查看inode使用情况，发现inode使用已经达到了100%。</p>
-<p>既然如此，那么整个事情也就明了了，磁盘空间已满不仅仅是物理空间上的已经使用完毕，也包括inode的使用情况，inode个数使用完毕之后，就不会有空间留给新文件用于记录文件信息了，自然也就不能创建文件了。关于inode，可以阅读阮一峰老师的<a href="http://www.ruanyifeng.com/blog/2011/12/inode.html" target="_blank" rel="external"><code>《理解inode》</code></a>这篇博文，清晰易懂。</p>
-<p>解决问题的话，自然是要找到用尽inode的元凶，一般来说，小文件过多都是引起这个问题的主要原因。检查了这台数据库机器的进程，发现居然有有一套PHP在运行，查看了下<code>php.ini</code>之后，发现session的配置上，目录层级很深，运行了这么长的时间，session文件已经多到让人无语的程度，那么剩下的事情就好解决了，因为这台机器当前的服务不需要session的支持，直接干掉全部session文件即可。</p>
-<p>小结一下，当MySQL出现28的错误码的时候，可以考虑：</p>
-<ol>
-<li>检查磁盘空间</li>
-<li>磁盘空间足够，检查临时目录空间大小</li>
-<li>检查inode是否还有剩余</li>
-</ol>
-<p>不得不说，这个事情并不是第一次看到，那么下次再出现磁盘无剩余空间，可以再看看是不是inode已满。</p>
-
-            
-          </span>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
 
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/17/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span><a class="page-number" href="/page/19/">19</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/19/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/17/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span><a class="page-number" href="/page/19/">19</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/19/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -778,7 +761,7 @@ img {
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">105</span>
+              <span class="site-state-item-count">106</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -792,7 +775,7 @@ img {
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">91</span>
+              <span class="site-state-item-count">94</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>
@@ -861,7 +844,7 @@ img {
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="icon-next-heart fa fa-heart"></i>
   </span>
