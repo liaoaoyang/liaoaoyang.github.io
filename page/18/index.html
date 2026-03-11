@@ -232,8 +232,8 @@
             
               
                 
-                <a class="post-title-link" href="/articles/2014/12/28/use-cpp-11-with-qt-creator/" itemprop="url">
-                  使用QtCreator配置C++ 11开发调试环境
+                <a class="post-title-link" href="/articles/2014/02/24/backwpup-not-work/" itemprop="url">
+                  BackWPup不能备份的一种可能性
                 </a>
               
             
@@ -243,8 +243,8 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2014-12-28T00:00:00+08:00" content="2014-12-28">
-              2014-12-28
+            <time itemprop="dateCreated" datetime="2014-02-24T00:00:00+08:00" content="2014-02-24">
+              2014-02-24
             </time>
           </span>
 
@@ -283,9 +283,112 @@
 
       
         
-          <p>编译<a href="http://lwan.ws"><code>lwan</code></a>的时候顺道看了下MinGW，发现64位版本也更新到了<a href="http://mingw-w64.sourceforge.net/download.php#mingw-builds"><code>4.9</code></a>，感觉自己很久没更新过Windows下的C++环境了，也想体验一下C++ 11，顺手升级了一下。</p>
+          <span itemprop="articleBody">
+            
+              <p><a href="http://wordpress.org/plugins/backwpup" target="_blank" rel="external">BackWPup</a>是一款非常赞的WP备份插件，可以自动增加定时任务实现对Wordpress的备份，并且可以指定目录文件以及数据库的具体备份规则，并且提供了备份到Dropbox的功能。不想折腾的话用这款插件是非常适合的。</p>
+<p>由于<a href="https://www.kvmla.com" target="_blank" rel="external">VPS</a>性能比较一般，为了能够提高响应速度，使用了Wordpress的<a href="http://wordpress.org/plugins/memcached" target="_blank" rel="external">Memcached</a>插件做缓存操作，这样可以减少数据库的查询操作，经过测试提升速度还是比较明显的，用法参见<a href="http://blog.wpjam.com/m/wordpress-memcached" target="_blank" rel="external">我爱水煮鱼</a>。</p>
+<p>在没有一次的自动备份完成后，由于新增了一些配置，决定自己手动备份一下，点击 <em>立即执行</em> 手动备份计划时，却被通知“每周备份”正在进行中（ <strong><em>每周备份</em></strong> 是我设定的一个备份计划的名称），无法进行备份操作。</p>
+<p>简单看了一下BackWPup的代码，发现这里读取的是缓存中的 <strong><em>site-options</em></strong> 类型的数据，而在Memcached插件的readme中找到可能缓存的数据组中包含了这一数据，并且在Memcached插件的object-cache.php文件中，发现默认超时为0，即缓存的数据不失效，那么应该是上一次写入缓存标记BackWPup正在执行的数据尚未过期，所以引起的这个问题。</p>
+<p>解决方法目前就是直接用 <strong><em>kill -9</em></strong> 杀死memcached的进程，之后手动执行备份操作。</p>
+<p>这样做坏处就在于缓存都没了，后面打算想想办法如何能够针对这一插件做一些特殊处理。</p>
+
+            
+          </span>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/articles/2014/02/22/add-auth-to-mediawiki/" itemprop="url">
+                  Mediawiki 登录操作
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2014-02-22T00:00:00+08:00" content="2014-02-22">
+              2014-02-22
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Try/" itemprop="url" rel="index">
+                    <span itemprop="name">Try</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <p><a href="http://www.mediawiki.org/wiki/MediaWiki">Mediawiki</a>是一个广泛使用的wiki系统之一。</p>
+<p>整个wiki的搭建过程十分的简便，几乎是各种下一步的傻瓜安装方式。安装时在有Memcached的机器的前提下，强烈建议配置上Memcached，在配与不配Memcached这个选项上，配置了Memcached之后速度会有明显的提升。</p>
+<p>在使用wiki的过程中，可能我们需要对外公开wiki的内容，但是不能让未授权用户编辑的情况，这时候就需要使用认证。在<a href="http://www.mediawiki.org/wiki/categories:User_identity_extensions">官方网站</a>上有很多的认证插件可以选择，不过有时需要加入自己使用的wiki系统的一些特性的时候（比如用公司的统一登录接口），插件就不一定适用了，需要自己编写插件。</p>
           <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2014/12/28/use-cpp-11-with-qt-creator/#more" rel="contents">
+            <a class="btn" href="/articles/2014/02/22/add-auth-to-mediawiki/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -328,8 +431,8 @@
             
               
                 
-                <a class="post-title-link" href="/articles/2014/12/26/build-lwan-on-centos-6-5/" itemprop="url">
-                  CentOS 6.5使用lwan
+                <a class="post-title-link" href="/articles/2014/02/21/setup-my-lamp/" itemprop="url">
+                  尝试搭建LAMP环境
                 </a>
               
             
@@ -339,105 +442,8 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2014-12-26T00:00:00+08:00" content="2014-12-26">
-              2014-12-26
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp; 分类于
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Try/" itemprop="url" rel="index">
-                    <span itemprop="name">Try</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <p>这些天看到了<a href="http://lwan.ws/"><code>lwan</code></a>，<a href="http://lwan.ws/"><code>官网</code></a>上号称作者历经三年打造的高性能轻量级可扩展Web Server，号称具备了低内存占用、最小化的系统调用次数、对静态文件根据大小智能的处理，预缓存目录信息以及7200行主体代码等特点，到今天（2014年12月26日）为止，<a href="https://github.com/lpereira/lwan"><code>Github</code></a>已经收集到了2000+个star。</p>
-<p>其中最吸引我的就是静态文件能达到18w qps，加上它较小的代码体积，于是想要试用一下。</p>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2014/12/26/build-lwan-on-centos-6-5/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/articles/2014/12/07/add-module-to-nginx-installed-by-yum/" itemprop="url">
-                  YUM安装的Nginx如何添加模块
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2014-12-07T00:00:00+08:00" content="2014-12-07">
-              2014-12-07
+            <time itemprop="dateCreated" datetime="2014-02-21T00:00:00+08:00" content="2014-02-21">
+              2014-02-21
             </time>
           </span>
 
@@ -476,222 +482,9 @@
 
       
         
-          <p>使用 yum 安装的 Nginx 添加模块也可以很简单。</p>
+          <p>之前自己一直用apt-get在Ubuntu上搭环境，实在是很方便，自动的解决了很多的依赖问题，可以说是真是很省心。用VPS的时候有时候也用比如<a href="http://www.centos.bz/ezhttp/">EZHTTP</a>这样的LAMP/LNMP一键安装包。不过老用这些方便的东西做自己就觉得有些问题，比如自己不能控制Apache、PHP、MySQL的安装位置，在需要进入这些软件的安装位置的时候，就得用dpkg -L来找到这些软件的安装位置。完全全自动的安装感觉自己也不能了解到更多的细节。</p>
           <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2014/12/07/add-module-to-nginx-installed-by-yum/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/articles/2014/11/09/oracle-ora27102/" itemprop="url">
-                  Oracle ORA27102 问题
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2014-11-09T00:00:00+08:00" content="2014-11-09">
-              2014-11-09
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp; 分类于
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Database/" itemprop="url" rel="index">
-                    <span itemprop="name">Database</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <style>
-img {
-    max-width:600px;
-}
-</style>
-
-<h1 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h1><p>在处理Oracle因为CI的持续连接引起Oracle进程用尽的问题之后，更新代码时忘记修改配置，导致了再次出现进程耗尽的问题，在处理时发现居然无法关闭数据库，同时sqlplus提示如下：</p>
-<p><img src="https://blog.wislay.com/wp-content/uploads/2014/11/ora27102.png" alt="ora27102"></p>
-<p><code>Out of memory</code>这个提示真是让人费解，内存感觉还是非常充足的样子。</p>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2014/11/09/oracle-ora27102/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/articles/2014/11/09/ci-may-not-use-pconnect-with-oracle/" itemprop="url">
-                  CI可能不应该使用持久连接Oracle数据库
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2014-11-09T00:00:00+08:00" content="2014-11-09">
-              2014-11-09
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp; 分类于
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/PHP/" itemprop="url" rel="index">
-                    <span itemprop="name">PHP</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <style>
-img {
-    max-width:600px;
-}
-</style>
-
-<h1 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h1><p>看过CI框架用法应该会看到，在配置CI框架连接数据库时，默认会开启<a href="http://codeigniter.org.cn/user_guide/database/configuration.html"><code>持久连接</code></a>，即类似这样的配置<code>$db[&#39;test&#39;][&#39;pconnect&#39;] = TRUE;</code>，使用MySQL时会调用<code>mysql_pconnect</code>方法实现这一个功能，而<code>oci8</code>扩展恰巧也有类似的方法<a href="http://php.net/manual/zh/function.oci-pconnect.php"><code>oci_pconnect</code></a>:</p>
-<p><img src="https://blog.wislay.com/wp-content/uploads/2014/11/oci_pconnect.jpg" alt="oci_pconnect"></p>
-<p>方法的用处文档上说的很清楚：</p>
-<blockquote>
-<p>oci_pconnect() 创建一个到 Oracle 服务器的持久连接并登录。持久连接会被缓冲并在请求之间重复使用，可以降低每个页面加载的消耗。</p>
-</blockquote>
-<p>那么按道理来说这样的功能应该是会提升处理能力的，但是问题在于，持久连接会增加Oracle的进程数，一旦进程数耗尽，那么新的连接请求可能会被拒绝，反而会使得处理能力下降。</p>
-<p>今天遇到了这样的一个问题，当双机各自开启1024个php-fpm进程时，使用sqlplus连接数据库被拒绝，同时各种操作都被拒绝执行。</p>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2014/11/09/ci-may-not-use-pconnect-with-oracle/#more" rel="contents">
+            <a class="btn" href="/articles/2014/02/21/setup-my-lamp/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -718,7 +511,7 @@ img {
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/17/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span><a class="page-number" href="/page/19/">19</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/19/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/17/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span>
   </nav>
 
 
@@ -761,7 +554,7 @@ img {
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">106</span>
+              <span class="site-state-item-count">88</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -775,7 +568,7 @@ img {
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">94</span>
+              <span class="site-state-item-count">93</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>
@@ -844,7 +637,7 @@ img {
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2026</span>
   <span class="with-love">
     <i class="icon-next-heart fa fa-heart"></i>
   </span>

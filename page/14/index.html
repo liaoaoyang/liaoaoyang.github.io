@@ -232,8 +232,8 @@
             
               
                 
-                <a class="post-title-link" href="/articles/2016/04/14/leetcode-6/" itemprop="url">
-                  LeetCode-6
+                <a class="post-title-link" href="/articles/2015/08/21/php-json-encode-emoji/" itemprop="url">
+                  emoji，json_encode与MySQL
                 </a>
               
             
@@ -243,8 +243,8 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2016-04-14T20:25:06+08:00" content="2016-04-14">
-              2016-04-14
+            <time itemprop="dateCreated" datetime="2015-08-21T00:00:00+08:00" content="2015-08-21">
+              2015-08-21
             </time>
           </span>
 
@@ -253,8 +253,8 @@
               &nbsp; | &nbsp; 分类于
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Try/" itemprop="url" rel="index">
-                    <span itemprop="name">Try</span>
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
                   </a>
                 </span>
 
@@ -283,9 +283,12 @@
 
       
         
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>作为一道简单题，<a href="https://leetcode.com/problems/zigzag-conversion/">ZigZag Conversion</a> 即将字符串按照之字形显示后，再逐行打印字符串。</p>
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>之前有看到过对于emoji表情这类字符，想要存入MySQL之中，需要建立或者修改表的字符集为<code>utf8mb4</code>，而且对MySQL版本还有一定的要求（<a href="https://dev.mysql.com/doc/refman/5.5/en/charset-unicode-utf8mb4.html"><code>&gt;=5.5.3</code></a>），否则MySQL会提示类似：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ERROR <span class="number">1366</span>: Incorrect <span class="keyword">string</span> <span class="keyword">value</span>: <span class="string">'\xF0\x9F\x8D\xBA'</span> <span class="keyword">for</span> column</span><br></pre></td></tr></table></figure>
+<p>的错误。</p>
+<p>然而在PHP中其实有一种情况是可以“存储”emoji表情字符的，那就是将包含emoji的字符串通过PHP的<code>json_encode</code>方法处理后再进行存储操作。</p>
           <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2016/04/14/leetcode-6/#more" rel="contents">
+            <a class="btn" href="/articles/2015/08/21/php-json-encode-emoji/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -328,8 +331,8 @@
             
               
                 
-                <a class="post-title-link" href="/articles/2016/04/12/leetcode-4/" itemprop="url">
-                  LeetCode-4
+                <a class="post-title-link" href="/articles/2015/03/29/build-facebook-fresco/" itemprop="url">
+                  Build Facebook Fresco
                 </a>
               
             
@@ -339,8 +342,8 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2016-04-12T00:43:13+08:00" content="2016-04-12">
-              2016-04-12
+            <time itemprop="dateCreated" datetime="2015-03-29T00:00:00+08:00" content="2015-03-29">
+              2015-03-29
             </time>
           </span>
 
@@ -349,8 +352,8 @@
               &nbsp; | &nbsp; 分类于
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Try/" itemprop="url" rel="index">
-                    <span itemprop="name">Try</span>
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
                   </a>
                 </span>
 
@@ -379,9 +382,10 @@
 
       
         
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>作为复杂题的第一题(<a href="https://leetcode.com/problems/median-of-two-sorted-arrays/">Median of Two Sorted Arrays</a>)，在时间复杂度为<em>O(log (m+n))</em>（<br><code>m</code>，<code>n</code>均为数组长度）的要求之下，求两个已排序数组的中位数。</p>
+          <p>Facebook最近开源了他们的Android图片加载库 <a href="https://github.com/facebook/fresco">fresco</a> ，3月26号到现在两天多时间在github上收获了1000+ star，足见大家对这一个库的肯定。</p>
+<p>自己自然也想尝试这一个库，首要工作就是build。</p>
           <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2016/04/12/leetcode-4/#more" rel="contents">
+            <a class="btn" href="/articles/2015/03/29/build-facebook-fresco/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -424,8 +428,8 @@
             
               
                 
-                <a class="post-title-link" href="/articles/2016/04/10/leetcode-3/" itemprop="url">
-                  LeetCode-3
+                <a class="post-title-link" href="/articles/2015/03/20/use-volley-in-android-studio/" itemprop="url">
+                  Android Studio中使用Volley
                 </a>
               
             
@@ -435,8 +439,8 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2016-04-10T23:41:39+08:00" content="2016-04-10">
-              2016-04-10
+            <time itemprop="dateCreated" datetime="2015-03-20T00:00:00+08:00" content="2015-03-20">
+              2015-03-20
             </time>
           </span>
 
@@ -445,8 +449,8 @@
               &nbsp; | &nbsp; 分类于
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Try/" itemprop="url" rel="index">
-                    <span itemprop="name">Try</span>
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
                   </a>
                 </span>
 
@@ -475,10 +479,9 @@
 
       
         
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>今天份的LeetCode题目 <a href="https://leetcode.com/problems/longest-substring-without-repeating-characters/">Longest Substring Without Repeating Characters</a> 也是一道 <code>Medium</code> 的题目。</p>
-<p>大意即找出给定字符串中的连续最长非重复子序列的长度。</p>
+          <p>Android上的通信框架各种各样，比如 <a href="http://loopj.com/android-async-http/">android-async-http</a>，而最近同学们很多都推荐给我用Google家的 <a href="http://developer.android.com/training/volley/index.html">Volley</a>。</p>
           <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2016/04/10/leetcode-3/#more" rel="contents">
+            <a class="btn" href="/articles/2015/03/20/use-volley-in-android-studio/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -521,8 +524,8 @@
             
               
                 
-                <a class="post-title-link" href="/articles/2016/04/10/leetcode-2/" itemprop="url">
-                  LeetCode-2
+                <a class="post-title-link" href="/articles/2014/12/28/use-cpp-11-with-qt-creator/" itemprop="url">
+                  使用QtCreator配置C++ 11开发调试环境
                 </a>
               
             
@@ -532,8 +535,8 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2016-04-10T13:28:41+08:00" content="2016-04-10">
-              2016-04-10
+            <time itemprop="dateCreated" datetime="2014-12-28T00:00:00+08:00" content="2014-12-28">
+              2014-12-28
             </time>
           </span>
 
@@ -572,9 +575,9 @@
 
       
         
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><a href="https://leetcode.com/problems/add-two-numbers/">Add Two Numbers</a> 难度为<code>Medium</code>，这一题目简单来说即给出两个序列，代表两个整数，模拟加法运算。</p>
+          <p>编译<a href="http://lwan.ws"><code>lwan</code></a>的时候顺道看了下MinGW，发现64位版本也更新到了<a href="http://mingw-w64.sourceforge.net/download.php#mingw-builds"><code>4.9</code></a>，感觉自己很久没更新过Windows下的C++环境了，也想体验一下C++ 11，顺手升级了一下。</p>
           <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2016/04/10/leetcode-2/#more" rel="contents">
+            <a class="btn" href="/articles/2014/12/28/use-cpp-11-with-qt-creator/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -617,8 +620,8 @@
             
               
                 
-                <a class="post-title-link" href="/articles/2016/04/09/leetcode-1/" itemprop="url">
-                  LeetCode-1
+                <a class="post-title-link" href="/articles/2014/12/26/build-lwan-on-centos-6-5/" itemprop="url">
+                  CentOS 6.5使用lwan
                 </a>
               
             
@@ -628,8 +631,8 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2016-04-09T23:03:39+08:00" content="2016-04-09">
-              2016-04-09
+            <time itemprop="dateCreated" datetime="2014-12-26T00:00:00+08:00" content="2014-12-26">
+              2014-12-26
             </time>
           </span>
 
@@ -668,9 +671,10 @@
 
       
         
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>作为简单题的第一题(<a href="https://leetcode.com/problems/two-sum/">Two Sum</a>)，简答来说就是给出一个序列以及目标值，求出能加和出目标值的两个数字在数组中的下标。</p>
+          <p>这些天看到了<a href="http://lwan.ws/"><code>lwan</code></a>，<a href="http://lwan.ws/"><code>官网</code></a>上号称作者历经三年打造的高性能轻量级可扩展Web Server，号称具备了低内存占用、最小化的系统调用次数、对静态文件根据大小智能的处理，预缓存目录信息以及7200行主体代码等特点，到今天（2014年12月26日）为止，<a href="https://github.com/lpereira/lwan"><code>Github</code></a>已经收集到了2000+个star。</p>
+<p>其中最吸引我的就是静态文件能达到18w qps，加上它较小的代码体积，于是想要试用一下。</p>
           <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2016/04/09/leetcode-1/#more" rel="contents">
+            <a class="btn" href="/articles/2014/12/26/build-lwan-on-centos-6-5/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -697,7 +701,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/15/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/15/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -740,7 +744,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">106</span>
+              <span class="site-state-item-count">88</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -754,7 +758,7 @@
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">94</span>
+              <span class="site-state-item-count">93</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>
@@ -823,7 +827,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2026</span>
   <span class="with-love">
     <i class="icon-next-heart fa fa-heart"></i>
   </span>

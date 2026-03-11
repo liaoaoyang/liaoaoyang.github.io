@@ -232,8 +232,8 @@
             
               
                 
-                <a class="post-title-link" href="/articles/2016/05/02/leetcode-24-26-27/" itemprop="url">
-                  LeetCode-24-26-27
+                <a class="post-title-link" href="/articles/2016/01/05/monitor-redis-by-nagios-part-2/" itemprop="url">
+                  使用Nagios监控Redis-按内存使用率监控
                 </a>
               
             
@@ -243,8 +243,8 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2016-05-02T13:53:25+08:00" content="2016-05-02">
-              2016-05-02
+            <time itemprop="dateCreated" datetime="2016-01-05T19:09:55+08:00" content="2016-01-05">
+              2016-01-05
             </time>
           </span>
 
@@ -253,8 +253,8 @@
               &nbsp; | &nbsp; 分类于
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Try/" itemprop="url" rel="index">
-                    <span itemprop="name">Try</span>
+                  <a href="/categories/Learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Learning</span>
                   </a>
                 </span>
 
@@ -283,9 +283,12 @@
 
       
         
-          <p><a href="https://leetcode.com/problems/swap-nodes-in-pairs/">Swap Nodes in Pairs</a>，<a href="https://leetcode.com/problems/remove-duplicates-from-sorted-array/">Remove Duplicates from Sorted Array</a>，<a href="https://leetcode.com/problems/remove-element/">Remove Element</a> 均为简单题，合并到一起写解题思路。</p>
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>本文是 <a href="http://www.liaoaoyang.com/articles/2015/11/27/monitor-redis-by-nagios/">使用Nagios监控Redis</a> 的补充记录。</p>
+<p>根据前期选用的插件，通过直接针对 <code>used_memory_rss</code> 设定监控阈值完成监控，而这一阈值的问题在于是使用字节数的表示的，如果要按照<code>36GB</code>的<code>70%</code>设定阈值监控，就需要将监控的值设定为(结果已四舍五入)：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">36</span> * <span class="number">1024</span> * <span class="number">1024</span> * <span class="number">1024</span> * <span class="number">0.7</span> = <span class="number">27058293965</span></span><br></pre></td></tr></table></figure>
+<p>这一数字对于config文件来说，以及监控用户来说并不友好。</p>
           <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2016/05/02/leetcode-24-26-27/#more" rel="contents">
+            <a class="btn" href="/articles/2016/01/05/monitor-redis-by-nagios-part-2/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -328,8 +331,8 @@
             
               
                 
-                <a class="post-title-link" href="/articles/2016/04/30/leetcode-19-20-21/" itemprop="url">
-                  LeetCode-19-20-21
+                <a class="post-title-link" href="/articles/2015/12/26/setup-bullet-train-in-a-new-mac/" itemprop="url">
+                  在Mac上简易设置Oh-My-Zsh的BulletTrain主题
                 </a>
               
             
@@ -339,26 +342,11 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2016-04-30T10:06:06+08:00" content="2016-04-30">
-              2016-04-30
+            <time itemprop="dateCreated" datetime="2015-12-26T23:00:30+08:00" content="2015-12-26">
+              2015-12-26
             </time>
           </span>
 
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp; 分类于
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Try/" itemprop="url" rel="index">
-                    <span itemprop="name">Try</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
           
 
           
@@ -379,9 +367,10 @@
 
       
         
-          <p>这三题均为 <code>Easy</code> ，合并到一起写写解题思路。</p>
+          <h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>近期有了一台新的MacBook，自然少不了基本的装机过程，其中Homebrew和Oh-My-Zsh作为生产力工具算是必装的软件。</p>
+<p>不过Oh-My-Zsh的默认主题看久了仍然还是觉得有些枯燥，动了想要更换主题的念头，于是有了后面的步骤。</p>
           <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2016/04/30/leetcode-19-20-21/#more" rel="contents">
+            <a class="btn" href="/articles/2015/12/26/setup-bullet-train-in-a-new-mac/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -424,8 +413,8 @@
             
               
                 
-                <a class="post-title-link" href="/articles/2016/04/21/install-git-from-source/" itemprop="url">
-                  CentOS 6.x 源码安装 Git
+                <a class="post-title-link" href="/articles/2015/12/06/problems-when-transform-blog-from-pelican-to-hexo/" itemprop="url">
+                  从Pelican到Hexo
                 </a>
               
             
@@ -435,8 +424,8 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2016-04-21T00:13:36+08:00" content="2016-04-21">
-              2016-04-21
+            <time itemprop="dateCreated" datetime="2015-12-06T20:44:27+08:00" content="2015-12-06">
+              2015-12-06
             </time>
           </span>
 
@@ -475,9 +464,9 @@
 
       
         
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>git 在各个发行版的包管理器中应该都有包含，一般版本也不够新，某些情况下如果需要安装特殊版本的 git 还是需要通过源码进行编译。</p>
+          <h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>用Pelican在GitHub上搭blog有段时间了，一直想要更清爽简单的blog解决方案，之前使用的Pelican算是满足了我的需求，但是还想尝试一下其他的系统，同时从视觉效果上来说Hexo+<a href="https://github.com/iissnan/hexo-theme-next"><code>Next</code></a>主题目前更让我觉得满意，于是决定从Pelican迁移到Hexo。</p>
           <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2016/04/21/install-git-from-source/#more" rel="contents">
+            <a class="btn" href="/articles/2015/12/06/problems-when-transform-blog-from-pelican-to-hexo/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -520,8 +509,8 @@
             
               
                 
-                <a class="post-title-link" href="/articles/2016/04/20/leetcode-9/" itemprop="url">
-                  LeetCode-9
+                <a class="post-title-link" href="/articles/2015/12/03/change-repo-user-info-by-git-hooks/" itemprop="url">
+                  Git根据仓库url修改用户信息
                 </a>
               
             
@@ -531,8 +520,8 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2016-04-20T23:13:59+08:00" content="2016-04-20">
-              2016-04-20
+            <time itemprop="dateCreated" datetime="2015-12-03T00:00:00+08:00" content="2015-12-03">
+              2015-12-03
             </time>
           </span>
 
@@ -541,8 +530,8 @@
               &nbsp; | &nbsp; 分类于
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Try/" itemprop="url" rel="index">
-                    <span itemprop="name">Try</span>
+                  <a href="/categories/Learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Learning</span>
                   </a>
                 </span>
 
@@ -571,9 +560,11 @@
 
       
         
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><a href="https://leetcode.com/problems/palindrome-number/">Palindrome Number</a> 判断文字是否是回文，输出布尔值。</p>
+          <h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>日常Coding使用git的一个问题是，公司工作和个人项目有时候会使用不同的用户信息，例如公司项目要求个人信息必须为<code>your_name@your_company.com</code>的形式，而你自己在使用<code>Gmail</code>，这里自然有些冲突。</p>
+<p>如果忘记在 clone 的项目中配置一下，极有可能会把自己的日常使用邮箱提交到公司的repo中，反之亦然。</p>
+<p>虽然git本身可以通过<code>--global</code>进行配置，默认各个项目都用自己的常用个人提交信息，但是对于公司项目，每次都要单独配置也是做了太多无用功，那么如果能让这个任务更加自动化想必是可以提高工作效率的。</p>
           <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2016/04/20/leetcode-9/#more" rel="contents">
+            <a class="btn" href="/articles/2015/12/03/change-repo-user-info-by-git-hooks/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -616,8 +607,8 @@
             
               
                 
-                <a class="post-title-link" href="/articles/2016/04/16/leetcode-7/" itemprop="url">
-                  LeetCode-7
+                <a class="post-title-link" href="/articles/2015/11/27/monitor-redis-by-nagios/" itemprop="url">
+                  使用Nagios监控Redis
                 </a>
               
             
@@ -627,8 +618,8 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2016-04-16T14:15:09+08:00" content="2016-04-16">
-              2016-04-16
+            <time itemprop="dateCreated" datetime="2015-11-27T00:00:00+08:00" content="2015-11-27">
+              2015-11-27
             </time>
           </span>
 
@@ -637,8 +628,8 @@
               &nbsp; | &nbsp; 分类于
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Try/" itemprop="url" rel="index">
-                    <span itemprop="name">Try</span>
+                  <a href="/categories/Learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Learning</span>
                   </a>
                 </span>
 
@@ -667,9 +658,11 @@
 
       
         
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><a href="https://leetcode.com/problems/reverse-integer/">Reverse Integer</a> 简单题，要求将不带符号位的整数反转，如果遇到溢出问题，则输出0。</p>
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>近期新上项目之后出现了后台服务的一些诡异的问题，追查之后发现居然有个Redis的实例把分配的几十G内存给用满了……</p>
+<p>终于意识到之前“土法炼钢”的不科学的地方，惭愧之余迅速的想要给Redis加上基本的监控。</p>
+<p>最初的想法是直接自己写脚本轮询各个实例的info信息，然后自行parse，当前运行Redis的实例不多，感觉工作量并不大，然而这时候想起组内之前的监控是在用<code>Nagios</code>，觉得为什么不让更专业的软件来完成这项工作呢？于是决定通过Nagios来完成监控。</p>
           <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2016/04/16/leetcode-7/#more" rel="contents">
+            <a class="btn" href="/articles/2015/11/27/monitor-redis-by-nagios/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -696,7 +689,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/12/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/14/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/12/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/14/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -739,7 +732,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">106</span>
+              <span class="site-state-item-count">88</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -753,7 +746,7 @@
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">94</span>
+              <span class="site-state-item-count">93</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>
@@ -822,7 +815,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2026</span>
   <span class="with-love">
     <i class="icon-next-heart fa fa-heart"></i>
   </span>

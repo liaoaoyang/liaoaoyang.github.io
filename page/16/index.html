@@ -232,8 +232,8 @@
             
               
                 
-                <a class="post-title-link" href="/articles/2016/02/16/one-step-into-tmux/" itemprop="url">
-                  一些简单的Tmux设置
+                <a class="post-title-link" href="/articles/2014/09/20/ci-connect-oracle-11g/" itemprop="url">
+                  CI连接Oracle 11G数据库
                 </a>
               
             
@@ -243,97 +243,8 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2016-02-16T22:47:00+08:00" content="2016-02-16">
-              2016-02-16
-            </time>
-          </span>
-
-          
-
-          
-            
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>如果使用Linux作为服务器的操作系统，通过ssh操作时，会出现一个困难的选择：是否需要打开n个终端窗口？</p>
-<p>如果服务器可以直接ssh的话，那么通过复用会话的方式似乎还算是个好选择，或者编写一个expect登陆脚本完成自动登陆操作。</p>
-<p>当然，如果有如下需求：</p>
-<ul>
-<li>回家之后继续在公司的工作</li>
-<li>防止偶发的网络断开引起的重新连接</li>
-<li>运行时同时使用监控软件查看运行状态</li>
-</ul>
-<p>那么这时候就需要使用终端复用软件了。</p>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2016/02/16/one-step-into-tmux/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/articles/2016/01/05/monitor-redis-by-nagios-part-2/" itemprop="url">
-                  使用Nagios监控Redis-按内存使用率监控
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            发表于
-            <time itemprop="dateCreated" datetime="2016-01-05T19:09:55+08:00" content="2016-01-05">
-              2016-01-05
+            <time itemprop="dateCreated" datetime="2014-09-20T00:00:00+08:00" content="2014-09-20">
+              2014-09-20
             </time>
           </span>
 
@@ -342,8 +253,8 @@
               &nbsp; | &nbsp; 分类于
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Learning/" itemprop="url" rel="index">
-                    <span itemprop="name">Learning</span>
+                  <a href="/categories/LAMP-LNMP/" itemprop="url" rel="index">
+                    <span itemprop="name">LAMP/LNMP</span>
                   </a>
                 </span>
 
@@ -372,12 +283,10 @@
 
       
         
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>本文是 <a href="http://www.liaoaoyang.com/articles/2015/11/27/monitor-redis-by-nagios/">使用Nagios监控Redis</a> 的补充记录。</p>
-<p>根据前期选用的插件，通过直接针对 <code>used_memory_rss</code> 设定监控阈值完成监控，而这一阈值的问题在于是使用字节数的表示的，如果要按照<code>36GB</code>的<code>70%</code>设定阈值监控，就需要将监控的值设定为(结果已四舍五入)：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">36</span> * <span class="number">1024</span> * <span class="number">1024</span> * <span class="number">1024</span> * <span class="number">0.7</span> = <span class="number">27058293965</span></span><br></pre></td></tr></table></figure>
-<p>这一数字对于config文件来说，以及监控用户来说并不友好。</p>
+          <p><a href="https://github.com/EllisLab/CodeIgniter/">CI</a>框架算是个人最喜欢的PHP框架之一，易用性上没的说，还有完备的<a href="http://codeigniter.org.cn/user_guide/toc.html">中文文档</a>，不过大多数时候是搭配MySQL一起使用。</p>
+<p>不过最近接触的一个项目使用的是Oracle 11G数据库，开发前给大家搭环境的时候发现连接有一些问题，主要来说是安装配置上的一些问题。</p>
           <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2016/01/05/monitor-redis-by-nagios-part-2/#more" rel="contents">
+            <a class="btn" href="/articles/2014/09/20/ci-connect-oracle-11g/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -420,8 +329,8 @@
             
               
                 
-                <a class="post-title-link" href="/articles/2015/12/31/my-2015/" itemprop="url">
-                  2015
+                <a class="post-title-link" href="/articles/2014/09/07/nodejs-helloworld/" itemprop="url">
+                  又写了一个Hello World
                 </a>
               
             
@@ -431,8 +340,8 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2015-12-31T22:50:55+08:00" content="2015-12-31">
-              2015-12-31
+            <time itemprop="dateCreated" datetime="2014-09-07T00:00:00+08:00" content="2014-09-07">
+              2014-09-07
             </time>
           </span>
 
@@ -441,8 +350,8 @@
               &nbsp; | &nbsp; 分类于
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Life/" itemprop="url" rel="index">
-                    <span itemprop="name">Life</span>
+                  <a href="/categories/Node-js/" itemprop="url" rel="index">
+                    <span itemprop="name">Node.js</span>
                   </a>
                 </span>
 
@@ -471,9 +380,16 @@
 
       
         
-          <p>2015年的个人总结。</p>
+          <style>
+img {
+    max-width: 600px;
+}
+</style>
+
+<p>近期有两天没有需求的日子，下周leader说让我去和前端学习一下，不过要先写个通关作业简单了解一下js。于是花两天时间又写了个Hello world。</p>
+<p>简单记录一下，代码包含大量的调试语句，暂时不贴代码，后期还得试着填坑，写出一个完善的hello world。</p>
           <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2015/12/31/my-2015/#more" rel="contents">
+            <a class="btn" href="/articles/2014/09/07/nodejs-helloworld/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -516,8 +432,8 @@
             
               
                 
-                <a class="post-title-link" href="/articles/2015/12/26/setup-bullet-train-in-a-new-mac/" itemprop="url">
-                  在Mac上简易设置Oh-My-Zsh的BulletTrain主题
+                <a class="post-title-link" href="/articles/2014/07/28/mysql-note-add-instance-and-start/" itemprop="url">
+                  MySQL的简单使用笔记：增加实例以及启动
                 </a>
               
             
@@ -527,11 +443,26 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2015-12-26T23:00:30+08:00" content="2015-12-26">
-              2015-12-26
+            <time itemprop="dateCreated" datetime="2014-07-28T00:00:00+08:00" content="2014-07-28">
+              2014-07-28
             </time>
           </span>
 
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/LAMP-LNMP/" itemprop="url" rel="index">
+                    <span itemprop="name">LAMP/LNMP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
           
 
           
@@ -552,10 +483,9 @@
 
       
         
-          <h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>近期有了一台新的MacBook，自然少不了基本的装机过程，其中Homebrew和Oh-My-Zsh作为生产力工具算是必装的软件。</p>
-<p>不过Oh-My-Zsh的默认主题看久了仍然还是觉得有些枯燥，动了想要更换主题的念头，于是有了后面的步骤。</p>
+          <h2 id="增加实例"><a href="#增加实例" class="headerlink" title="增加实例"></a>增加实例</h2><p>增加实例这里指的的在源码编译安装完MySQL之后建立一个初始的数据库实例，占用某一端口，或者是使用新端口启动新的mysqld进程。</p>
           <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2015/12/26/setup-bullet-train-in-a-new-mac/#more" rel="contents">
+            <a class="btn" href="/articles/2014/07/28/mysql-note-add-instance-and-start/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -598,8 +528,8 @@
             
               
                 
-                <a class="post-title-link" href="/articles/2015/12/06/problems-when-transform-blog-from-pelican-to-hexo/" itemprop="url">
-                  从Pelican到Hexo
+                <a class="post-title-link" href="/articles/2014/07/20/monument-valley/" itemprop="url">
+                  纪念碑谷
                 </a>
               
             
@@ -609,8 +539,8 @@
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2015-12-06T20:44:27+08:00" content="2015-12-06">
-              2015-12-06
+            <time itemprop="dateCreated" datetime="2014-07-20T00:00:00+08:00" content="2014-07-20">
+              2014-07-20
             </time>
           </span>
 
@@ -649,12 +579,119 @@
 
       
         
-          <h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>用Pelican在GitHub上搭blog有段时间了，一直想要更清爽简单的blog解决方案，之前使用的Pelican算是满足了我的需求，但是还想尝试一下其他的系统，同时从视觉效果上来说Hexo+<a href="https://github.com/iissnan/hexo-theme-next"><code>Next</code></a>主题目前更让我觉得满意，于是决定从Pelican迁移到Hexo。</p>
+          <p>这是一个由<a href="http://ustwo.com/">USTWO</a>公司出品的冒险游戏，虽然闻名已久，但是自己却从来没有玩过这款游戏，直到这款游戏已经到达100w销量<a href="https://itunes.apple.com/cn/app/monument-valley/id728293409">iOS版半价</a>时才购入。</p>
           <div class="post-more-link text-center">
-            <a class="btn" href="/articles/2015/12/06/problems-when-transform-blog-from-pelican-to-hexo/#more" rel="contents">
+            <a class="btn" href="/articles/2014/07/20/monument-valley/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/articles/2014/07/18/directories-should-be-existed-in-apache-vhost-conf-file/" itemprop="url">
+                  Vhost中目录不存在引起Apache不能启动
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2014-07-18T00:00:00+08:00" content="2014-07-18">
+              2014-07-18
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/LAMP-LNMP/" itemprop="url" rel="index">
+                    <span itemprop="name">LAMP/LNMP</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <span itemprop="articleBody">
+            
+              <p>环境配置始终是工作过程中一个最为折腾人的环节，为了解决这个问题，最后写了个简单地装机脚本给大家使用。</p>
+<p>环境配置包括软件的安装和设置的更改，一套LAMP每个组成部分设置都以百计，功能的强大的同时如果对每个部分的了解程度不足尤其容易出现一些看似很难以解决的问题，往往这些问题解决之后都会让人觉得沮丧不已。</p>
+<p>今天配置环境出现了一个问题，就是只要在<code>httpd.conf</code>中添加了包含vhost设置的语句之后，Apache使用</p>
+<blockquote>
+<p>apachectl -k gracecful</p>
+</blockquote>
+<p>等方式启动时总会提示</p>
+<blockquote>
+<p>httpd not running, trying to start</p>
+</blockquote>
+<p>让人沮丧的是这种错误并没有打印error_log，同时使用语法检查也不能发现有任何错误，在逐句注释掉vhost中的设置语句之后，发现当注释掉所有提及的主机路径之后，居然可以重新启动了，于是检查发现这些目录都在主机上不存在，添加目录之后Apache能正常启动了。</p>
+<p>尝试出来的结果，后面打算去找找更为具体的原因。</p>
+
+            
+          </span>
         
       
     </div>
@@ -678,7 +715,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/15/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><span class="page-number current">16</span><a class="page-number" href="/page/17/">17</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/17/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/15/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><span class="page-number current">16</span><a class="page-number" href="/page/17/">17</a><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/17/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -721,7 +758,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">106</span>
+              <span class="site-state-item-count">88</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -735,7 +772,7 @@
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">94</span>
+              <span class="site-state-item-count">93</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>
@@ -804,7 +841,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2026</span>
   <span class="with-love">
     <i class="icon-next-heart fa fa-heart"></i>
   </span>
